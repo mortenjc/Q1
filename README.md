@@ -17,3 +17,13 @@ To run the emulator
 
     > cd src
     > python3 single_stepping.py
+
+### command line options
+
+The output can be controlled by printing out a message at a program counter (PC)
+of interest using --poi addr
+
+Hexdummp is done periodically but but can be disabled by --nodump
+
+The emulation is stopped after 16380 instructions but this can be changed by
+--stopafter nnnn

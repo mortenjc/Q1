@@ -2,9 +2,10 @@
 
 import z80, sys
 import memory
+import argparse
 
 
-def main():
+def main(args):
     e = z80
     m = z80.Z80Machine()
     b = z80._Z80InstrBuilder()
@@ -29,6 +30,10 @@ def main():
 
     while True:
         icount += 1
+        if icount >= args.stopafter:
+            print(f'max instruction count reached, exiting ...')
+            sys.exit()
+
         # Decode the instruction.
         MAX_INSTR_SIZE = 4
         instr = b.build_instr(m.pc, bytes(m.memory[m.pc:m.pc + MAX_INSTR_SIZE]))
@@ -36,12 +41,13 @@ def main():
         # Get and verbalise the instruction bytes.
         instr_bytes = bytes(m.memory[instr.addr:instr.addr + instr.size])
         instr_bytes = ' '.join(f'{b:02X}' for b in instr_bytes)
-        print(f'{m.pc:04X} {instr_bytes:12} ; {instr_str:14} | SP={m.sp:04X}, A={m.a:02X} BC={m.bc:04X}, DE={m.de:04X}, HL={m.hl:04X}')
+        print(f'{m.pc:04X} {instr_bytes:12} ; {instr_str:15} | SP={m.sp:04X}, A={m.a:02X} BC={m.bc:04X}, DE={m.de:04X}, HL={m.hl:04X}')
 
-        if m.pc == 0x0D8A: # seems to be a loop here
-            print('\npoint of interest\n')
 
-        if icount % 256 == 0:
+        if m.pc == args.poi: # PC of interest
+            print('\n<<<<< pc of interest >>>>>\n')
+
+        if icount % 256 == 0 and not args.nodump:
             mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
 
         data = mem.getu32(m.pc)
@@ -55,4 +61,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-s", "--stopafter", help = "stop after N instructions",
+                        type = int, default = 16380)
+    parser.add_argument("-p", "--poi", help = "Point of interest (PC)",
+                        type = int, default = 0x0d8a)
+    parser.add_argument("-n", "--nodump", help = "Toggle hexdump", action='store_true')
+
+    args = parser.parse_args()
+
+    main(args)
