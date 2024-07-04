@@ -4,6 +4,7 @@
 An attempt at running Q1 code from ROMs. All information, including the
 ROM images are taken from https://datamuseum.dk/wiki/Q1_Microlite
 
+Documentation found at https://github.com/TheByteAttic/Q1
 
 ## prerequisites
 The Q1 emulator uses a Z80 emulator from kosraev: https://github.com/kosarev/z80
