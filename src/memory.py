@@ -15,6 +15,13 @@ class Memory():
        0x4086: "wait_for_kbd_or_printer()"
     }
 
+    # Named points of interest, for disassembly
+    pois = {
+        0x0000: 'reset vector',
+        0x043F: 'display ctrl (0x05) Reset, Unbuffer'
+    }
+
+
     def __init__(self, m):
         self.m = m.memory
 
