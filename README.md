@@ -23,7 +23,7 @@ If you get an error you might need to
     > pip install disttools
 
 ## Running
-To run the emulator you have two options, use the disassembler or run the emulator. Igenerally need to
+To run the emulator you have two options, use the disassembler or run the emulator. I generally need to
 alternate between the two to achieve progress.
 
 The python files are in the src directory
@@ -79,8 +79,8 @@ The emulator is generally started like this
     01FB 20 FB        ; jr nz, 0x1f8    | SP=4080, A=00 BC=0000, DE=40C5, HL=0048
     ...
 
-The hexdump happens periodically and only prints lines that are modified. The
-frequency can be controlled with **--dumpfreq**. To disable use **-nodump**.
+The hexdump happens periodically and only prints lines that are modified.
+The frequency can be controlled with **--dumpfreq**. To disabl,e use **--nodump**.
 
 If you don't care about the instruction decode you can use **--nodecode**.
 
@@ -90,4 +90,9 @@ by **--stopafter**.
 
 
 ## Hardware emulation
-The Z80 uses **in**
+The Z80 uses **in** and **out** instructions for IO.
+
+I use the set_input_callback() function to capture the **in** instructions. At
+the moment there is no corresponding function for **out** so I parse the
+decoded instruction string when needed. So far only display output (0x3) is
+handled. 
