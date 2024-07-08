@@ -80,8 +80,7 @@ The emulator is generally started like this
     ...
 
 The hexdump happens periodically and only prints lines that are modified.
-The frequency can be controlled with **--dumpfreq**. To disabl,e use **--nodump**.
-
+The frequency can be controlled with **--dumpfreq**. To disable, use **--nodump**.
 If you don't care about the instruction decode you can use **--nodecode**.
 
 The emulator stops when it encounters four bytes of uninitialised data (FF FF FF FF)
@@ -95,4 +94,4 @@ The Z80 uses **in** and **out** instructions for IO.
 I use the set_input_callback() function to capture the **in** instructions. At
 the moment there is no corresponding function for **out** so I parse the
 decoded instruction string when needed. So far only display output (0x3) is
-handled. 
+handled.
