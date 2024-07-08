@@ -1,44 +1,31 @@
 #!/usr/bin/env python3
 
 import z80, sys
-import memory
+import memory, cpu
 import argparse
 
 
 def main(range):
-    e = z80
-    m = z80.Z80Machine()
-    b = z80._Z80InstrBuilder()
 
-    mem = memory.Memory(m)
-    # Clear all memory to 0xff
-    mem.set(0, 65535, 0xff)
-    # Load ROMs to assumed addresses
-    mem.loadroms(mem.roms)
-
-    print()
+    C = cpu.Cpu()
+    C.reset()
 
     for start, end, text in range:
         #print(f'Range 0x{start:04x} - 0x{end:04x}\n<<<<< {text} >>>>>')
         print(f'<<<<< {text} >>>>>')
-        m.pc = start
+        C.m.pc = start
         while True:
             # Decode the instruction.
-            MAX_INSTR_SIZE = 4
-            instr = b.build_instr(m.pc, bytes(m.memory[m.pc:m.pc + MAX_INSTR_SIZE]))
-            instr_str = f"{instr}"
-            # Get and verbalise the instruction bytes.
-            instr_bytes = bytes(m.memory[instr.addr:instr.addr + instr.size])
-            instr_bytes = ' '.join(f'{b:02X}' for b in instr_bytes)
+            inst_str, bytes, bytes_str = C.getinst()
 
             func_desc = ""
-            if m.pc in mem.pois:
-                func_desc = f'{mem.pois[m.pc]}'
-            print(f'{m.pc:04X} {instr_bytes:12} ; {instr_str:15} | {func_desc}')
+            if C.m.pc in C.mem.pois:
+                func_desc = f'{C.mem.pois[C.m.pc]}'
+            print(f'{C.m.pc:04X} {bytes_str:12} ; {inst_str:15} | {func_desc}')
 
-            m.pc += instr.size
+            C.m.pc += len(bytes)
 
-            if m.pc > end:
+            if C.m.pc > end:
                 #print('-------------------------------------')
                 break
 
@@ -68,7 +55,10 @@ if __name__ == "__main__":
         [0x01f8, 0x01fc, 'clear RAM from 4089 to 40ff'],
         [0x01fd, 0x0200, 'printer control - reset printer, raise ribbon'],
         [0x0201, 0x0218, 'printer status  - check result (FF?)'],
-        [0x04D1, 0x054F, 'read key(s)?']
+        [0x044E, 0x0456, 'print backspace E times?'],
+        [0x0464, 0x0478, 'print Q1-lite klar til brug'],
+        [0x04D1, 0x054F, 'read key(s)?'],
+        [0x0556, 0x0562, 'called after printing line?']
         # [0x0439, 0x0551, 'UPDIS() ?'],
         # [0x0553, 0x0590, 'UPDIS() ?'],
         # [0x0077, 0x0106, 'TOSTR() ?'],

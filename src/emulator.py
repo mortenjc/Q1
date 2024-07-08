@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import z80, sys
-import memory
+import memory, cpu
 import argparse
 
 calldict = {0x05:0, 0x04:0, 0x01:0, 0x0c:0, 0x1a:0}
@@ -32,26 +32,18 @@ def myfunc(a):
         print(f'unhandled in ({func})')
         sys.exit()
 
-
 def main(args):
-    e = z80
-    m = z80.Z80Machine()
-    m.set_input_callback(myfunc)
-    b = z80._Z80InstrBuilder()
 
 
-    mem = memory.Memory(m)
-    # Clear all memory to 0xff
-    mem.set(0, 65535, 0xff)
-    # Load ROMs to assumed addresses
-    mem.loadroms(mem.roms)
-
-    m.pc = args.start
+    C = cpu.Cpu()
+    C.reset()
+    C.m.set_input_callback(myfunc)
+    C.m.pc = args.start
 
     out03 = ''
 
     icount = 0
-    mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
+    C.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
 
     while True:
         icount += 1
@@ -62,39 +54,23 @@ def main(args):
             print('-----')
             sys.exit()
 
-        # Decode the instruction.
+        if C.m.pc in C.mem.funcs:
+            print(f'; {C.mem.funcs[C.m.pc]}')
 
-        MAX_INSTR_SIZE = 4
-        instr = b.build_instr(m.pc, bytes(m.memory[m.pc:m.pc + MAX_INSTR_SIZE]))
-        instr_str = f"{instr}"
-        if instr_str[:9] == 'out (0x3)':
-            out03 += chr(m.a)
-            print(f'; out (0x3): 0x{m.a:02X} char: ({chr(m.a)})')
-
-        # Get and verbalise the instruction bytes.
-        instr_bytes = bytes(m.memory[instr.addr:instr.addr + instr.size])
-        instr_bytes = ' '.join(f'{b:02X}' for b in instr_bytes)
-        if m.pc in mem.funcs:
-            print(f';{mem.funcs[m.pc]}')
-        if args.nodecode:
-            print(f'{m.pc:04X} {instr_bytes:12} ; {instr_str:15} | SP={m.sp:04X}, A={m.a:02X} BC={m.bc:04X}, DE={m.de:04X}, HL={m.hl:04X}')
-
-
-        if m.pc == args.poi: # PC of interest
+        if C.m.pc == args.poi: # PC of interest
             print('\n<<<<< pc of interest >>>>>\n')
 
+        # Decode the instruction.
+        inst_str, bytes, bytes_str = C.getinst()
+        inst_str = C.decodestr(inst_str, bytes_str)
+        print(inst_str)
+
+
+
         if icount % args.dumpfreq == 0 and not args.nodump:
-            mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
+            C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
 
-        data = mem.getu32(m.pc)
-        if data == 0xffffffff:
-            print(f'all ones at {m.pc:04x}, exiting ...')
-            sys.exit()
-
-
-        # Limit runs to a single tick so each time we execute exactly one instruction.
-        m.ticks_to_stop = 1
-        m.run()
+        C.step()
 
 
 

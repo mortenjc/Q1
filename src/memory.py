@@ -15,6 +15,7 @@ class Memory():
     ]
 
     funcs = {
+       0x0000: "reset()",
        0x0038: "0038 interrupt ROM()",
        0x01e5: "01e5 interrupt2 ROM()",
        0x01eb: "01eb setup registers for copying and clearing",

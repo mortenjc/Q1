@@ -4,8 +4,12 @@ import z80, sys
 import memory
 import argparse
 
+def isprintable(c):
+    return c >= 0x20 and c <= 0x7D
+
 class Cpu:
     MAX_INSTR_SIZE = 4
+
 
     def in_cb_func(self, val):
         reg = val >> 8
@@ -21,8 +25,6 @@ class Cpu:
         self.in_cbs = {}
         self.out_cbs = {}
         self.mem = memory.Memory(self.m)
-
-
 
 
     def reset(self):
@@ -47,9 +49,17 @@ class Cpu:
         instr_str = f"{instr}"
         # Get and verbalise the instruction bytes.
         instr_bytes = bytes(self.m.memory[instr.addr:instr.addr + instr.size])
-        instr_bytes = ' '.join(f'{b:02X}' for b in instr_bytes)
-        return f'{self.m.pc:04X} {instr_bytes:12} ; {instr_str:15} | SP={self.m.sp:04X}, A={self.m.a:02X} BC={self.m.bc:04X}, DE={self.m.de:04X}, HL={self.m.hl:04X}'
+        instr_bytes_str = ' '.join(f'{b:02X}' for b in instr_bytes)
+        return instr_str, instr_bytes, instr_bytes_str
 
+
+    def decodestr(self, inst, bytes):
+        if isprintable(self.m.a):
+            a_str = chr(self.m.a)
+        else:
+            a_str = '.'
+
+        return f'{self.m.pc:04X} {bytes:12} ; {inst:15} | SP={self.m.sp:04X}, A={self.m.a:02X}({a_str}) BC={self.m.bc:04X}, DE={self.m.de:04X}, HL={self.m.hl:04X}'
 
 
 # def myfunc(a):

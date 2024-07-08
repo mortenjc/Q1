@@ -6,11 +6,14 @@ ROM images are taken from https://datamuseum.dk/wiki/Q1_Microlite
 
 Documentation found at https://github.com/TheByteAttic/Q1
 
+Please note that this repo is in the early phase and refactoring and
+renaming is likely to happen often, hopefully to the better.
+
 ## prerequisites
-The Q1 emulator uses a Z80 emulator from kosraev: https://github.com/kosarev/z80
+The Q1 emulator uses a Z80 emulator from Kosraev: https://github.com/kosarev/z80
 
 ### Installation
-Z80 can be installed by
+Kosarev's Z80 emulator can be installed by
 
     > python3 setup.py install
 
@@ -75,3 +78,16 @@ The emulator is generally started like this
     01FA 1C           ; inc e           | SP=4080, A=00 BC=0000, DE=40C4, HL=0048
     01FB 20 FB        ; jr nz, 0x1f8    | SP=4080, A=00 BC=0000, DE=40C5, HL=0048
     ...
+
+The hexdump happens periodically and only prints lines that are modified. The
+frequency can be controlled with **--dumpfreq**. To disable use **-nodump**.
+
+If you don't care about the instruction decode you can use **--nodecode**.
+
+The emulator stops when it encounters four bytes of uninitialised data (FF FF FF FF)
+or when the maximum number of instructions have been emulated. This can be controlled
+by **--stopafter**.
+
+
+## Hardware emulation
+The Z80 uses **in**
