@@ -3,12 +3,13 @@
 import z80, sys
 import memory, cpu
 import argparse
+from collections import defaultdict
 
-calldict = {0x05:0, 0x04:0, 0x01:0, 0x0c:0, 0x1a:0}
+calldict = defaultdict(int)
 
 def myfunc(a):
     func = a & 0xff
-    calldict[func]+=1
+    calldict[func] += 1
     if func == 0x05:
         print(f';in (05): printer status: no error')
         return 0
@@ -20,21 +21,27 @@ def myfunc(a):
             print(f';in (01): read key 0x0E')
             return 0x0e
     elif func == 0x0c:
-        print(f'unknown IO')
+        print(f';in (0C): unknown IO')
         return 0
     elif func == 0x1a:
         print(';in (1A): unknown IO II')
         return 0
     elif func == 0x04:
-        print(f';in (04): display staus')
+        print(f';in (04): display status 0')
         return 0
     else:
         print(f'unhandled in ({func})')
         sys.exit()
 
+
+def out3(addr, value):
+    if cpu.isprintable(value):
+        return chr(value)
+    else:
+        return '~'
+
+
 def main(args):
-
-
     C = cpu.Cpu()
     C.reset()
     C.m.set_input_callback(myfunc)
@@ -43,7 +50,8 @@ def main(args):
     out03 = ''
 
     icount = 0
-    C.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
+    if not args.nodump:
+        C.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
 
     while True:
         icount += 1
@@ -54,16 +62,19 @@ def main(args):
             print('-----')
             sys.exit()
 
-        if C.m.pc in C.mem.funcs:
+        if C.m.pc in C.mem.funcs and not args.nodecode:
             print(f'; {C.mem.funcs[C.m.pc]}')
 
-        if C.m.pc == args.poi: # PC of interest
+        if C.m.pc == args.poi and not args.nodecode: # PC of interest
             print('\n<<<<< pc of interest >>>>>\n')
 
         # Decode the instruction.
         inst_str, bytes, bytes_str = C.getinst()
         inst_str = C.decodestr(inst_str, bytes_str)
-        print(inst_str)
+        if bytes[0] == 0xD3 and bytes[1] == 0x03:
+            out03 += out3(bytes[1], C.m.a)
+        if not args.nodecode:
+            print(inst_str)
 
 
 
@@ -88,7 +99,7 @@ if __name__ == "__main__":
     parser.add_argument("--dumpfreq", help = "Hexdump every N instruction",
                         type = int, default = 256)
     parser.add_argument("-n", "--nodump", help = "Toggle hexdump", action='store_true')
-    parser.add_argument("-d", "--nodecode", help = "Decode instructions", action='store_false')
+    parser.add_argument("-d", "--nodecode", help = "Decode instructions", action='store_true')
     parser.add_argument("-a", "--start", help = "start at specified address",
                         type = auto_int, default = 0)
 
