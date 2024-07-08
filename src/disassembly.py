@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Validated ranges
+    # (mostly) validated ranges
     known_ranges = [
         [0x0000, 0x003e, 'jump tables'],
         [0x01e5, 0x01ea, 'set keyboard mode 2 (ASM IO page 10)'],

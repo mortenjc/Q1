@@ -9,22 +9,69 @@ Documentation found at https://github.com/TheByteAttic/Q1
 ## prerequisites
 The Q1 emulator uses a Z80 emulator from kosraev: https://github.com/kosarev/z80
 
-## Installation
-At this time I can not remember how I installed the project. More information
-will come later.
+### Installation
+Z80 can be installed by
+
+    > python3 setup.py install
+
+If you get an error you might need to
+
+    > pip install setuptools
+    > pip install disttools
 
 ## Running
-To run the emulator
+To run the emulator you have two options, use the disassembler or run the emulator. Igenerally need to
+alternate between the two to achieve progress.
+
+The python files are in the src directory
 
     > cd src
-    > python3 single_stepping.py
 
-### command line options
+### Disassembler
+Two modes exist:
 
-The output can be controlled by printing out a message at a program counter (PC)
-of interest using --poi addr
+Automatically disassemble some of the (few) currently known address
+ranges. These will be annotated (see known_ranges in disassembly.py).
 
-Hexdummp is done periodically but but can be disabled by --nodump
+    > python3 disassembly.py -a
+    ...
+    <<<<< set keyboard mode 2 (ASM IO page 10) >>>>>
+    01E5 ED 56        ; im 0x1          |
+    01E7 3E 04        ; ld a, 0x4       |
+    01E9 D3 01        ; out (0x1), a    |
+    <<<<< prepare registers for copy and clearing >>>>>
+    01EB 11 3F 00     ; ld de, 0x3f     |
+    01EE 21 80 40     ; ld hl, 0x4080   |
+    01F1 F9           ; ld sp, hl       |
+    01F2 EB           ; ex de, hl       |
+    ...
 
-The emulation is stopped after 16380 instructions but this can be changed by
---stopafter nnnn
+Manually specifying the start and end address for disassembly, for example:
+
+    > python3 disassembly.py -s 0x01e5 -e 0x01ea
+    <<<<< Custom >>>>>
+    01E5 ED 56        ; im 0x1          |
+    01E7 3E 04        ; ld a, 0x4       |
+    01E9 D3 01        ; out (0x1), a    |
+
+### Emulator
+The emulator is generally started like this
+
+    > python3 emulator.py
+    ...
+    ;01f8 clear RAM from 4089 to 40ff
+    01F8 97           ; sub a           | SP=4080, A=00 BC=0000, DE=40C4, HL=0048
+    01F9 12           ; ld (de), a      | SP=4080, A=00 BC=0000, DE=40C4, HL=0048
+    '########### HEXDUMP 0x2000 - 0x10000 ####################################
+    icount 256
+    ....
+    4080 C3 3F 00 C3 B1 02 C3 15 08 00 00 00 00 00 00 00  .?..............
+    4090 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    40A0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    40B0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    40C0 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF  ................
+    ....
+    ''########### HEXDUMP END #################################################
+    01FA 1C           ; inc e           | SP=4080, A=00 BC=0000, DE=40C4, HL=0048
+    01FB 20 FB        ; jr nz, 0x1f8    | SP=4080, A=00 BC=0000, DE=40C5, HL=0048
+    ...
