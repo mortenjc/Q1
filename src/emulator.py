@@ -21,8 +21,6 @@ def main(args):
     C.m.set_input_callback(io.handle_io_in)
     C.m.pc = args.start
 
-    out03 = ''
-
     icount = 0
     if not args.nodump:
         C.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
@@ -31,8 +29,8 @@ def main(args):
         icount += 1
         if icount >= args.stopafter:
             print(f'max instruction count reached, exiting ...')
-            print(f'printed characters ({len(out03)}):')
-            print(f'{out03}')
+            print(f'printed characters ({len(io.displaystr)}):')
+            print(f'{io.displaystr}')
             print('-----')
             sys.exit()
 
@@ -45,10 +43,11 @@ def main(args):
         # Decode the instruction.
         inst_str, bytes, bytes_str = C.getinst()
         inst_str = C.decodestr(inst_str, bytes_str)
-        if bytes[0] == 0xD3 and bytes[1] == 0x03:
-            out03 += out3(bytes[1], C.m.a)
         if not args.nodecode:
             print(inst_str)
+        if bytes[0] == 0xD3:
+            io.handle_io_out(bytes[1], C.m.a)
+
 
 
 
