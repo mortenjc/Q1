@@ -95,3 +95,9 @@ I use the set_input_callback() function to capture the **in** instructions. At
 the moment there is no corresponding function for **out** so I parse the
 decoded instruction string when needed. So far only display output (0x3) is
 handled.
+
+## Bugs and improvements
+Feel free to create a GitHub issue or contact me directly.
+
+## License
+This project is licensed under the BSD-2 License see the [LICENSE](LICENSE) file for details.
