@@ -1,41 +1,14 @@
 #!/usr/bin/env python3
 
 import z80, sys
-import memory, cpu
+import memory, cpu, z80io
 import argparse
 from collections import defaultdict
 
 calldict = defaultdict(int)
 
-def myfunc(a):
-    func = a & 0xff
-    calldict[func] += 1
-    if func == 0x05:
-        print(f';in (05): printer status: no error')
-        return 0
-    elif func == 0x01:
-        if calldict[func] == 1:
-            print(f';in (01): read key 0x0F')
-            return 0x0f
-        else:
-            print(f';in (01): read key 0x0E')
-            return 0x0e
-    elif func == 0x0c:
-        print(f';in (0C): unknown IO')
-        return 0
-    elif func == 0x1a:
-        print(';in (1A): unknown IO II')
-        return 0
-    elif func == 0x04:
-        print(f';in (04): display status 0')
-        return 0
-    else:
-        print(f'unhandled in ({func})')
-        sys.exit()
-
-
 def out3(addr, value):
-    if cpu.isprintable(value):
+    if z80io.isprintable(value):
         return chr(value)
     else:
         return '~'
@@ -43,8 +16,9 @@ def out3(addr, value):
 
 def main(args):
     C = cpu.Cpu()
+    io = z80io.IO()
     C.reset()
-    C.m.set_input_callback(myfunc)
+    C.m.set_input_callback(io.handle_io_in)
     C.m.pc = args.start
 
     out03 = ''

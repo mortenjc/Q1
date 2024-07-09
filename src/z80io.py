@@ -1,0 +1,106 @@
+
+import sys
+
+# This is in a horrible state, still need to figure out how to use this
+
+def isprintable(c):
+    return c >= 0x20 and c <= 0x7D
+
+
+class IO:
+    def __init__(self):
+        self.incb = {}
+        self.outcb = {}
+        self.keyincount = 0
+        self.register_in_cb(0x01, self.handle_key_in)
+        self.register_out_cb(0x03, self.handle_display_out)
+        self.register_in_cb(0x04, self.handle_display_in)
+        self.register_in_cb(0x05, self.handle_printer_in)
+        self.register_in_cb(0x0C, self.handle_uio1_0c_in)
+        self.register_in_cb(0x1A, self.handle_uio2_1a_in)
+
+
+    ### Functions for registering and handling IO
+
+    def handle_io_in(self, value) -> int:
+        reg = value >> 8
+        inaddr = value & 0xFF
+        if inaddr in self.incb:
+            return self.incb[inaddr]()
+        else:
+            print(f'IO - unregistered input address 0x{inaddr:02x}, exiting')
+            sys.exit()
+
+    def handle_io_out(self, outaddr, outval):
+        if outaddr in self.outcb:
+            self.outcb[outaddr](outval)
+        else:
+            print(f'IO - unregistered output address 0x{outaddr:02x}')
+
+
+    def register_out_cb(self, outaddr: int, outfunc):
+        self.outcb[outaddr] = outfunc
+
+
+    def register_in_cb(self, inaddr: int, infunc):
+        self.incb[inaddr] = infunc
+
+    ### Specific functions
+
+    ### Display
+    def handle_display_in(self) -> int:
+        print('IO - display status: 0')
+        return 0
+
+
+    def handle_display_out(self, val) -> str:
+        print(f'IO - display out {val}')
+
+
+    ### Keyboard
+    def handle_key_in(self) -> int:
+        self.keyincount += 1
+        retval = 0
+        if self.keyincount == 1:
+            retval = 0x0F
+        elif self.keyincount == 2:
+            retval = 0x0E
+        else:
+            retval = 0x00
+        print(f'IO - key in (calls: {self.keyincount}): 0x{retval:02X}')
+        return retval
+
+    ### Printer
+    def handle_printer_in(self) -> int:
+        print(f'IO - printer in (status) : 0 (no errors)')
+        return 0
+
+
+    ### Unknown IO1
+    def handle_uio1_0c_in(self) -> int:
+        print('IO - unknown IO 1 (0x0C), return 0')
+        return 0
+
+    ### Unknown IO2
+    def handle_uio2_1a_in(self) -> int:
+        print('IO - unknown IO 2 (0x1a), return 0')
+        return 0
+
+if __name__ == '__main__':
+    io = IO()
+    # Display
+    assert io.handle_io_in(0x04) == 0
+    # Printer
+    assert io.handle_io_in(0x05) == 0
+    # Keyboard
+    assert io.handle_io_in(0x01) == 0x0F
+    assert io.handle_io_in(0x01) == 0x0E
+    assert io.handle_io_in(0x01) == 0x00
+    assert io.handle_io_in(0x01) == 0x00
+
+    # Not sure
+    assert io.handle_io_in(0x0C) == 0x00
+    assert io.handle_io_in(0x1A) == 0x00
+
+    io.handle_io_out(0x03, 0xAA)
+    io.handle_io_out(0x04, 0xAA)
