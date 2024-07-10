@@ -57,8 +57,12 @@ if __name__ == "__main__":
         [0x0201, 0x0218, 'printer status  - check result (FF?)'],
         [0x044E, 0x0456, 'print backspace E times?'],
         [0x0464, 0x0478, 'print Q1-lite klar til brug'],
-        [0x04D1, 0x054F, 'read key(s)?'],
+        [0x04B3, 0x04CA, 'clear display?'],
+        [0x04CB, 0x04D0, 'disable interrupt, get key?, enable interrupt'],
+        [0x04D1, 0x04D7, 'wait for key 0x0E'],
+        [0x04D8, 0x054F, 'read key(s)?'],
         [0x0556, 0x0562, 'called after printing line?']
+
         # [0x0439, 0x0551, 'UPDIS() ?'],
         # [0x0553, 0x0590, 'UPDIS() ?'],
         # [0x0077, 0x0106, 'TOSTR() ?'],

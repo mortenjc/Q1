@@ -29,7 +29,7 @@ class Cpu:
 
         data = self.mem.getu32(self.m.pc)
         if data == 0xffffffff:
-            print(f'all ones at {self.m.pc:04x}, exiting ...')
+            print(f'0xffffffff at {self.m.pc:04x}, exiting ...')
             sys.exit()
 
 

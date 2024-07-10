@@ -7,11 +7,11 @@ class Memory():
         ["roms/IC25.BIN", 0x0000],
         ["roms/IC26.BIN", 0x0400],
         ["roms/IC27.BIN", 0x0800],
-        ["roms/IC28.BIN", 0x0C00],
-        ["roms/IC29.BIN", 0x1000],
-        ["roms/IC30.BIN", 0x1400],
-        ["roms/IC31.BIN", 0x1800],
-        ["roms/IC32.BIN", 0x1C00]
+        ["roms/IC28.BIN", 0x0C00]
+        # ["roms/IC29.BIN", 0x1000],
+        # ["roms/IC30.BIN", 0x1400],
+        # ["roms/IC31.BIN", 0x1800],
+        # ["roms/IC32.BIN", 0x1C00]
     ]
 
     funcs = {
@@ -24,6 +24,7 @@ class Memory():
        0x02b1: "02b1 interrupt3 ROM()",
        0x0410: "0410 write 0x20 from 4100 to 417f",
        0x04a9: "04a9 unknown_io()",
+       0x04d1: "04d1 wait_for_key_0x0e()",
        0x4083: "4083 interrupt RAM()",
        0x4086: "4086 wait_for_kbd_or_printer()"
     }
@@ -140,6 +141,11 @@ class Memory():
     def loaddata(self, data, address):
         for i in range(len(data)):
             self.m[address+i] = data[i]
+
+
+    def clear(self, val):
+        for i in range(len(self.m)):
+            self.m[i] = val
 
 
 if __name__ == '__main__':
