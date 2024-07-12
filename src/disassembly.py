@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-import z80, sys
+import z80, sys, argparse
 import memory, cpu
-import argparse
+import programs as prg
 
 
 def main(range):
-
-    C = cpu.Cpu()
+    prgobj = prg.proglist["q1_small"]
+    C = cpu.Cpu(prgobj)
     C.reset()
 
     for start, end, text in range:

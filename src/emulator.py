@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import z80, sys
+import z80, sys, argparse
 import memory, cpu, z80io
-import argparse
+import programs as prg
 from collections import defaultdict
 
 calldict = defaultdict(int)
@@ -15,11 +15,11 @@ def out3(addr, value):
 
 
 def main(args):
-    C = cpu.Cpu()
+    prgobj = prg.proglist[args.program]
+    C = cpu.Cpu(prgobj)
     io = z80io.IO()
     C.reset()
     C.m.set_input_callback(io.handle_io_in)
-    C.m.pc = args.start
 
     icount = 0
     if not args.nodump:
@@ -73,8 +73,8 @@ if __name__ == "__main__":
                         type = int, default = 256)
     parser.add_argument("-n", "--nodump", help = "Toggle hexdump", action='store_true')
     parser.add_argument("-d", "--nodecode", help = "Decode instructions", action='store_true')
-    parser.add_argument("-a", "--start", help = "start at specified address",
-                        type = auto_int, default = 0)
+    parser.add_argument("--program", help = "name of program to load, see programs.py",
+                        type = str, default = "q1_small")
 
     args = parser.parse_args()
 

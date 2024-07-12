@@ -1,19 +1,9 @@
 
 
-
 class Memory():
 
-    roms = [
-        ["roms/IC25.BIN", 0x0000],
-        ["roms/IC26.BIN", 0x0400],
-        ["roms/IC27.BIN", 0x0800],
-        ["roms/IC28.BIN", 0x0C00]
-        # ["roms/IC29.BIN", 0x1000],
-        # ["roms/IC30.BIN", 0x1400],
-        # ["roms/IC31.BIN", 0x1800],
-        # ["roms/IC32.BIN", 0x1C00]
-    ]
-
+    # these actually belong to a specific set of ROMs so will fail once we
+    # try new images.
     funcs = {
        0x0000: "reset()",
        0x0038: "0038 interrupt ROM()",
@@ -30,6 +20,8 @@ class Memory():
     }
 
     # Named points of interest, for disassembly
+    # these actually belong to a specific set of ROMs so will fail once we
+    # try new images.
     pois = {
         0x0000: 'reset vector',
         0x0003: 'TOSTR',
@@ -58,7 +50,27 @@ class Memory():
 
     def __init__(self, m):
         self.m = m.memory
-        self.verbose = False
+
+
+    def clear(self, val: int):
+        # Clear memory (set to val)
+        for i in range(len(self.m)):
+            self.m[i] = val
+
+
+    def loader(self, program : dict) -> int:
+        # The main program loader
+        print(f'loading program: {program["descr"]}')
+        pc = program["start"]
+        for type, source, addr in program["data"]:
+            if type == "file":
+                self._loadfile(source, addr)
+            elif type == "snippet":
+                self._loaddata(source, addr)
+            else:
+                print(f"Ignoring unknown data soure: {type}")
+        return pc
+
 
 
     def hexdump(self, address, length, icount):
@@ -91,61 +103,46 @@ class Memory():
         print(f"########### HEXDUMP END #################################################")
 
 
-    def set(self, start, end, val):
-        assert end >= start
-        assert val >= 0 and val <= 255
-
-        for i in range(start, end + 1):
-            self.m[i] = val
-        if self.verbose:
-            print(f'set {end - start + 1} bytes of memory to {val}')
-
-
-    def writeu8(self, addr, val):
+    def writeu8(self, addr: int, val: int):
         assert val >=0 and val <= 255
         self.m[addr] = val
 
 
     def getu8(self, address: int) -> int:
+        # Get byte from memory
         val = self.m[address]
         assert val >= 0 and val <= 255
         return val
 
 
-    def getu16(self, address):
+    def getu16(self, address: int):
+        # Get 2-byte word from memory
         return self.getu8(address) + (self.getu8(address+1) << 8)
 
 
-    def getu32(self, address):
+    def getu32(self, address: int):
+        # Get 4-byte word from memory
         lo = self.getu16(address)
         hi = self.getu16(address+2)
         return lo + (hi << 16)
 
 
-    def loadfile(self, file, address):
-            fh = open(file, 'rb')
-            block = list(fh.read())
-            assert len(block) + address < 65535
-            for i in range(len(block)):
-                self.m[address + i] = block[i]
-            if self.verbose:
-                print(f'loaded {len(block)} bytes from {file} at address {address}')
-            fh.close()
+    def _loadfile(self, file: str, address: int):
+        # Helper code to load a file into a specidied address
+        fh = open(file, 'rb')
+        block = list(fh.read())
+        assert len(block) + address < 65535
+        for i in range(len(block)):
+            self.m[address + i] = block[i]
+        print(f'loaded {len(block)} bytes from {file} at address {address:04x}h')
+        fh.close()
 
 
-    def loadroms(self, romlist):
-        for file, addr in romlist:
-            self.loadfile(file, addr)
-
-
-    def loaddata(self, data, address):
+    def _loaddata(self, data: list, address: int):
+        # Helper code to load a list of bytes into a specified address
         for i in range(len(data)):
             self.m[address+i] = data[i]
-
-
-    def clear(self, val):
-        for i in range(len(self.m)):
-            self.m[i] = val
+        print(f'loaded {len(data)} bytes from list at address {address:04x}h')
 
 
 if __name__ == '__main__':

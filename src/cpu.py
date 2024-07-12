@@ -7,20 +7,23 @@ import argparse
 class Cpu:
     MAX_INSTR_SIZE = 4
 
-    def __init__(self):
+    def __init__(self, program):
+        self.program = program
         self.e = z80
         self.m = z80.Z80Machine()
         self.b = z80._Z80InstrBuilder()
         self.in_cbs = {}
         self.out_cbs = {}
         self.mem = memory.Memory(self.m)
+        self.fill = 0xff
+        self.halt = 0xffffffff
 
 
     def reset(self):
-        # Clear all memory to 0xff
-        self.mem.set(0, 65535, 0xff)
+        # Set all memory to self.fill
+        self.mem.clear(self.fill)
         # Load ROMs to assumed addresses
-        self.mem.loadroms(self.mem.roms)
+        self.m.pc = self.mem.loader(self.program)
 
 
     def step(self, ticks:int =1):
@@ -28,8 +31,8 @@ class Cpu:
         self.m.run()
 
         data = self.mem.getu32(self.m.pc)
-        if data == 0xffffffff:
-            print(f'0xffffffff at {self.m.pc:04x}, exiting ...')
+        if data == self.halt:
+            print(f'0x{self.halt:04x} at {self.m.pc:04x}, exiting ...')
             sys.exit()
 
 
