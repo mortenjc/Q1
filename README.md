@@ -79,6 +79,10 @@ The emulator is generally started like this
     01FB 20 FB        ; jr nz, 0x1f8    | SP=4080, A=00 BC=0000, DE=40C5, HL=0048
     ...
 
+The user can specify a program to load with the **--program** option which currenly defaults
+to "jdc_small". Programs are defined in **programs.py** where one can specify a combination
+of files and bytes to load at specific addresses.
+
 The hexdump happens periodically and only prints lines that are modified
 from the initial value of 0xFF x 16.
 The hexdump frequency can be controlled with **--dumpfreq**. To disable, use **--nodump**.

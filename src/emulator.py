@@ -74,7 +74,7 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--nodump", help = "Toggle hexdump", action='store_true')
     parser.add_argument("-d", "--nodecode", help = "Decode instructions", action='store_true')
     parser.add_argument("--program", help = "name of program to load, see programs.py",
-                        type = str, default = "q1_small")
+                        type = str, default = "jdc_small")
 
     args = parser.parse_args()
 

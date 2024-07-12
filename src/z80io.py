@@ -54,7 +54,7 @@ class IO:
         if outaddr in self.outcb:
             self.outcb[outaddr](outval)
         else:
-            print(f'IO - unregistered output address 0x{outaddr:02x}')
+            print(f'IO - unregistered output address 0x{outaddr:02x} (0x{outval:02x})')
             #sys.exit()
 
 

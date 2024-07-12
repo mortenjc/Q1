@@ -6,7 +6,7 @@ import programs as prg
 
 
 def main(range):
-    prgobj = prg.proglist["q1_small"]
+    prgobj = prg.proglist["jdc_small"]
     C = cpu.Cpu(prgobj)
     C.reset()
 

@@ -1,29 +1,46 @@
 # New abstraction to make it possible to load different roms and/or
 # custom code snippets into memory with a user defined start address
 
-q1_full = {
-    "descr": "Combined Q1 image from IC25-IC32",
+
+### From peel.dk
+peeldk1 = {
+    "descr": "Downloaded from peel.dk",
     "start": 0x0000,
     "data": [
-        ["file", "roms/IC25.bin", 0x0000],
-        ["file", "roms/IC26.bin", 0x0400],
-        ["file", "roms/IC27.bin", 0x0800],
-        ["file", "roms/IC28.bin", 0x0C00],
-        ["file", "roms/IC29.bin", 0x1000],
-        ["file", "roms/IC30.bin", 0x1400],
-        ["file", "roms/IC31.bin", 0x1800],
-        ["file", "roms/IC32.bin", 0x1C00]
+        ["file", "roms/SN615_SN580/IC25_2708.bin", 0x0000],
+        ["file", "roms/SN615_SN580/IC26_2708.bin", 0x0400],
+        ["file", "roms/SN615_SN580/IC27_2708.bin", 0x0800],
+        ["file", "roms/SN615_SN580/IC31_2708.bin", 0x1800],
+        ["file", "roms/SN615_SN580/IC32_2708.bin", 0x1C00]
     ]
 }
 
-q1_small = {
+
+### From (currently) unknown source
+
+jdc_full = {
+    "descr": "Combined Q1 image from IC25-IC32",
+    "start": 0x0000,
+    "data": [
+        ["file", "roms/JDC/IC25.bin", 0x0000],
+        ["file", "roms/JDC/IC26.bin", 0x0400],
+        ["file", "roms/JDC/IC27.bin", 0x0800],
+        ["file", "roms/JDC/IC28.bin", 0x0C00],
+        ["file", "roms/JDC/IC29.bin", 0x1000],
+        ["file", "roms/JDC/IC30.bin", 0x1400],
+        ["file", "roms/JDC/IC31.bin", 0x1800],
+        ["file", "roms/JDC/IC32.bin", 0x1C00]
+    ]
+}
+
+jdc_small = {
     "descr": "Minimal images to finish boot (IC25-IC28)",
     "start": 0x0000,
     "data": [
-        ["file", "roms/IC25.bin", 0x0000],
-        ["file", "roms/IC26.bin", 0x0400],
-        ["file", "roms/IC27.bin", 0x0800],
-        ["file", "roms/IC28.bin", 0x0C00]
+        ["file", "roms/JDC/IC25.bin", 0x0000],
+        ["file", "roms/JDC/IC26.bin", 0x0400],
+        ["file", "roms/JDC/IC27.bin", 0x0800],
+        ["file", "roms/JDC/IC28.bin", 0x0C00]
     ]
 }
 
@@ -40,15 +57,17 @@ loop = {
     "descr": "Loop program (three nops and loop back)",
     "start": 0x2000,
     "data": [
-        ["snippet", [0x00, 0x00, 0x00], 0x2000],
-        ["snippet", [0xC3, 0x00, 0x20], 0x2003]
+        ["snippet", [0x00, 0x00, 0x00], 0x2000], # nop
+        ["snippet", [0x3C], 0x2003],             # inc a
+        ["snippet", [0xC3, 0x00, 0x20], 0x2004]  # jp 2000h
     ]
 }
 
 
 proglist = {
-        "q1_full"  : q1_full,
-        "q1_small" : q1_small,
-        "dummy"    : dummy,
-        "loop"    : loop
+        "peeldk1"   : peeldk1,
+        "jdc_full"  : jdc_full,
+        "jdc_small" : jdc_small,
+        "dummy"     : dummy,
+        "loop"      : loop
     }
