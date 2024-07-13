@@ -14,6 +14,7 @@ class IO:
         self.keyincount = 0
         self.displaystr = ""
         self.register_in_cb( 0x01, self.handle_key_in)
+        #self.register_in_cb( 0x01, self.handle_key_in_string) # 'ABCD' + CR
         self.register_out_cb(0x01, self.handle_key_out)
 
         self.register_out_cb(0x03, self.handle_display_out)
@@ -86,6 +87,19 @@ class IO:
 
 
     ### Keyboard
+    def handle_key_in_string(self) -> int:
+        mystr = "ABCD"
+        self.keyincount += 1
+        retval = 0xd
+        print(len(mystr), self.keyincount)
+        if self.keyincount <= len(mystr):
+            retval = ord(mystr[self.keyincount - 1])
+            print(f'IO - key in (calls: {self.keyincount}): 0x{retval:02X}')
+            return retval
+
+        print(f'IO - key in return (calls: {self.keyincount}): 0x{retval:02X}')
+        return retval
+
 
     def handle_key_in(self) -> int:
         self.keyincount += 1

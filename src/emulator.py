@@ -3,18 +3,12 @@
 import z80, sys, argparse
 import memory, cpu, z80io
 import programs as prg
-from collections import defaultdict
-
-calldict = defaultdict(int)
-
-def out3(addr, value):
-    if z80io.isprintable(value):
-        return chr(value)
-    else:
-        return '~'
 
 
 def main(args):
+    interrupts = 0
+    nextint = 7000
+
     prgobj = prg.proglist[args.program]
     C = cpu.Cpu(prgobj)
     io = z80io.IO()
@@ -49,13 +43,19 @@ def main(args):
             io.handle_io_out(bytes[1], C.m.a)
 
 
-
-
         if icount % args.dumpfreq == 0 and not args.nodump:
             C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
 
+        if icount % 100000 == 0:
+            print(f'Instruction count: {icount}')
+
         C.step()
 
+        if interrupts < 20 and icount > nextint:
+            print(f'IRQ {interrupts} injected at inst count {nextint}')
+            C.m.pc = 0x0038
+            interrupts += 1
+            nextint += 400
 
 
 if __name__ == "__main__":
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-s", "--stopafter", help = "stop after N instructions",
-                        type = int, default = 16380)
+                        type = int, default = 6380)
     parser.add_argument("-p", "--poi", help = "Point of interest (PC)",
                         type = auto_int, default = 0x0d8a)
     parser.add_argument("--dumpfreq", help = "Hexdump every N instruction",
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--nodump", help = "Toggle hexdump", action='store_true')
     parser.add_argument("-d", "--nodecode", help = "Decode instructions", action='store_true')
     parser.add_argument("--program", help = "name of program to load, see programs.py",
-                        type = str, default = "jdc_small")
+                        type = str, default = "jdc_full")
 
     args = parser.parse_args()
 

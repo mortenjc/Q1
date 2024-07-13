@@ -19,30 +19,40 @@ class Cpu:
         self.halt = 0xffffffff
 
 
-    def reset(self):
+    def reset(self) -> None:
         # Set all memory to self.fill
         self.mem.clear(self.fill)
         # Load ROMs to assumed addresses
         self.m.pc = self.mem.loader(self.program)
 
 
-    def step(self, ticks:int =1):
-        self.m.ticks_to_stop = ticks
-        self.m.run()
+    def step(self, ticks:int=1):
+        m = self.m
+        m.ticks_to_stop = ticks
+        m.run()
 
-        data = self.mem.getu32(self.m.pc)
+        data = self.mem.getu32(m.pc)
         if data == self.halt:
-            print(f'0x{self.halt:04x} at {self.m.pc:04x}, exiting ...')
+            print(f'0x{self.halt:04x} at {m.pc:04x}, exiting ...')
             sys.exit()
 
 
     def getinst(self):
-        instr = self.b.build_instr(self.m.pc, bytes(self.m.memory[self.m.pc:self.m.pc + Cpu.MAX_INSTR_SIZE]))
-        instr_str = f"{instr}"
-        # Get and verbalise the instruction bytes.
-        instr_bytes = bytes(self.m.memory[instr.addr:instr.addr + instr.size])
-        instr_bytes_str = ' '.join(f'{b:02X}' for b in instr_bytes)
-        return instr_str, instr_bytes, instr_bytes_str
+        try:
+            instr = self.b.build_instr(self.m.pc, bytes(self.m.memory[self.m.pc:self.m.pc + Cpu.MAX_INSTR_SIZE]))
+            instr_str = f"{instr}"
+            # Get and verbalise the instruction bytes.
+            instr_bytes = bytes(self.m.memory[instr.addr:instr.addr + instr.size])
+            instr_bytes_str = ' '.join(f'{b:02X}' for b in instr_bytes)
+            return instr_str, instr_bytes, instr_bytes_str
+        except Exception as e:
+            print('exception: build_instr() failed')
+            pc = self.m.pc
+            mem = self.mem
+            print(f'{pc:04X} {mem.getu8(pc):02X} {mem.getu8(pc+1):02X} {mem.getu8(pc+2):02X} {mem.getu8(pc+3):02X}')
+            print(f'{repr(e)}')
+            print('exiting...')
+            sys.exit()
 
 
     def decodestr(self, inst: str, bytes: []) -> str:
@@ -50,4 +60,5 @@ class Cpu:
             a_str = f"'{chr(self.m.a)}'"
         else:
             a_str = '   '
-        return f'{self.m.pc:04X} {bytes:12} ; {inst:15} | SP={self.m.sp:04X}, A={self.m.a:02X}{a_str} BC={self.m.bc:04X}, DE={self.m.de:04X}, HL={self.m.hl:04X}'
+        m = self.m
+        return f'{m.pc:04X} {bytes:12} ; {inst:15} | SP={m.sp:04X}, A={m.a:02X}{a_str} BC={m.bc:04X}, DE={m.de:04X}, HL={m.hl:04X}'
