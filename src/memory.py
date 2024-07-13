@@ -15,6 +15,7 @@ class Memory():
        0x0410: "0410 write 0x20 from 4100 to 417f",
        0x04a9: "04a9 unknown_io()",
        0x04d1: "04d1 wait_for_key_0x0e()",
+       0x0fb8: "0fb8 check_#_disk_selected()",
        0x4083: "4083 interrupt RAM()",
        0x4086: "4086 wait_for_kbd_or_printer()"
     }

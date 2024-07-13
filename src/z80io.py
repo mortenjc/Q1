@@ -79,6 +79,7 @@ class IO:
     def handle_display_out_ctrl(self, val) -> str:
         if val == 0x05:
             desc = 'unblank, reset to (1,1)'
+            self.displaystr += "\n-----\n"
         elif val == 0x08:
             desc = 'advance right (or new line)'
         else:
