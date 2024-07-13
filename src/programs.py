@@ -15,23 +15,38 @@ peeldk1 = {
     ]
 }
 
+peeldk_iws = {
+    "descr": "Downloaded from peel.dk",
+    "start": 0x0000,
+    "data": [
+        ["file", "roms/IWS_SN820/IC25_2708.bin", 0x0000],
+        ["file", "roms/IWS_SN820/IC26_2708.bin", 0x0400],
+        ["file", "roms/IWS_SN820/IC27_2708.bin", 0x0800],
+        ["file", "roms/IWS_SN820/IC28_2708.bin", 0x0C00],
+        ["file", "roms/IWS_SN820/IC29_2708.bin", 0x1000],
+        ["file", "roms/IWS_SN820/IC31_2708.bin", 0x1800],
+        ["file", "roms/IWS_SN820/IC32_2708.bin", 0x1C00]
+    ]
+}
+
+# Still doesn't work. System might need to be initialised
+# also, don't know where the PL/1 stack resides
 todec = {
     "descr": "test TODEC function at address 06",
     "start": 0x0006,
     "data": [
-        ["file", "roms/SN615_SN580/IC25_2708.bin", 0x0000],
-        ["file", "roms/SN615_SN580/IC26_2708.bin", 0x0400],
-        ["file", "roms/SN615_SN580/IC27_2708.bin", 0x0800],
-        ["file", "roms/SN615_SN580/IC31_2708.bin", 0x1800],
-        ["file", "roms/SN615_SN580/IC32_2708.bin", 0x1C00],
+        ["file", "roms/SN615_SN580/IC25_2708.bin",  0x0000],
+        ["file", "roms/SN615_SN580/IC26_2708.bin",  0x0400],
+        ["file", "roms/SN615_SN580/IC27_2708.bin",  0x0800],
+        ["file", "roms/SN615_SN580/IC31_2708.bin",  0x1800],
+        ["file", "roms/SN615_SN580/IC32_2708.bin",  0x1C00],
         ["snippet", [0x31, 0x32, 0x33, 0x34, 0x35], 0x5000],
-        ["snippet", [5, 0x00, 0x40], 0x3ffd],
+        ["snippet", [5, 0x00, 0x50], 0x420D],
     ]
 }
 
 
-### From (currently) unknown source
-
+### From https://datamuseum.dk/wiki/Bits:Keyword/COMPANY/JDC/Q1
 jdc_full = {
     "descr": "Combined Q1 image from IC25-IC32",
     "start": 0x0000,
@@ -48,7 +63,7 @@ jdc_full = {
 }
 
 jdc_small = {
-    "descr": "Minimal images to finish boot (IC25-IC28)",
+    "descr": "Minimal images to complete boot (IC25-IC28)",
     "start": 0x0000,
     "data": [
         ["file", "roms/JDC/IC25.bin", 0x0000],
@@ -88,10 +103,11 @@ emucrash = {
 
 proglist = {
         "peeldk1"   : peeldk1,
+        "peeldk_iws": peeldk_iws,
         "jdc_full"  : jdc_full,
         "jdc_small" : jdc_small,
         "dummy"     : dummy,
         "loop"      : loop,
         "todec"     : todec,
-        "emucrash"     : emucrash
+        "emucrash"  : emucrash
     }

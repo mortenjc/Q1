@@ -6,14 +6,14 @@ import programs as prg
 
 
 def main(args):
-    interrupts = 0
-    nextint = 7000
+    irq_count = 0
+    next_irq = 7000
 
     prgobj = prg.proglist[args.program]
     C = cpu.Cpu(prgobj)
     io = z80io.IO()
     C.reset()
-    C.m.set_input_callback(io.handle_io_in)
+    C.m.set_input_callback(io.handle_io_in) # input hooks (emulator support)
 
     icount = 0
     if not args.nodump:
@@ -25,7 +25,6 @@ def main(args):
             print(f'max instruction count reached, exiting ...')
             print(f'printed characters ({len(io.displaystr)}):')
             print(f'{io.displaystr}')
-            print('-----')
             sys.exit()
 
         if C.m.pc in C.mem.funcs and not args.nodecode:
@@ -39,9 +38,10 @@ def main(args):
         inst_str = C.decodestr(inst_str, bytes_str)
         if not args.nodecode:
             print(inst_str)
+
+        # IO hook for output
         if bytes[0] == 0xD3:
             io.handle_io_out(bytes[1], C.m.a)
-
 
         if icount % args.dumpfreq == 0 and not args.nodump:
             C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
@@ -49,13 +49,13 @@ def main(args):
         if icount % 100000 == 0:
             print(f'Instruction count: {icount}')
 
-        C.step()
+        C.step() # does the actual emulation of the next instruction
 
-        if interrupts < 20 and icount > nextint:
+        if irq_count < 20 and icount > next_irq:
             print(f'IRQ {interrupts} injected at inst count {nextint}')
             C.m.pc = 0x0038
-            interrupts += 1
-            nextint += 400
+            irq_count += 1
+            next_irq += 400
 
 
 if __name__ == "__main__":

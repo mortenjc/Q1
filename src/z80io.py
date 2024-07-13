@@ -79,7 +79,7 @@ class IO:
     def handle_display_out_ctrl(self, val) -> str:
         if val == 0x05:
             desc = 'unblank, reset to (1,1)'
-            self.displaystr += "\n-----\n"
+            self.displaystr += "\n"
         elif val == 0x08:
             desc = 'advance right (or new line)'
         else:
@@ -88,6 +88,7 @@ class IO:
 
 
     ### Keyboard
+    # used to simulate entering 'ABCD' + CR
     def handle_key_in_string(self) -> int:
         mystr = "ABCD"
         self.keyincount += 1
@@ -102,6 +103,7 @@ class IO:
         return retval
 
 
+    # First version with magic values 0x0F and 0x0E
     def handle_key_in(self) -> int:
         self.keyincount += 1
         retval = 0
