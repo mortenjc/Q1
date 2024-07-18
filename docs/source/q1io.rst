@@ -22,9 +22,9 @@ Differences
 
 The two document has some differences. For example the known addresses are
 
-Addresses | 0x01 | 0x09
-----------|------|-----
-A         | B    | C
+|Addresses | 0x01 | 0x09|
+|----------|------|-----|
+|A         | B    | C   |
 
 .. list-table:: Addresses
 
