@@ -100,19 +100,22 @@ Neither seem to be complete as the code for the JMC roms (add references)
 at 0x2A0 seems to be testing **Bit 3** to select a 80 character width and
 **Bit 4** to select 40 bytes:
 
-<blockquote>
-<<<<< Display width? >>>>>
-02A0 DB 04        ; in a, (0x4)     |
-02A2 CB 5F        ; bit 0x3, a      |
-02A4 3E 50        ; ld a, 0x50      |
-02A6 C0           ; ret nz          |
-02A7 DB 04        ; in a, (0x4)     |
-02A9 CB 67        ; bit 0x4, a      |
-02AB 3E 28        ; ld a, 0x28      |
-02AD C0           ; ret nz          |
-02AE C6 07        ; add a, 0x7      |
-02B0 C9           ; ret             |
-</blockquote>
+
+.. code-block:: asm
+  :linenos:
+
+  <<<<< Display width? >>>>>
+  02A0 DB 04        ; in a, (0x4)     |
+  02A2 CB 5F        ; bit 0x3, a      |
+  02A4 3E 50        ; ld a, 0x50      |
+  02A6 C0           ; ret nz          |
+  02A7 DB 04        ; in a, (0x4)     |
+  02A9 CB 67        ; bit 0x4, a      |
+  02AB 3E 28        ; ld a, 0x28      |
+  02AD C0           ; ret nz          |
+  02AE C6 07        ; add a, 0x7      |
+  02B0 C9           ; ret             |
+
 
 .. list-table:: Display status (speculative)
    :header-rows: 1
