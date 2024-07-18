@@ -61,5 +61,5 @@ if __name__ == "__main__":
         except:
             print(f'please specify known_ranges for {args.program}')
             sys.exit()
-    print(known_ranges)
+            
     main(known_ranges)
