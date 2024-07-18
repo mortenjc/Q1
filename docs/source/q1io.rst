@@ -101,8 +101,7 @@ at 0x2A0 seems to be testing **Bit 3** to select a 80 character width and
 **Bit 4** to select 40 bytes:
 
 
-.. code-block:: asm
-  :linenos:
+.. code-block:: console
 
   <<<<< Display width? >>>>>
   02A0 DB 04        ; in a, (0x4)     |
