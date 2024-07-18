@@ -11,3 +11,19 @@ software from ROMs.
     If you consider using this project you should be aware that the code is subject
     to frequent change without notice. Behaviour and output formats are likely to
     be different in newer versions.
+
+
+    .. toctree::
+        :caption: Background
+        :maxdepth: 3
+        :hidden:
+
+        information
+
+    .. toctree::
+        :caption: Emulator
+        :maxdepth: 3
+        :hidden:
+
+        hooks
+        running
