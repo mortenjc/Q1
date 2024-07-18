@@ -22,57 +22,57 @@ Differences
 
 The two document has some differences. For example the known addresses are
 
-.. list-table:: Addresses
-   :header-rows: 1
+    .. list-table:: Addresses
+       :header-rows: 1
 
-   * - Address
-     - KIO
-     - TBA
-   * - 0x00 (IO)
-     - RTC
-     - Timer
-   * - 0x01 (IO)
-     - Keyb.
-     - Keyb.
-   * - 0x03
-     - Disp. data (O)
-     - Disp. data + status (IO)
-   * - 0x04
-     - Disp. ctrl (IO)
-     - Disp. ctrl (O)
-   * - 0x05 (IO)
-     - Prt. data + status
-     - Prt. data + status
-   * - 0x06 (O)
-     - Prt. ctrl 1
-     - Prt. ctrl 1
-   * - 0x07 (O)
-     - Prt. ctrl 2
-     - Prt. ctrl 2
-   * - 0x08 (IO)
-     - Dotm. Print
-     -
-   * - 0x09 (IO)
-     - Disk R+W
-     -
-   * - 0x0a (IO)
-     - Disk ctrl 1 + status
-     -
-   * - 0x0b (O)
-     - Disk ctrl 2
-     -
-   * - 0x19 (IO)
-     -
-     - Disk R+W
-   * - 0x1a (IO)
-     -
-     - Disk ctrl 1 + status
-   * - 0x1b (O)
-     -
-     - Disk ctrl 2
-   * - 0x1c (O)
-     -
-     - Disk ctrl 3
+       * - Address
+         - KIO
+         - TBA
+       * - 0x00 (IO)
+         - RTC
+         - Timer
+       * - 0x01 (IO)
+         - Keyb.
+         - Keyb.
+       * - 0x03
+         - Disp. data (O)
+         - Disp. data + status (IO)
+       * - 0x04
+         - Disp. ctrl (IO)
+         - Disp. ctrl (O)
+       * - 0x05 (IO)
+         - Prt. data + status
+         - Prt. data + status
+       * - 0x06 (O)
+         - Prt. ctrl 1
+         - Prt. ctrl 1
+       * - 0x07 (O)
+         - Prt. ctrl 2
+         - Prt. ctrl 2
+       * - 0x08 (IO)
+         - Dotm. Print
+         -
+       * - 0x09 (IO)
+         - Disk R+W
+         -
+       * - 0x0a (IO)
+         - Disk ctrl 1 + status
+         -
+       * - 0x0b (O)
+         - Disk ctrl 2
+         -
+       * - 0x19 (IO)
+         -
+         - Disk R+W
+       * - 0x1a (IO)
+         -
+         - Disk ctrl 1 + status
+       * - 0x1b (O)
+         -
+         - Disk ctrl 2
+       * - 0x1c (O)
+         -
+         - Disk ctrl 3
 
 
 
