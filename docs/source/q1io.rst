@@ -87,6 +87,21 @@ The two document has some differences. For example the known addresses are
      - Disk ctrl 3
 
 
+Neither seem fully compatible with the JDC roms (todo add reference) as
+**out** commands are seen to both 0xa and 0x1a are in use:
+
+.. code-block:: console
+
+  ...
+  0B0B 6C           ; ld l, h         |
+  0B0C 67           ; ld h, a         |
+  0B0D D3 1A        ; out (0x1a), a   |
+  0B0F 97           ; sub a           |
+  0B10 D3 0A        ; out (0xa), a    |
+  0B12 DB 1A        ; in a, (0x1a)    |
+  0B14 0F           ; rrca            |
+  ...
+
 Display
 -------
 
@@ -96,7 +111,7 @@ However KIO has the following:
 **Bit 6** = 0 for 12 line = 1 for 6 line
 **Bit 5** = 1 for LITE; = 0 for LMC
 
-Neither seem to be complete as the code for the JMC roms (add references)
+Neither seem to be complete as the code for the JDC roms (todo add references)
 at 0x2A0 seems to be testing **Bit 3** to select a 80 character width and
 **Bit 4** to select 40 bytes:
 
