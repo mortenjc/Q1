@@ -22,10 +22,6 @@ Differences
 
 The two document has some differences. For example the known addresses are
 
-KIO: 0x00, 0x10, 0x11
-TBA:
-
-Addresses
 
 .. list-table:: Addresses
 
@@ -64,7 +60,7 @@ Addresses
      - n/a
      - n/a
    * - TBA
-     - tba
+     - Timer
      - Keyb.
      - Disp. data + status (IO)
      - Disp. ctrl (O)
