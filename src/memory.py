@@ -1,68 +1,13 @@
-
+#
+# Memory abstraction used on top of Korarev's z80 emulator
+#
 
 class Memory():
-
-    # these actually belong to a specific set of ROMs so will fail once we
-    # try new images.
-    funcs = {
-       0x0000: "jump to START",
-       0x0038: "interrupt - jp 0x52",
-       0x0052: "interrupt - jp 0x01de" ,
-       0x01de: "interrupt routine()",
-       0x01e5: "START()",
-       0x01eb: "01eb setup registers for copying and clearing",
-       0x01f3: "01f3 copy (function calls) from 0x003f:0x0047 to 0x4080:",
-       0x01f8: "01f8 clear RAM from 4089 to 40ff",
-       0x02b1: "02b1 interrupt3 ROM()",
-       0x0410: "0410 write 0x20 from 4100 to 417f",
-       0x04a9: "04a9 unknown_io()",
-       0x04d1: "04d1 wait_for_key_0x0e()",
-       0x0fb8: "0fb8 check_#_disk_selected()",
-       0x4083: "4083 interrupt RAM()",
-       0x4086: "4086 wait_for_kbd_or_printer()"
-    }
-
-    # Named points of interest, for disassembly
-    # these actually belong to a specific set of ROMs so will fail once we
-    # try new images.
-    pois = {
-        0x0000: 'reset START',
-        0x0003: 'TOSTR',
-        0x0006: 'TODEC',
-        0x0009: 'UPDIS',
-        0x000C: 'MUL',
-        0x000F: 'DIV',
-        0x0012: 'BICHAR',
-        0x0015: 'NHL',
-        0x0018: 'START',
-        0x001B: 'KFILE',
-        0x001E: 'KEYIN',
-        0x0021: 'GETDN',
-        0x0024: 'NKEY',
-        0x0027: 'DISPLAY',
-        0x002A: 'PRINTER',
-        0x002D: 'CARB',
-        0x0030: 'STOP',
-        0x0033: 'PROCH',
-        0x0036: 'INTRET',
-        0x0039: 'INDEX',
-        0x003C: 'SHIFTY',
-        0x0213: 'CLRDK',
-        0x039e: 'display PRINTER FAULT',
-        0x03d5: 'check printer status',
-        0x03d7: 'clear keyboard buffer, update display',
-        0x0421: 'update display',
-        0x0439: 'de <- #characters used for display',
-        0x043F: 'display ctrl (0x05) Reset, Unbuffer',
-        0x0503: 'Key 0x1e (INS?)',
-        0x0d90: 'clrdk()'
-
-    }
-
 
     def __init__(self, m):
         self.m = m.memory
         self.verbose = True
+
 
     def print(self, s):
         if self.verbose:
@@ -87,7 +32,6 @@ class Memory():
             else:
                 print(f"Ignoring unknown data soure: {type}")
         return pc
-
 
 
     def hexdump(self, address, length, icount):

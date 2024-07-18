@@ -17,6 +17,7 @@ def main(args):
     next_irq = 7000
 
     prgobj = prg.proglist[args.program]
+    funcs = prgobj["funcs"]
     C = cpu.Cpu(prgobj)
     io = z80io.IO()
     io.verbose = False
@@ -29,6 +30,7 @@ def main(args):
         C.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
 
     while True:
+        pc = C.m.pc
         icount += 1
         if icount >= args.stopafter:
             print(f'max instruction count reached, exiting ...')
@@ -38,10 +40,10 @@ def main(args):
             print(f'{io.displaystr}')
             sys.exit()
 
-        if C.m.pc in C.mem.funcs and not args.nodecode:
-            print(f'; {C.mem.funcs[C.m.pc]}')
+        if pc in funcs and not args.nodecode:
+            print(f'; {funcs[pc]}')
 
-        if C.m.pc == args.poi and not args.nodecode: # PC of interest
+        if pc == args.poi and not args.nodecode: # PC of interest
             print('\n<<<<< pc of interest >>>>>\n')
 
         # Decode the instruction.
@@ -112,7 +114,7 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--nodump", help = "Toggle hexdump", action='store_true')
     parser.add_argument("-d", "--nodecode", help = "Decode instructions", action='store_true')
     parser.add_argument("--program", help = "name of program to load, see programs.py",
-                        type = str, default = "jdc_full")
+                        type = str, default = "jdc")
 
     args = parser.parse_args()
     if args.stopafter == -1:
