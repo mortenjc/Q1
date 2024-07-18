@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 
 import z80, sys, argparse
-import memory, cpu, z80io
+import memory, cpu, z80io, kbd
 import programs as prg
+
+
+def int38(C):
+    oldpc = C.m.pc
+    C.m.pc -= 2
+    C.mem.writeu16(C.m.pc, oldpc)
+    C.m.pc = 0x38
 
 
 def main(args):
@@ -12,6 +19,8 @@ def main(args):
     prgobj = prg.proglist[args.program]
     C = cpu.Cpu(prgobj)
     io = z80io.IO()
+    io.verbose = False
+    key = kbd.Key()
     C.reset()
     C.m.set_input_callback(io.handle_io_in) # input hooks (emulator support)
 
@@ -23,6 +32,8 @@ def main(args):
         icount += 1
         if icount >= args.stopafter:
             print(f'max instruction count reached, exiting ...')
+            for l in C.bt:
+                print(l)
             print(f'printed characters ({len(io.displaystr)}):')
             print(f'{io.displaystr}')
             sys.exit()
@@ -46,16 +57,43 @@ def main(args):
         if icount % args.dumpfreq == 0 and not args.nodump:
             C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
 
-        if icount % 100000 == 0:
-            print(f'Instruction count: {icount}')
+        # if icount % 100000 == 0:
+        #     print(f'Instruction count: {icount}')
 
         C.step() # does the actual emulation of the next instruction
 
-        if irq_count < 20 and icount > next_irq:
-            print(f'IRQ {interrupts} injected at inst count {nextint}')
-            C.m.pc = 0x0038
-            irq_count += 1
-            next_irq += 400
+        # if C.m.pc == 0x4d1: # wait for key 0xe ??
+        #     sys.exit()
+
+        if (icount % 1000):
+            if key.kbhit():
+                ch = ord(key.getch())
+                if ch >= 32 and ch < 127:
+                    print(f'{chr(ch)}')
+                else:
+                    print(f'{ch}')
+                if ch == 0x222b:  # opt-b, hexdump
+                    C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+                elif ch == 0x8800: # fake key 0xe
+                    io.keyin = 0xe
+                    int38(C)
+                elif ch == 0x0a:
+                    io.keyin = 0x0d
+                    int38(C)
+                    # args.nodecode = False
+                    # args.nodump = False
+                elif ch == 27: # ESC
+                    sys.exit()
+                elif ch == 127:
+                    io.keyin = 0x8 # BS
+                    int38(C)
+                elif ch == 181: # opt-m INS
+                    io.keyin = 0x1e # INS
+                    int38(C)
+                else:
+                    io.keyin = ch
+                    int38(C)
+
 
 
 if __name__ == "__main__":
@@ -77,5 +115,7 @@ if __name__ == "__main__":
                         type = str, default = "jdc_full")
 
     args = parser.parse_args()
+    if args.stopafter == -1:
+        args.stopafter = 1000000000
 
     main(args)

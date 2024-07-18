@@ -5,9 +5,11 @@ class Memory():
     # these actually belong to a specific set of ROMs so will fail once we
     # try new images.
     funcs = {
-       0x0000: "reset()",
-       0x0038: "0038 interrupt ROM()",
-       0x01e5: "01e5 interrupt2 ROM()",
+       0x0000: "jump to START",
+       0x0038: "interrupt - jp 0x52",
+       0x0052: "interrupt - jp 0x01de" ,
+       0x01de: "interrupt routine()",
+       0x01e5: "START()",
        0x01eb: "01eb setup registers for copying and clearing",
        0x01f3: "01f3 copy (function calls) from 0x003f:0x0047 to 0x4080:",
        0x01f8: "01f8 clear RAM from 4089 to 40ff",
@@ -24,7 +26,7 @@ class Memory():
     # these actually belong to a specific set of ROMs so will fail once we
     # try new images.
     pois = {
-        0x0000: 'reset vector',
+        0x0000: 'reset START',
         0x0003: 'TOSTR',
         0x0006: 'TODEC',
         0x0009: 'UPDIS',
@@ -45,12 +47,26 @@ class Memory():
         0x0036: 'INTRET',
         0x0039: 'INDEX',
         0x003C: 'SHIFTY',
-        0x043F: 'display ctrl (0x05) Reset, Unbuffer'
+        0x0213: 'CLRDK',
+        0x039e: 'display PRINTER FAULT',
+        0x03d5: 'check printer status',
+        0x03d7: 'clear keyboard buffer, update display',
+        0x0421: 'update display',
+        0x0439: 'de <- #characters used for display',
+        0x043F: 'display ctrl (0x05) Reset, Unbuffer',
+        0x0503: 'Key 0x1e (INS?)',
+        0x0d90: 'clrdk()'
+
     }
 
 
     def __init__(self, m):
         self.m = m.memory
+        self.verbose = True
+
+    def print(self, s):
+        if self.verbose:
+            print(s)
 
 
     def clear(self, val: int):
@@ -75,9 +91,9 @@ class Memory():
 
 
     def hexdump(self, address, length, icount):
-        nullpatt = "FF " * 16
-        print(f"########### HEXDUMP 0x{address:x} - 0x{address+length:x} ####################################")
-        print(f'icount {icount}')
+        nullpatt = "FD " * 16
+        self.print(f"########### HEXDUMP 0x{address:x} - 0x{address+length:x} ####################################")
+        self.print(f'icount {icount}')
         hexline = f"{address:04X} "
         char = ""
         count = 0
@@ -92,21 +108,27 @@ class Memory():
             count += 1
             if count == 16:
                 if hexline[5:] != nullpatt:
-                    print(hexline, char)
+                    self.print(f'{hexline} {char}')
                     prevempty = False
                 else:
                     if prevempty == False:
-                        print('....')
+                        self.print('....')
                         prevempty = True
                 hexline = f"{address +i+1:04X} "
                 char = ""
                 count = 0
-        print(f"########### HEXDUMP END #################################################")
+        self.print(f"########### HEXDUMP END #################################################")
 
 
     def writeu8(self, addr: int, val: int):
         assert val >=0 and val <= 255
         self.m[addr] = val
+
+    def writeu16(self, addr: int, val: int):
+        hi = val >> 8
+        lo = val & 0xFF
+        self.writeu8(addr  , lo)
+        self.writeu8(addr+1, hi)
 
 
     def getu8(self, address: int) -> int:

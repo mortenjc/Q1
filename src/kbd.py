@@ -1,0 +1,48 @@
+import sys, termios
+from select import select
+
+class Key:
+
+    def __init__(self):
+        # save the terminal settings
+        self.fd = sys.stdin.fileno()
+        self.new_term = termios.tcgetattr(self.fd)
+        self.old_term = termios.tcgetattr(self.fd)
+
+        # new terminal setting unbuffered
+        self.new_term[3] = (self.new_term[3] & ~termios.ICANON & ~termios.ECHO)
+        termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.new_term)
+
+
+    def __del__(self):
+        # switch to normal terminal
+        termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.old_term)
+
+
+    def putch(self, ch):
+        sys.stdout.write(ch)
+
+    def getch(self):
+        return sys.stdin.read(1)
+
+    def getche(selg):
+        ch = self.getch()
+        putch(ch)
+        return ch
+
+    def kbhit(self):
+        dr,dw,de = select([sys.stdin], [], [], 0)
+        return dr != []
+
+if __name__ == '__main__':
+
+    kbd = Key()
+
+    while 1:
+        if kbd.kbhit():
+            ch = kbd.getch()
+            break
+        print("A")
+        #sys.stdout.write('.')
+
+    print(f'done {ch}')

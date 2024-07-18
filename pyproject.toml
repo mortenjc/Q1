@@ -1,0 +1,8 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "Event Formation Unit"
+authors = [{name = "Morten Jagd Christensen", email = "mortenjc@jcaps.com"}]
+dynamic = ["version", "description"]

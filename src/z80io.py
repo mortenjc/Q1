@@ -12,9 +12,10 @@ class IO:
         self.incb = {}
         self.outcb = {}
         self.keyincount = 0
+        self.keyin = 0
         self.displaystr = ""
-        self.register_in_cb( 0x01, self.handle_key_in)
-        #self.register_in_cb( 0x01, self.handle_key_in_string) # 'ABCD' + CR
+        #self.register_in_cb( 0x01, self.handle_key_in)
+        self.register_in_cb( 0x01, self.handle_key_in_string) # 'ABCD' + CR
         self.register_out_cb(0x01, self.handle_key_out)
 
         self.register_out_cb(0x03, self.handle_display_out)
@@ -24,15 +25,23 @@ class IO:
         self.register_in_cb( 0x05, self.handle_printer_in)
         self.register_out_cb(0x07, self.handle_printer_out_7)
 
+        # Maybe these are really disk IO ?
+        self.register_in_cb( 0x09, self.handle_ciu_in_09)
+        self.register_in_cb( 0x0a, self.handle_ciu_in_0a)
         self.register_out_cb(0x0a, self.handle_ciu_out_0a)
         self.register_out_cb(0x0b, self.handle_ciu_out_0b)
         self.register_in_cb( 0x0c, self.handle_ciu_in_0c)
         self.register_out_cb(0x0c, self.handle_ciu_out_0c)
 
+        self.register_in_cb( 0x19, self.handle_disk_in_19)
         self.register_in_cb( 0x1a, self.handle_disk_in_1a)
         self.register_out_cb(0x1a, self.handle_disk_out_1a)
         self.register_out_cb(0x1b, self.handle_disk_out_1b)
 
+
+    def print(self, s):
+        if self.verbose:
+            print(s)
 
     ### Functions for registering and handling IO
 
@@ -48,14 +57,14 @@ class IO:
         if inaddr in self.incb:
             return self.incb[inaddr]()
         else:
-            print(f'IO - unregistered input address 0x{inaddr:02x}, exiting')
+            self.print(f'IO - unregistered input address 0x{inaddr:02x}, exiting')
             sys.exit()
 
     def handle_io_out(self, outaddr, outval):
         if outaddr in self.outcb:
             self.outcb[outaddr](outval)
         else:
-            print(f'IO - unregistered output address 0x{outaddr:02x} (0x{outval:02x})')
+            self.print(f'IO - unregistered output address 0x{outaddr:02x} (0x{outval:02x})')
             #sys.exit()
 
 
@@ -64,42 +73,40 @@ class IO:
     ### Display
 
     def handle_display_in(self) -> int:
-        print('IO - display status: 0')
-        return 0
+        self.print('IO - display status: 32 + 16 (Lite, 40 char)')
+        return 32 + 16
 
 
     def handle_display_out(self, val) -> str:
         if isprintable(val):
-            print(f"IO - display out {val} '{chr(val)}'")
+            self.print(f"IO out - display {val} '{chr(val)}'")
             self.displaystr += chr(val)
         else:
-            print(f"IO - display out {val}")
+            self.print(f"IO out - display (non printable){val}")
 
 
     def handle_display_out_ctrl(self, val) -> str:
         if val == 0x05:
             desc = 'unblank, reset to (1,1)'
-            self.displaystr += "\n"
+            #self.displaystr += "\n"
+
+            if len(self.displaystr) > 1:
+                print(self.displaystr)
+            self.displaystr = ""
         elif val == 0x08:
             desc = 'advance right (or new line)'
         else:
             desc = f'0x{val:02X}'
-        print(f"IO - display control out - {desc}")
+        self.print(f"IO out - display control - {desc}")
 
 
     ### Keyboard
     # used to simulate entering 'ABCD' + CR
     def handle_key_in_string(self) -> int:
-        mystr = "ABCD"
         self.keyincount += 1
-        retval = 0xd
-        print(len(mystr), self.keyincount)
-        if self.keyincount <= len(mystr):
-            retval = ord(mystr[self.keyincount - 1])
-            print(f'IO - key in (calls: {self.keyincount}): 0x{retval:02X}')
-            return retval
-
-        print(f'IO - key in return (calls: {self.keyincount}): 0x{retval:02X}')
+        retval = self.keyin
+        self.keyin = 0
+        self.print(f'IO in  - key (calls: {self.keyincount}): 0x{retval:02X}')
         return retval
 
 
@@ -113,7 +120,7 @@ class IO:
             retval = 0x0E
         else:
             retval = 0x00
-        print(f'IO - key in (calls: {self.keyincount}): 0x{retval:02X}')
+        self.print(f'IO in  - key (calls: {self.keyincount}): 0x{retval:02X}')
         return retval
 
 
@@ -122,12 +129,12 @@ class IO:
             desc = 'keyboard mode 2'
         else:
             desc = 'unknown'
-        print(f'IO - key out: {desc}')
+        self.print(f'IO out - key - {desc}')
 
 
     ### Printer
     def handle_printer_in(self) -> int:
-        print(f'IO - printer in (status) : 0 (no errors)')
+        self.print(f'IO in  - printer status -  0 (no errors)')
         return 0
 
 
@@ -136,16 +143,16 @@ class IO:
             desc = 'reset printer, raise ribbon'
         else:
             desc = 'unknown command'
-        print(f'IO - printer out 7: {desc}')
+        self.print(f'IO out - printer control - {desc}')
 
 
-    ### CIU ?
+    ### CIU or perhaps DISK?
     def handle_ciu_out_0a(self, val):
-        print(f'IO - CIU out (data out) (0x{val:02X})')
+        self.print(f'IO out - CIU/DISK? (data) - (0x{val:02X})')
 
 
     def handle_ciu_out_0b(self, val):
-        print(f'IO - CIU out (control 1) (0x{val:02X})')
+        self.print(f'IO out - CIU/DISK? (control 1) - (0x{val:02X})')
 
 
     def handle_ciu_out_0c(self, val):
@@ -153,26 +160,38 @@ class IO:
             desc = 'synchronous mode, master reset'
         else:
             desc = 'unspecified'
-        print(f'IO - CIU out (control 2) {desc} (0x{val:02X})')
+        self.print(f'IO out - CIU/DISK? (control 2) - {desc} (0x{val:02X})')
 
 
     def handle_ciu_in_0c(self):
-        print('IO - CIU in (control 2): 0x00')
+        self.print('IO in  - CIU/DISK? (0xc) (control 1): 0x00')
+        return 0
+
+    def handle_ciu_in_0a(self):
+        self.print('IO in  - CIU/DISK? (0xa) (control 2): 0x00')
+        return 0
+
+    def handle_ciu_in_09(self):
+        self.print('IO in  - CIU/DISK (0x9) (data): 0x00')
         return 0
 
 
     ### Disk control (from Q1 Assembler p. 52)
+    def handle_disk_in_19(self):
+        self.print('IO in  - disk2 (data): 0x00')
+        return 0
+
     def handle_disk_in_1a(self):
-        print('IO - in (disk status): 0x00')
+        self.print('IO in  - disk2 (status): 0x00')
         return 0
 
 
     def handle_disk_out_1a(self, val):
-        print(f'IO - disk control 1: NOP? (0x{val:02X})')
+        self.print(f'IO out - disk2 (control 1) -  NOP? (0x{val:02X})')
 
 
     def handle_disk_out_1b(self, val):
-        print(f'IO - disk control 2: NOP? (0x{val:02X})')
+        self.print(f'IO out - disk2 (control 2) - NOP? (0x{val:02X})')
 
 
 if __name__ == '__main__':

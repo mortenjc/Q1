@@ -8,6 +8,7 @@ class Cpu:
     MAX_INSTR_SIZE = 4
 
     def __init__(self, program):
+        self.bt = [] # backtrace
         self.program = program
         self.e = z80
         self.m = z80.Z80Machine()
@@ -15,8 +16,8 @@ class Cpu:
         self.in_cbs = {}
         self.out_cbs = {}
         self.mem = memory.Memory(self.m)
-        self.fill = 0xff
-        self.halt = 0xffffffff
+        self.fill = 0xfd
+        self.halt = 0xfdfdfdfd
 
 
     def reset(self) -> None:
@@ -34,7 +35,15 @@ class Cpu:
         data = self.mem.getu32(m.pc)
         if data == self.halt:
             print(f'0x{self.halt:04x} at {m.pc:04x}, exiting ...')
-            sys.exit()
+            self.exit()
+
+
+    def exit(self):
+        self.mem.hexdump(0x2000, 0x10000 - 0x2000, -1)
+        for l in self.bt:
+            print(l)
+        print('exiting...')
+        sys.exit()
 
 
     def getinst(self):
@@ -51,8 +60,7 @@ class Cpu:
             mem = self.mem
             print(f'{pc:04X} {mem.getu8(pc):02X} {mem.getu8(pc+1):02X} {mem.getu8(pc+2):02X} {mem.getu8(pc+3):02X}')
             print(f'{repr(e)}')
-            print('exiting...')
-            sys.exit()
+            self.exit()
 
 
     def decodestr(self, inst: str, bytes: []) -> str:
@@ -61,4 +69,8 @@ class Cpu:
         else:
             a_str = '   '
         m = self.m
-        return f'{m.pc:04X} {bytes:12} ; {inst:15} | SP={m.sp:04X}, A={m.a:02X}{a_str} BC={m.bc:04X}, DE={m.de:04X}, HL={m.hl:04X}'
+        l = f'{m.pc:04X} {bytes:12} ; {inst:15} | SP={m.sp:04X}, A={m.a:02X}{a_str} BC={m.bc:04X}, DE={m.de:04X}, HL={m.hl:04X}'
+        self.bt.append(l)
+        if len(self.bt) == 10:
+            self.bt = self.bt[1:]
+        return l
