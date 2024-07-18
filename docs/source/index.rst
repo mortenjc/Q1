@@ -19,6 +19,7 @@ software from ROMs.
         :hidden:
 
         information
+        learnings
 
     .. toctree::
         :caption: Emulator
@@ -27,3 +28,10 @@ software from ROMs.
 
         hooks
         running
+
+    .. toctree::
+        :caption: Learnings
+        :maxdepth: 3
+        :hidden:
+
+        learnings
