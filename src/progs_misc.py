@@ -29,7 +29,7 @@ dummy = {
 }
 
 loop = {
-    "descr": "Loop program (three nops and loop back)",
+    "descr": "Loop program (three nops, an inc, and loop to start)",
     "start": 0x2000,
     "data": [
         ["snippet", [0x00, 0x00, 0x00], 0x2000], # nop

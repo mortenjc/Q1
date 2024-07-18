@@ -183,7 +183,7 @@ incomplete as it doesn't mention the important 'GO' key with code 0x0e.
    * - 0x0e
      - GO (inferred)
      - exit processor wait loop
-   * - 0x0F
+   * - 0x0f
      - STOP
      - processor loop: wait for GO key
    * - 0x10
@@ -195,10 +195,10 @@ incomplete as it doesn't mention the important 'GO' key with code 0x0e.
    * - 0x1c
      - CHAR ADV
      - Move cursor right
-   * - 0x1D
+   * - 0x1d
      - DEL CHAR
      - Delete char under cursor and move text right of cursor
-   * - 0x1E
+   * - 0x1f
      - INSERT MODE
      - When entering new chars, move text right of cursor
    * - 0x03
