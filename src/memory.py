@@ -35,16 +35,16 @@ class Memory():
 
 
     def hexdump(self, address, length, icount):
-        nullpatt = "FD " * 16
+        nullpatt = "fd " * 16
         self.print(f"########### HEXDUMP 0x{address:x} - 0x{address+length:x} ####################################")
         self.print(f'icount {icount}')
-        hexline = f"{address:04X} "
+        hexline = f"{address:04x} "
         char = ""
         count = 0
         prevempty = False
         for i in range(length):
             byte  = self.m[address + i]
-            hexline += f"{byte:02X} "
+            hexline += f"{byte:02x} "
             if byte >=32 and byte < 122:
                 char += chr(byte)
             else:
@@ -58,7 +58,7 @@ class Memory():
                     if prevempty == False:
                         self.print('....')
                         prevempty = True
-                hexline = f"{address +i+1:04X} "
+                hexline = f"{address +i+1:04x} "
                 char = ""
                 count = 0
         self.print(f"########### HEXDUMP END #################################################")

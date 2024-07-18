@@ -21,7 +21,7 @@ def main(range):
             func_desc = ""
             if C.m.pc in prgobj["pois"]:
                 func_desc = f'{prgobj["pois"][C.m.pc]}'
-            print(f'{C.m.pc:04X} {bytes_str:12} ; {inst_str:15} | {func_desc}')
+            print(f'{C.m.pc:04x} {bytes_str:12} ; {inst_str:15} | {func_desc}')
 
             C.m.pc += len(bytes)
 

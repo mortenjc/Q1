@@ -152,3 +152,55 @@ at 0x2A0 seems to be testing **Bit 3** to select a 80 character width and
      - unknown
    * - 0
      - unknown
+
+keyboard
+--------
+
+Information about keyboard codes can be found in the ROS User's Manual
+on page 10 and 11.
+
+This is useful when you want to simulate keyboard input. The documentation is
+incomplete as it doesn't mention the important 'GO' key with code 0x0e.
+
+.. list-table:: Key codes
+   :header-rows: 1
+
+   * - Key Code
+     - Key Name
+     - Description
+   * - 0x02
+     - TAB CLR
+     - Cursor position is not a tab position
+   * - 0x03
+     - TAB SET
+     - Cursor position is a tab position
+   * - 0x04
+     - CORR
+     - Move cursor back one position
+   * - 0x09
+     - TAB
+     - Move to next tab
+   * - 0x0e
+     - GO (inferred)
+     - exit processor wait loop
+   * - 0x0F
+     - STOP
+     - processor loop: wait for GO key
+   * - 0x10
+     - REV TAB
+     - Move to previous tab
+   * - 0x1b
+     - CLEAR ENTRY
+     - Clear all keyboard input
+   * - 0x1c
+     - CHAR ADV
+     - Move cursor right
+   * - 0x1D
+     - DEL CHAR
+     - Delete char under cursor and move text right of cursor
+   * - 0x1E
+     - INSERT MODE
+     - When entering new chars, move text right of cursor
+   * - 0x03
+     - TAB SET
+     - Cursor position is a tab position

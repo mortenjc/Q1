@@ -8,14 +8,15 @@ def isprintable(c):
 
 
 class IO:
-    def __init__(self):
+    def __init__(self, m):
+        self.m = m
         self.incb = {}
         self.outcb = {}
         self.keyincount = 0
         self.keyin = 0
         self.displaystr = ""
-        #self.register_in_cb( 0x01, self.handle_key_in)
-        self.register_in_cb( 0x01, self.handle_key_in_string) # 'ABCD' + CR
+        self.go = 0
+        self.register_in_cb( 0x01, self.handle_key_in)
         self.register_out_cb(0x01, self.handle_key_out)
 
         self.register_out_cb(0x03, self.handle_display_out)
@@ -61,6 +62,8 @@ class IO:
             sys.exit()
 
     def handle_io_out(self, outaddr, outval):
+        outaddr = outaddr & 0xff
+        #print(f'handle_io_out({outaddr:02x},{outval:02x}({chr(outval)}))')
         if outaddr in self.outcb:
             self.outcb[outaddr](outval)
         else:
@@ -96,32 +99,33 @@ class IO:
         elif val == 0x08:
             desc = 'advance right (or new line)'
         else:
-            desc = f'0x{val:02X}'
+            desc = f'0x{val:02}'
         self.print(f"IO out - display control - {desc}")
 
 
     ### Keyboard
-    # used to simulate entering 'ABCD' + CR
-    def handle_key_in_string(self) -> int:
-        self.keyincount += 1
+    def handle_key_in(self) -> int:
         retval = self.keyin
         self.keyin = 0
-        self.print(f'IO in  - key (calls: {self.keyincount}): 0x{retval:02X}')
+        if self.go:
+            retval = 0x0e
+            self.go = 0
+        self.print(f'IO in  - key : 0x{retval:02x}')
         return retval
 
 
     # First version with magic values 0x0F and 0x0E
-    def handle_key_in(self) -> int:
-        self.keyincount += 1
-        retval = 0
-        if self.keyincount == 1:
-            retval = 0x0F
-        elif self.keyincount == 2:
-            retval = 0x0E
-        else:
-            retval = 0x00
-        self.print(f'IO in  - key (calls: {self.keyincount}): 0x{retval:02X}')
-        return retval
+    # def handle_key_in(self) -> int:
+    #     self.keyincount += 1
+    #     retval = 0
+    #     if self.keyincount == 1:
+    #         retval = 0x0F
+    #     elif self.keyincount == 2:
+    #         retval = 0x0E
+    #     else:
+    #         retval = 0x00
+    #     self.print(f'IO in  - key (calls: {self.keyincount}): 0x{retval:02x}')
+    #     return retval
 
 
     def handle_key_out(self, val):
@@ -148,11 +152,11 @@ class IO:
 
     ### CIU or perhaps DISK?
     def handle_ciu_out_0a(self, val):
-        self.print(f'IO out - CIU/DISK? (data) - (0x{val:02X})')
+        self.print(f'IO out - CIU/DISK? (data) - (0x{val:02x})')
 
 
     def handle_ciu_out_0b(self, val):
-        self.print(f'IO out - CIU/DISK? (control 1) - (0x{val:02X})')
+        self.print(f'IO out - CIU/DISK? (control 1) - (0x{val:02x})')
 
 
     def handle_ciu_out_0c(self, val):
@@ -160,7 +164,7 @@ class IO:
             desc = 'synchronous mode, master reset'
         else:
             desc = 'unspecified'
-        self.print(f'IO out - CIU/DISK? (control 2) - {desc} (0x{val:02X})')
+        self.print(f'IO out - CIU/DISK? (control 2) - {desc} (0x{val:02x})')
 
 
     def handle_ciu_in_0c(self):
@@ -187,11 +191,11 @@ class IO:
 
 
     def handle_disk_out_1a(self, val):
-        self.print(f'IO out - disk2 (control 1) -  NOP? (0x{val:02X})')
+        self.print(f'IO out - disk2 (control 1) -  NOP? (0x{val:02x})')
 
 
     def handle_disk_out_1b(self, val):
-        self.print(f'IO out - disk2 (control 2) - NOP? (0x{val:02X})')
+        self.print(f'IO out - disk2 (control 2) - NOP? (0x{val:02x})')
 
 
 if __name__ == '__main__':

@@ -52,15 +52,20 @@ class Cpu:
             instr_str = f"{instr}"
             # Get and verbalise the instruction bytes.
             instr_bytes = bytes(self.m.memory[instr.addr:instr.addr + instr.size])
-            instr_bytes_str = ' '.join(f'{b:02X}' for b in instr_bytes)
+            instr_bytes_str = ' '.join(f'{b:02x}' for b in instr_bytes)
             return instr_str, instr_bytes, instr_bytes_str
         except Exception as e:
             print('exception: build_instr() failed')
             pc = self.m.pc
             mem = self.mem
-            print(f'{pc:04X} {mem.getu8(pc):02X} {mem.getu8(pc+1):02X} {mem.getu8(pc+2):02X} {mem.getu8(pc+3):02X}')
+            print(f'{pc:04x} {mem.getu8(pc):02x} {mem.getu8(pc+1):02x} {mem.getu8(pc+2):02x} {mem.getu8(pc+3):02x}')
             print(f'{repr(e)}')
             self.exit()
+
+
+    def getregs(self):
+        m = self.m
+        return f'PC={m.pc:04x}, SP={m.sp:04x}, A={m.a:02x}, BC={m.bc:04x}, DE={m.de:04x}, HL={m.hl:04x}'
 
 
     def decodestr(self, inst: str, bytes: []) -> str:
@@ -69,7 +74,7 @@ class Cpu:
         else:
             a_str = '   '
         m = self.m
-        l = f'{m.pc:04X} {bytes:12} ; {inst:15} | SP={m.sp:04X}, A={m.a:02X}{a_str} BC={m.bc:04X}, DE={m.de:04X}, HL={m.hl:04X}'
+        l = f'{m.pc:04x} {bytes:12} ; {inst:15} | SP={m.sp:04x}, A={m.a:02x}{a_str} BC={m.bc:04x}, DE={m.de:04x}, HL={m.hl:04x}'
         self.bt.append(l)
         if len(self.bt) == 10:
             self.bt = self.bt[1:]

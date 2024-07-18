@@ -5,25 +5,24 @@ import memory, cpu, z80io, kbd
 import programs as prg
 
 
-def int38(C):
+def int38(C, io, ch):
+    io.keyin = ch
     oldpc = C.m.pc
-    C.m.pc -= 2
-    C.mem.writeu16(C.m.pc, oldpc)
+    C.m.sp -= 2
+    C.mem.writeu16(C.m.sp, oldpc)
     C.m.pc = 0x38
 
 
 def main(args):
-    irq_count = 0
-    next_irq = 7000
-
     prgobj = prg.proglist[args.program]
     funcs = prgobj["funcs"]
     C = cpu.Cpu(prgobj)
-    io = z80io.IO()
+    io = z80io.IO(C.m)
     io.verbose = False
     key = kbd.Key()
     C.reset()
     C.m.set_input_callback(io.handle_io_in) # input hooks (emulator support)
+    C.m.set_output_callback(io.handle_io_out)
 
     icount = 0
     if not args.nodump:
@@ -53,8 +52,8 @@ def main(args):
             print(inst_str)
 
         # IO hook for output
-        if bytes[0] == 0xD3:
-            io.handle_io_out(bytes[1], C.m.a)
+        # if bytes[0] == 0xD3:
+        #     io.handle_io_out(bytes[1], C.m.a)
 
         if icount % args.dumpfreq == 0 and not args.nodump:
             C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
@@ -64,37 +63,41 @@ def main(args):
 
         C.step() # does the actual emulation of the next instruction
 
-        # if C.m.pc == 0x4d1: # wait for key 0xe ??
-        #     sys.exit()
+        if C.m.pc ==0x4cb:
+            print(io.displaystr)
+            io.displaystr = ""
+            print("<STOP>")
 
-        if (icount % 1000):
+
+        if (icount % 1000) == 0:
             if key.kbhit():
                 ch = ord(key.getch())
                 if ch >= 32 and ch < 127:
                     print(f'{chr(ch)}')
                 else:
                     print(f'{ch}')
-                if ch == 0x222b:  # opt-b, hexdump
+
+                if ch == 0x222b:       # opt-b -> hexdump
                     C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
-                elif ch == 0x8800: # fake key 0xe
-                    io.keyin = 0xe
-                    int38(C)
-                elif ch == 0x0a:
-                    io.keyin = 0x0d
-                    int38(C)
-                    # args.nodecode = False
-                    # args.nodump = False
-                elif ch == 27: # ESC
-                    sys.exit()
+                elif ch == 960:        # opt-p -> regdump
+                    print(C.getregs())
+                elif ch == 0x0a:       # LF -> CR
+                    int38(C, io, 0x0d)
+                elif ch == 169:        # opt-g GO
+                    io.go = 1
                 elif ch == 127:
-                    io.keyin = 0x8 # BS
-                    int38(C)
-                elif ch == 181: # opt-m INS
-                    io.keyin = 0x1e # INS
-                    int38(C)
+                    int38(C, io, 0x04) # BS -> CORR
+                elif ch == 231:
+                    int38(C, io, 0x1b) # opt-c -> CLEAR ENTRY
+                elif ch == 181:        # opt-m -> INSERT MODE
+                    int38(C, io, 0x1e)
                 else:
-                    io.keyin = ch
-                    int38(C)
+                    int38(C, io, ch)
+
+
+
+
+
 
 
 
@@ -105,6 +108,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("-l", "--list", help = "showavailable programs", action='store_true')
     parser.add_argument("-s", "--stopafter", help = "stop after N instructions",
                         type = int, default = 6380)
     parser.add_argument("-p", "--poi", help = "Point of interest (PC)",
@@ -119,5 +123,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.stopafter == -1:
         args.stopafter = 1000000000
+
+    if args.list:
+        for p in prg.proglist:
+            print(p)
+        sys.exit()
 
     main(args)
