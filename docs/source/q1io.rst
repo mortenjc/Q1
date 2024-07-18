@@ -1,10 +1,31 @@
 
+
+ROM Images
+==========
+
+Three sets of ROM images are currently available
+
+.. list-table:: ROMs
+   :header-rows: 1
+
+   * - Name
+     - Roms
+     - Description
+   * - JDC
+     - IC25 - IC32
+     - From danish vendor JDC
+   * - IWS
+     - IC25 - IC29, IC31, IC32
+     - From a model with serial number 820
+   * - Hybrid
+     - IC25 - IC27, IC31, IC32
+     - Mix of ROMs from serial numbers 615 and 580
+
+
 IO Addresses
 ============
 
-
-
-The two main sources of information for IO is two versions of the
+The two main sources of information for IO are the two versions of the
 "The Q1 Assembler" document.
 
 Karl's version (KIO) (only pages 64 to 80), dated 8/78.
@@ -20,7 +41,7 @@ https://github.com/TheByteAttic/Q1/blob/main/Original%20Documentation/Q1%20Assem
 Differences
 -----------
 
-The two document has some differences. For example the known addresses are
+The two documents have some differences. For example the known IO addresses are
 
 .. list-table:: IO Addresses
    :header-rows: 1
@@ -103,7 +124,7 @@ Neither seem fully compatible with the JDC roms (todo add reference) as
   ...
 
 Display
--------
+=======
 
 When reading the Display status, TBA reports **Bit 7** as busy.
 However KIO has the following:
@@ -153,8 +174,8 @@ at 0x2A0 seems to be testing **Bit 3** to select a 80 character width and
    * - 0
      - unknown
 
-keyboard
---------
+Keyboard
+========
 
 Information about keyboard codes can be found in the ROS User's Manual
 on page 10 and 11.
