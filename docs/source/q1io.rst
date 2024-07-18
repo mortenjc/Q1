@@ -61,6 +61,18 @@ The two document has some differences. For example the known addresses are
    * - 0x0b (O)
      - Disk ctrl 2
      -
+   * - 0x10 (IO)
+     -
+     - Data R+W
+   * - 0x11 (IO)
+     -
+     - ctrl 1, status 1
+   * - 0x12 (IO)
+     -
+     - ctrl 2, status 2
+   * - 0x13 (O)
+     -
+     - ctrl 3
    * - 0x19 (IO)
      -
      - Disk R+W
@@ -73,3 +85,29 @@ The two document has some differences. For example the known addresses are
    * - 0x1c (O)
      -
      - Disk ctrl 3
+
+
+Display
+-------
+
+When reading the Display status, TBA reports **Bit 7** as busy.
+However KIO has the following:
+
+**Bit 6** = 0 for 12 line = 1 for 6 line
+**Bit 5** = 1 for LITE; = 0 for LMC
+
+Neither seem to be complete as the code for the JMC roms (add references)
+at 0x2A0 seems to be testing **Bit 3** to select a 80 character width and
+**Bit 4** to select 40 bytes:
+
+        <<<<< Display width? >>>>>
+        02A0 DB 04        ; in a, (0x4)     |
+        02A2 CB 5F        ; bit 0x3, a      |
+        02A4 3E 50        ; ld a, 0x50      |
+        02A6 C0           ; ret nz          |
+        02A7 DB 04        ; in a, (0x4)     |
+        02A9 CB 67        ; bit 0x4, a      |
+        02AB 3E 28        ; ld a, 0x28      |
+        02AD C0           ; ret nz          |
+        02AE C6 07        ; add a, 0x7      |
+        02B0 C9           ; ret             |
