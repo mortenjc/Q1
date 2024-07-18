@@ -19,7 +19,6 @@ software from ROMs.
         :hidden:
 
         information
-        learnings
 
     .. toctree::
         :caption: Emulator
