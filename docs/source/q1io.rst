@@ -27,7 +27,6 @@ The two document has some differences. For example the known addresses are
 | A          |  B     |  C    |
 
 .. list-table:: Addresses
-
    :header-rows: 1
 
    * - Version
