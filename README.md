@@ -9,6 +9,9 @@ Documentation found at https://github.com/TheByteAttic/Q1
 Please note that this repo is in the early phase and refactoring and
 renaming is likely to happen often, hopefully to the better.
 
+Note that documentation for this software is moving to
+https://q1-lite-emulator.readthedocs.io
+
 ## prerequisites
 The Q1 emulator uses a Z80 emulator from Kosraev: https://github.com/kosarev/z80
 

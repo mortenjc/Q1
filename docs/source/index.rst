@@ -5,6 +5,8 @@ Q1-Lite Emulator
 Documentation for the efforts of running the Q1-Lite z80 based
 software from ROMs.
 
+Help wanted, please get in touch ;-)
+
 
 .. note::
 
