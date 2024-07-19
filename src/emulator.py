@@ -21,7 +21,7 @@ def main(args):
     io.verbose = False
     key = kbd.Key()
     C.reset()
-    C.m.set_input_callback(io.handle_io_in) # input hooks (emulator support)
+    C.m.set_input_callback(io.handle_io_in)
     C.m.set_output_callback(io.handle_io_out)
 
     icount = 0
@@ -58,9 +58,11 @@ def main(args):
         if icount % args.dumpfreq == 0 and not args.nodump:
             C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
 
-        # if icount % 100000 == 0:
-        #     print(f'Instruction count: {icount}')
+        # if pc == 0x0818: # Break Point/Trigger point
+        #     C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+        #     args.nodecode = False
 
+        # main cpu emulation step
         C.step() # does the actual emulation of the next instruction
 
         if C.m.pc ==0x4cb:
@@ -68,8 +70,7 @@ def main(args):
             io.displaystr = ""
             print("<STOP>")
 
-
-        if (icount % 1000) == 0:
+        if (icount % 1000) == 0: # int_disabled check?
             if key.kbhit():
                 ch = ord(key.getch())
                 if ch >= 32 and ch < 127:
