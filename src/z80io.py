@@ -5,7 +5,8 @@ import sys
 #
 
 def isprintable(c):
-    return c >= 0x20 and c <= 0x7D
+    """True if character is printable ASCII"""
+    return 0x20 <= c <= 0x7D
 
 
 class IO:
