@@ -5,6 +5,13 @@ Q1-Lite Emulator
 Documentation for the efforts of running the Q1-Lite z80 based
 software from ROMs.
 
+.. figure:: images/Q1lite.png
+  :width: 800
+  :align: center
+
+  Q1 Lite, generation 1?
+
+
 Help wanted, please get in touch ;-)
 
 
