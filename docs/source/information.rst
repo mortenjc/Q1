@@ -16,6 +16,9 @@ https://datamuseum.dk/wiki/Q1_Microlite
 
 https://www.thebyteattic.com/p/q1.html
 
+https://hackaday.com/2022/09/28/the-first-microcomputer-the-q1/
+
+
 People
 ------
 

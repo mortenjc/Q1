@@ -9,7 +9,7 @@ software from ROMs.
   :width: 800
   :align: center
 
-  Q1 Lite, generation 1?
+  Q1 Lite, generation 3?
 
 
 Help wanted, please get in touch ;-)
