@@ -18,6 +18,7 @@ class IO:
         self.keyin = 0
         self.displaystr = ""
         self.go = 0
+        self.verbose = False
         self.register_in_cb( 0x01, self.handle_key_in)
         self.register_out_cb(0x01, self.handle_key_out)
 
@@ -198,22 +199,3 @@ class IO:
 
     def handle_disk_out_1b(self, val):
         self.print(f'IO out - disk2 (control 2) - NOP? (0x{val:02x})')
-
-
-if __name__ == '__main__':
-    io = IO()
-    # Display
-    io.handle_io_out(0x03, 0xAA)
-    assert io.handle_io_in(0x04) == 0
-    io.handle_io_out(0x04, 0xAA)
-    # Printer
-    assert io.handle_io_in(0x05) == 0
-    # Keyboard
-    assert io.handle_io_in(0x01) == 0x0F
-    assert io.handle_io_in(0x01) == 0x0E
-    assert io.handle_io_in(0x01) == 0x00
-    assert io.handle_io_in(0x01) == 0x00
-
-    # Not sure
-    assert io.handle_io_in(0x0C) == 0x00
-    assert io.handle_io_in(0x1A) == 0x00

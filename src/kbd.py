@@ -1,4 +1,5 @@
-import sys, termios
+import sys
+import termios
 from select import select
 from enum import Enum
 
@@ -48,7 +49,7 @@ class Key:
         return ch
 
     def kbhit(self):
-        dr,dw,de = select([sys.stdin], [], [], 0)
+        dr,_,_ = select([sys.stdin], [], [], 0)
         return dr != []
 
 if __name__ == '__main__':

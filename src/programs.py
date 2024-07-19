@@ -3,7 +3,9 @@
 # New abstraction to make it possible to load different roms and/or
 # custom code snippets into memory with a user defined start address
 
-import progs.jdc, progs.peeldk, progs.misc
+import progs.jdc
+import progs.misc
+import progs.peeldk
 
 proglist = {
         "peeldk"   : progs.peeldk.peeldk,

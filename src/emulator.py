@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
-import z80, sys, argparse
-import memory, cpu, z80io, kbd
+import argparse
+import cpu
+import kbd
+import memory
+import sys
+import z80
+import z80io
 import programs as prg
 
 
