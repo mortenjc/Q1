@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Module providing a CPU abstraction"""
+
 import z80, sys
 import memory, z80io
 import argparse

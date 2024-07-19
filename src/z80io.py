@@ -1,3 +1,4 @@
+"""Module to provide IO hooks for the Q1 Lite"""
 
 import sys
 

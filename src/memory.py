@@ -1,6 +1,4 @@
-#
-# Memory abstraction used on top of Korarev's z80 emulator
-#
+"""Memory utilities used on top of Korarev's z80 emulator"""
 
 class Memory():
 

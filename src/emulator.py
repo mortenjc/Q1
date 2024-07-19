@@ -65,7 +65,11 @@ def main(args):
         # main cpu emulation step
         C.step() # does the actual emulation of the next instruction
 
-        if C.m.pc ==0x4cb:
+        if args.breakpoint and args.breakpoint == pc:
+            print('\n<<<< BREAKPOINT at 0x{pc:04x} >>>>\n')
+            C.exit()
+
+        if pc ==0x4cb:
             print(io.displaystr)
             io.displaystr = ""
             print("<STOP>")
@@ -96,12 +100,6 @@ def main(args):
                     int38(C, io, ch)
 
 
-
-
-
-
-
-
 if __name__ == "__main__":
 
     def auto_int(x):
@@ -109,9 +107,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-l", "--list", help = "showavailable programs", action='store_true')
+    parser.add_argument("-b", "--breakpoint", help = "stop on BP, hexdump and backtrace",
+        type = auto_int, default = 0)
+    parser.add_argument("-l", "--list", help = "showavailable programs",
+        action='store_true')
     parser.add_argument("-s", "--stopafter", help = "stop after N instructions",
-                        type = int, default = -1)
+        type = int, default = -1)
     parser.add_argument("-p", "--poi", help = "Point of interest (PC)",
                         type = auto_int, default = 0x0d8a)
     parser.add_argument("--dumpfreq", help = "Hexdump every N instruction",

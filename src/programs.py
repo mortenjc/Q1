@@ -1,3 +1,5 @@
+"""Module to specify a list of loadable programs"""
+
 # New abstraction to make it possible to load different roms and/or
 # custom code snippets into memory with a user defined start address
 

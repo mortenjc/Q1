@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Module providing Z80 disassembly functionality"""
+
 import z80, sys, argparse
 import memory, cpu
 import programs as prg
@@ -61,5 +63,5 @@ if __name__ == "__main__":
         except:
             print(f'please specify known_ranges for {args.program}')
             sys.exit()
-            
+
     main(known_ranges)
