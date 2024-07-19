@@ -2,32 +2,33 @@
 
 """Module providing Z80 disassembly functionality"""
 
-import z80, sys, argparse
-import memory, cpu
+import argparse
+import cpu
+import memory
+import sys
 import programs as prg
 
 
-def main(range):
+def main(ranges):
     prgobj = prg.proglist[args.program]
-    C = cpu.Cpu(prgobj)
-    C.reset()
+    c = cpu.Cpu(prgobj)
+    c.reset()
 
-    for start, end, text in range:
-        #print(f'Range 0x{start:04x} - 0x{end:04x}\n<<<<< {text} >>>>>')
+    for start, end, text in ranges:
         print(f'<<<<< {text} >>>>>')
-        C.m.pc = start
+        c.m.pc = start
         while True:
             # Decode the instruction.
-            inst_str, bytes, bytes_str = C.getinst()
+            inst_str, bytes, bytes_str = c.getinst()
 
             func_desc = ""
-            if C.m.pc in prgobj["pois"]:
-                func_desc = f'{prgobj["pois"][C.m.pc]}'
-            print(f'{C.m.pc:04x} {bytes_str:12} ; {inst_str:15} | {func_desc}')
+            if c.m.pc in prgobj["pois"]:
+                func_desc = f'{prgobj["pois"][c.m.pc]}'
+            print(f'{c.m.pc:04x} {bytes_str:12} ; {inst_str:15} | {func_desc}')
 
-            C.m.pc += len(bytes)
+            c.m.pc += len(bytes)
 
-            if C.m.pc > end:
+            if c.m.pc > end:
                 #print('-------------------------------------')
                 break
 

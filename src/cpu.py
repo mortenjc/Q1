@@ -2,9 +2,12 @@
 
 """Module providing a CPU abstraction"""
 
-import z80, sys
-import memory, z80io
 import argparse
+import memory
+import sys
+import z80
+import z80io
+
 
 class Cpu:
     MAX_INSTR_SIZE = 4
@@ -50,7 +53,8 @@ class Cpu:
 
     def getinst(self):
         try:
-            instr = self.b.build_instr(self.m.pc, bytes(self.m.memory[self.m.pc:self.m.pc + Cpu.MAX_INSTR_SIZE]))
+            instr = self.b.build_instr(self.m.pc,
+                bytes(self.m.memory[self.m.pc:self.m.pc + Cpu.MAX_INSTR_SIZE]))
             instr_str = f"{instr}"
             # Get and verbalise the instruction bytes.
             instr_bytes = bytes(self.m.memory[instr.addr:instr.addr + instr.size])
@@ -60,7 +64,11 @@ class Cpu:
             print('exception: build_instr() failed')
             pc = self.m.pc
             mem = self.mem
-            print(f'{pc:04x} {mem.getu8(pc):02x} {mem.getu8(pc+1):02x} {mem.getu8(pc+2):02x} {mem.getu8(pc+3):02x}')
+            b1 = mem.getu8(pc)
+            b2 = mem.getu8(pc+1)
+            b3 = mem.getu8(pc+2)
+            b4 = mem.getu8(pc+3)
+            print(f'{pc:04x} {b1:02x} {b2:02x} {b3:02x} {b4:02x}')
             print(f'{repr(e)}')
             self.exit()
 
