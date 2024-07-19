@@ -92,17 +92,21 @@ Provides disassembler functionality of **programs** with annotations.
 
   > python3 disassembly.py -a
   ...
-  <<<<< print A, E times (entry 0x450) >>>>>
-  044e 1d           ; dec e           |
-  044f c8           ; ret z           |
-  0450 d3 04        ; out (0x4), a    |
-  0452 1d           ; dec e           |
-  0453 c8           ; ret z           |
-  0454 d3 04        ; out (0x4), a    |
-  0456 18 f6        ; jr 0x44e        |
-  <<<<< display() - string=HL, len=C >>>>>
-  0458 f3           ; di              |
-  0459 cd 39 04     ; call 0x439      |
+  <<<<< report() >>>>>
+  0d8e c5           ; push bc         |
+  0d8f f5           ; push af         |
+  0d90 cd 6b 0d     ; call 0xd6b      | clrdk()
+  0d93 21 ec 0d     ; ld hl, 0xdec    | CLEAR
+  0d96 0e 01        ; ld c, 0x1       |
+  0d98 cd 27 00     ; call 0x27       |
+  0d9b f1           ; pop af          |
+  0d9c fe 04        ; cp 0x4          |
+  0d9e 28 33        ; jr z, 0xdd3     |
+  0da0 fe 09        ; cp 0x9          |
+  0da2 fa a7 0d     ; jp m, 0xda7     |
+  0da5 3e 09        ; ld a, 0x9       |
+  <<<<< print nth error message >>>>>
+  0da7 21 ed 0d     ; ld hl, 0xded    | Start of error messages
   ...
 
 emulator
@@ -127,3 +131,25 @@ of the program counter, registers, decoded instructions, etc.
   01f2 eb           ; ex de, hl       | SP=4080, A=04    BC=0000, DE=003f, HL=4080
   ; 01f3 copy (function calls) from 0x003f:0x0047 to 0x4080:
   01f3 01 09 00     ; ld bc, 0x9      | SP=4080, A=04    BC=0000, DE=4080, HL=003f
+
+For interactive sessions it is better to disable periodic hexdump and instruction decode.
+This is done using the -d and -n option.
+
+
+.. code-block:: console
+
+  > python3 emulator.py -n -d -s -1
+  loading program: Combined Q1 image from IC25-IC32
+  loaded 1024 bytes from roms/JDC/IC25.bin at address 0000h
+  loaded 1024 bytes from roms/JDC/IC26.bin at address 0400h
+  loaded 1024 bytes from roms/JDC/IC27.bin at address 0800h
+  loaded 1024 bytes from roms/JDC/IC28.bin at address 0c00h
+  loaded 1024 bytes from roms/JDC/IC29.bin at address 1000h
+  loaded 1024 bytes from roms/JDC/IC30.bin at address 1400h
+  loaded 1024 bytes from roms/JDC/IC31.bin at address 1800h
+  loaded 1024 bytes from roms/JDC/IC32.bin at address 1c00h
+
+  ... several blank lines ...
+
+   Q1-Lite
+   klar til brug

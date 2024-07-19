@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
     parser.add_argument("-l", "--list", help = "showavailable programs", action='store_true')
     parser.add_argument("-s", "--stopafter", help = "stop after N instructions",
-                        type = int, default = 6380)
+                        type = int, default = -1)
     parser.add_argument("-p", "--poi", help = "Point of interest (PC)",
                         type = auto_int, default = 0x0d8a)
     parser.add_argument("--dumpfreq", help = "Hexdump every N instruction",

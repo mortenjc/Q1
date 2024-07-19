@@ -1,5 +1,22 @@
 import sys, termios
 from select import select
+from enum import Enum
+
+# class kMBP(Enum):
+#     optb = 0x222b
+#     optc = 231
+#     optg = 169
+#     optm = 181
+#     backspace = 127
+#
+# q1key = {
+#     "GO"   : kMBP.optg,
+#     "CORR" : kMBP.backspace,
+#     "CLEAR ENTRY" : kMBP.optc,
+#     "INSERT MODE" : kMBP.optm
+# }
+
+
 
 class Key:
 
