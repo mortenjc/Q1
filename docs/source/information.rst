@@ -47,6 +47,8 @@ Manuals
    * - Q1 ROS Users Manual.pdf
      - Memory and function addresses, Keyboard codes, disk module, record format
 
+If no description the document is identical with documents from the above table.
+
 .. list-table:: Documentation from peel.dk/Q1
   :header-rows: 1
 
