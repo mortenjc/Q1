@@ -4,7 +4,9 @@
 
 import argparse
 import cpu
+import match
 import memory
+import ros as r
 import sys
 import programs as prg
 
@@ -12,19 +14,22 @@ import programs as prg
 def main(ranges):
     prgobj = prg.proglist[args.program]
     c = cpu.Cpu(prgobj)
+    ros = r.ROS(c.mem)
     c.reset()
 
     for start, end, text in ranges:
-        print(f'<<<<< {text} >>>>>')
+        print(f'\n;{text}')
         c.m.pc = start
         while True:
             # Decode the instruction.
             inst_str, bytes, bytes_str = c.getinst()
 
-            func_desc = ""
-            if c.m.pc in prgobj["pois"]:
-                func_desc = f'{prgobj["pois"][c.m.pc]}'
-            print(f'{c.m.pc:04x} {bytes_str:12} ; {inst_str:15} | {func_desc}')
+            annot = match.operandaddr(inst_str, ros.addrs)
+            if annot == "":
+                if c.m.pc in prgobj["pois"]:
+                    annot = f'{prgobj["pois"][c.m.pc]}'
+
+            print(f'{c.m.pc:04x} {bytes_str:12} ; {inst_str:20} | {annot}')
 
             c.m.pc += len(bytes)
 
@@ -36,6 +41,9 @@ def main(ranges):
 
 
 if __name__ == "__main__":
+
+
+    print()
 
     def auto_int(x):
         return int(x, 0)

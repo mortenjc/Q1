@@ -1,6 +1,7 @@
 """Module to provide IO hooks for the Q1 Lite"""
 
 import sys
+import disk
 
 #
 
@@ -11,12 +12,15 @@ def isprintable(c):
 
 class IO:
     def __init__(self, m):
+        self.disk = disk.Control()
         self.m = m
         self.incb = {}
         self.outcb = {}
         self.keyincount = 0
         self.keyin = 0
         self.displaystr = ""
+        self.diskdata = 0x00
+        self.diskstatus = 0x00
         self.go = 0
         self.verbose = False
         self.register_in_cb( 0x01, self.handle_key_in)
@@ -30,12 +34,13 @@ class IO:
         self.register_out_cb(0x07, self.handle_printer_out_7)
 
         # Maybe these are really disk IO ?
-        self.register_in_cb( 0x09, self.handle_ciu_in_09)
-        self.register_in_cb( 0x0a, self.handle_ciu_in_0a)
-        self.register_out_cb(0x0a, self.handle_ciu_out_0a)
-        self.register_out_cb(0x0b, self.handle_ciu_out_0b)
-        self.register_in_cb( 0x0c, self.handle_ciu_in_0c)
-        self.register_out_cb(0x0c, self.handle_ciu_out_0c)
+        self.register_in_cb( 0x09, self.handle_disk_in_09)
+        self.register_in_cb( 0x0a, self.handle_disk_in_0a)
+        self.register_out_cb(0x09, self.handle_disk_out_09)
+        self.register_out_cb(0x0a, self.handle_disk_out_0a)
+        self.register_out_cb(0x0b, self.handle_disk_out_0b)
+        # possibly not disk?
+        self.register_in_cb(0x0c, self.handle_disk_in_0c)
 
         self.register_in_cb( 0x19, self.handle_disk_in_19)
         self.register_in_cb( 0x1a, self.handle_disk_in_1a)
@@ -85,10 +90,10 @@ class IO:
 
     def handle_display_out(self, val) -> str:
         if isprintable(val):
-            self.print(f"IO out - display {val} '{chr(val)}'")
+            #self.print(f"IO out - display {val} '{chr(val)}'")
             self.displaystr += chr(val)
         else:
-            self.print(f"IO out - display (non printable){val}")
+            pass #self.print(f"IO out - display (non printable){val}")
 
 
     def handle_display_out_ctrl(self, val) -> str:
@@ -103,7 +108,7 @@ class IO:
             desc = 'advance right (or new line)'
         else:
             desc = f'0x{val:02}'
-        self.print(f"IO out - display control - {desc}")
+        #self.print(f"IO out - display control - {desc}")
 
 
     ### Keyboard
@@ -153,49 +158,69 @@ class IO:
         self.print(f'IO out - printer control - {desc}')
 
 
-    ### CIU or perhaps DISK?
-    def handle_ciu_out_0a(self, val):
-        self.print(f'IO out - CIU/DISK? (data) - (0x{val:02x})')
+    ### DISK
+    def handle_disk_out_0a(self, val):
+        if val != 0:
+            self.print(f'IO out - disk1 (control 1 ) - (0x{val:02x})')
+
+    def handle_disk_out_0b(self, val):
+        if val != 0:
+            self.print(f'IO out - disk1 (control 2 ) - (0x{val:02x})')
 
 
-    def handle_ciu_out_0b(self, val):
-        self.print(f'IO out - CIU/DISK? (control 1) - (0x{val:02x})')
+
+    def handle_disk_out_09(self, val):
+        self.print(f'IO out - disk1 (data) - (0x{val:02x})')
 
 
-    def handle_ciu_out_0c(self, val):
-        if val == 0x81:
-            desc = 'synchronous mode, master reset'
-        else:
-            desc = 'unspecified'
-        self.print(f'IO out - CIU/DISK? (control 2) - {desc} (0x{val:02x})')
+    # def handle_ciu_out_0b(self, val):
+    #     self.print(f'IO out - CIU/DISK? (control 1) - (0x{val:02x})')
 
 
-    def handle_ciu_in_0c(self):
-        self.print('IO in  - CIU/DISK? (0xc) (control 1): 0x00')
-        return 0
+    # def handle_ciu_out_0c(self, val):
+    #     if val == 0x81:
+    #         desc = 'synchronous mode, master reset'
+    #     else:
+    #         desc = 'unspecified'
+    #     self.print(f'IO out - CIU/DISK? (control 2) - {desc} (0x{val:02x})')
 
-    def handle_ciu_in_0a(self):
-        self.print('IO in  - CIU/DISK? (0xa) (control 2): 0x00')
-        return 0
 
-    def handle_ciu_in_09(self):
-        self.print('IO in  - CIU/DISK (0x9) (data): 0x00')
+    # def handle_disk_0c(self):
+    #     self.print('IO in  - CIU/DISK? (0xc) (control 1): 0x00')
+    #     return 0
+
+    def handle_disk_in_0a(self):
+        self.print(f'IO in  - disk1 (0xa) (status): {self.diskstatus}')
+        return self.diskstatus # for now
+
+    def handle_disk_in_09(self):
+        retval = self.diskdata
+        self.print(f'IO in  - disk1 (0x9) (data): {retval}')
+
+        self.diskdata = 0
+        return retval
+
+    # possibly not disk
+    def handle_disk_in_0c(self):
+        self.print(f'IO in  - disk1 ???????????? - (0x00)')
         return 0
 
 
     ### Disk control (from Q1 Assembler p. 52)
     def handle_disk_in_19(self):
-        self.print('IO in  - disk2 (data): 0x00')
-        return 0
+        self.print(f'IO in  - disk2 (data): {self.diskdata}')
+        return self.diskdata
 
     def handle_disk_in_1a(self):
-        self.print('IO in  - disk2 (status): 0x00')
-        return 0
+        self.print(f'IO in  - disk2 (status): {self.diskstatus}')
+        return self.diskstatus
 
 
     def handle_disk_out_1a(self, val):
-        self.print(f'IO out - disk2 (control 1) -  NOP? (0x{val:02x})')
+        if val != 0:
+            self.print(f'IO out - disk2 (control 1 ) - (0x{val:02x})')
 
 
     def handle_disk_out_1b(self, val):
-        self.print(f'IO out - disk2 (control 2) - NOP? (0x{val:02x})')
+        if val != 0:
+            self.print(f'IO out - disk2 (control 2 ) - (0x{val:02x})')

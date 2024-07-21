@@ -1,27 +1,5 @@
 
 
-ROM Images
-==========
-
-Three sets of ROM images are currently available
-
-.. list-table:: ROMs
-   :header-rows: 1
-
-   * - Name
-     - Roms
-     - Description
-   * - JDC
-     - IC25 - IC32
-     - From danish vendor JDC
-   * - IWS
-     - IC25 - IC29, IC31, IC32
-     - From a model with serial number 820
-   * - Hybrid
-     - IC25 - IC27, IC31, IC32
-     - Mix of ROMs from serial numbers 615 and 580
-
-
 IO Addresses
 ============
 

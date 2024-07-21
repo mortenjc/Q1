@@ -38,9 +38,9 @@ Help wanted, please get in touch ;-)
         running
 
     .. toctree::
-        :caption: Learnings
+        :caption: System
         :maxdepth: 3
         :hidden:
 
-        learnings
         q1io
+        disk

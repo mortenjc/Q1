@@ -1,44 +1,47 @@
 #!/usr/bin/env python3
 
 import argparse
-import cpu
+import cpu as c
 import kbd
+import match
 import memory
+import ros as r
 import sys
 import z80
 import z80io
 import programs as prg
 
 
-def int38(C, io, ch):
+def int38(cpu, io, ch):
     io.keyin = ch
-    oldpc = C.m.pc
-    C.m.sp -= 2
-    C.mem.writeu16(C.m.sp, oldpc)
-    C.m.pc = 0x38
+    oldpc = cpu.m.pc
+    cpu.m.sp -= 2
+    cpu.mem.writeu16(cpu.m.sp, oldpc)
+    cpu.m.pc = 0x38
 
 
 def main(args):
     prgobj = prg.proglist[args.program]
     funcs = prgobj["funcs"]
-    C = cpu.Cpu(prgobj)
-    io = z80io.IO(C.m)
-    io.verbose = False
+    cpu = c.Cpu(prgobj)
+    io = z80io.IO(cpu.m)
+    ros = r.ROS(cpu.mem)
+    #io.verbose = True
     key = kbd.Key()
-    C.reset()
-    C.m.set_input_callback(io.handle_io_in)
-    C.m.set_output_callback(io.handle_io_out)
+    cpu.reset()
+    cpu.m.set_input_callback(io.handle_io_in)
+    cpu.m.set_output_callback(io.handle_io_out)
 
     icount = 0
     if not args.nodump:
-        C.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
+        cpu.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
 
     while True:
-        pc = C.m.pc
+        pc = cpu.m.pc
         icount += 1
         if icount >= args.stopafter:
             print(f'max instruction count reached, exiting ...')
-            for l in C.bt:
+            for l in cpu.bt:
                 print(l)
             print(f'printed characters ({len(io.displaystr)}):')
             print(f'{io.displaystr}')
@@ -51,32 +54,48 @@ def main(args):
             print('\n<<<<< pc of interest >>>>>\n')
 
         # Decode the instruction.
-        inst_str, bytes, bytes_str = C.getinst()
-        inst_str = C.decodestr(inst_str, bytes_str)
+        inst_str, bytes, bytes_str = cpu.getinst()
+        inst_str2 = cpu.decodestr(inst_str, bytes_str)
+        annot = match.operandaddr(inst_str, ros.addrs)
+        if annot == "":
+            if cpu.m.pc in prgobj["pois"]:
+                annot = f'{prgobj["pois"][cpu.m.pc]}'
         if not args.nodecode:
-            print(inst_str)
+            print(inst_str2, annot)
 
         # IO hook for output
         # if bytes[0] == 0xD3:
-        #     io.handle_io_out(bytes[1], C.m.a)
+        #     io.handle_io_out(bytes[1], cpu.m.a)
 
         if icount % args.dumpfreq == 0 and not args.nodump:
-            C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
+            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
 
         # if pc == 0x0818: # Break Point/Trigger point
-        #     C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+        #     cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
         #     args.nodecode = False
 
         # main cpu emulation step
-        C.step() # does the actual emulation of the next instruction
+        cpu.step() # does the actual emulation of the next instruction
 
-        if args.breakpoint and args.breakpoint == pc:
-            print('\n<<<< BREAKPOINT at 0x{pc:04x} >>>>\n')
-            C.exit()
+        if args.breakpoint == pc:
+            print(f'\n<<<< BREAKPOINT at 0x{pc:04x} >>>>\n')
+            ros.index()
+            ros.file()
+            ros.disk()
+            cpu.exit()
+
+        if args.trigger == pc:
+            print(f'\n<<<< TRIGGER at 0x{pc:04x} >>>>\n')
+            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+            args.nodecode = False
+            io.verbose = True
 
         if pc ==0x4cb:
             print(io.displaystr)
             io.displaystr = ""
+            ros.index()
+            ros.file()
+            ros.disk()
             print("<STOP>")
 
         if (icount % 1000) == 0: # int_disabled check?
@@ -88,21 +107,21 @@ def main(args):
                     print(f'{ch}')
 
                 if ch == 0x222b:       # opt-b -> hexdump
-                    C.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+                    cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
                 elif ch == 960:        # opt-p -> regdump
-                    print(C.getregs())
+                    print(cpu.getregs())
                 elif ch == 0x0a:       # LF -> CR
-                    int38(C, io, 0x0d)
+                    int38(cpu, io, 0x0d)
                 elif ch == 169:        # opt-g GO
                     io.go = 1
                 elif ch == 127:
-                    int38(C, io, 0x04) # BS -> CORR
+                    int38(cpu, io, 0x04) # BS -> CORR
                 elif ch == 231:
-                    int38(C, io, 0x1b) # opt-c -> CLEAR ENTRY
+                    int38(cpu, io, 0x1b) # opt-c -> CLEAR ENTRY
                 elif ch == 181:        # opt-m -> INSERT MODE
-                    int38(C, io, 0x1e)
+                    int38(cpu, io, 0x1e)
                 else:
-                    int38(C, io, ch)
+                    int38(cpu, io, ch)
 
 
 if __name__ == "__main__":
@@ -113,7 +132,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-b", "--breakpoint", help = "stop on BP, hexdump and backtrace",
-        type = auto_int, default = 0)
+        type = auto_int, default = 0x1FFFF)
+    parser.add_argument("-t", "--trigger", help = "start decode at trigger address",
+        type = auto_int, default = 0x1FFFF)
     parser.add_argument("-l", "--list", help = "showavailable programs",
         action='store_true')
     parser.add_argument("-s", "--stopafter", help = "stop after N instructions",

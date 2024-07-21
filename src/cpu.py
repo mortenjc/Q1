@@ -4,6 +4,7 @@
 
 import argparse
 import memory
+import ros as r
 import sys
 import z80
 import z80io
@@ -13,6 +14,7 @@ class Cpu:
     MAX_INSTR_SIZE = 4
 
     def __init__(self, program):
+
         self.bt = [] # backtrace
         self.program = program
         self.e = z80
@@ -21,6 +23,7 @@ class Cpu:
         self.in_cbs = {}
         self.out_cbs = {}
         self.mem = memory.Memory(self.m)
+        self.ros = r.ROS(self.mem)
         self.fill = 0xfd
         self.halt = 0xfdfdfdfd
 
@@ -44,6 +47,11 @@ class Cpu:
 
 
     def exit(self):
+        print('#####################################################')
+        print('#####################################################')
+        self.ros.index()
+        self.ros.file()
+        self.ros.disk()
         self.mem.hexdump(0x2000, 0x10000 - 0x2000, -1)
         for l in self.bt:
             print(l)
@@ -84,7 +92,7 @@ class Cpu:
         else:
             a_str = '   '
         m = self.m
-        l = f'{m.pc:04x} {bytes:12} ; {inst:15} | SP={m.sp:04x}, A={m.a:02x}{a_str} BC={m.bc:04x}, DE={m.de:04x}, HL={m.hl:04x}'
+        l = f'{m.pc:04x} {bytes:12} ; {inst:25} | SP={m.sp:04x}, A={m.a:02x}{a_str} BC={m.bc:04x}, DE={m.de:04x}, HL={m.hl:04x}'
         self.bt.append(l)
         if len(self.bt) == 10:
             self.bt = self.bt[1:]
