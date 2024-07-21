@@ -77,11 +77,25 @@ setting the initial value of the program counter.
   }
 
 
+ros
+^^^
+The **ros** module provides mappings from addresses to variable names
+as given in the ROS User's Manual on pages 2 - 4. It also holds
+functions to print the individual fields of the INDEX nd LFILE
+file descriptors.
+
+
+disk
+^^^^
+The **disk** module is in its infancy. But the aim is to emulate a
+spinning disk with loadable files on it.
+
 
 Applications
 ============
 
 The previous modules can be combined to achieve different functions
+
 
 disassembly
 ^^^^^^^^^^^

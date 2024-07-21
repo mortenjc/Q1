@@ -2,7 +2,7 @@
 
 
 
-INDEX FILE
+Index File
 ==========
 Figure from ROS manual p. 17 gave a hint, but INDEX file does not
 use the File Name field. The INDEX file descriptor resides in

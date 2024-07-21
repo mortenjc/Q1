@@ -29,13 +29,6 @@ Help wanted, please get in touch ;-)
 
         information
 
-    .. toctree::
-        :caption: Emulator
-        :maxdepth: 3
-        :hidden:
-
-        hooks
-        running
 
     .. toctree::
         :caption: System
@@ -44,3 +37,12 @@ Help wanted, please get in touch ;-)
 
         q1io
         disk
+
+
+    .. toctree::
+        :caption: Emulator
+        :maxdepth: 3
+        :hidden:
+
+        hooks
+        running
