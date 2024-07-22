@@ -84,7 +84,7 @@ The two documents have some differences. For example the known IO addresses are
      - Disk ctrl 3
 
 
-Neither seem fully compatible with the JDC roms (todo add reference) as
+Neither seem fully compatible with the JDC roms :ref:`ROMS` as
 **out** commands to both addresses 0xa and 0x1a are in use (see below).
 Also I've seen **in()** commands to address 0xc which isn't documented in
 either.
