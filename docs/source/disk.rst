@@ -1,6 +1,35 @@
 
 
+File System
+===========
+(Mostly unconfirmed)
+By tracing CPU instructions and doing annotated disassembly I have
+made the following colclusions and assumptions.
 
+The disk consists of 77 tracks (0 - 76), each track having 2468 bytes. I've
+decided that the 'index' position is located at the first byte of each
+track. I assume that when selecting a disk Track 0 is the first track.
+
+The disk controller issues a 'step' and a 'step direction' command.
+In the documentation (Q1 ASM IO addresess p. 80), Bit 5 is the step command
+and Bit 6 the 'direction' where  '1' is UP and 0 (assumed) DOWN. However
+I have had to reverse this logic. Perhaps I should have started at Track 76?
+
+I assume that the byte offset within a track is increasing on every read and
+also that it wraps around to 0 when reading past the last byte.
+
+In order to initialise the file system I fill out 55 records on each track
+with information compatible with figure2 on page 17 (same document):
+
+Each record looks like this
+
+|0x9e|Trk|Sect|Csum|0xa|x00 x00 x00 x00 x00 x00|0x9b|Trk|Sect|Csum|0xa|1234|x00 x00 x00 x00 x00 x00|
+
+So far I have seen no definition of what a sector is. So I am assuming the above
+record is two sectors, one starting with 0x9e (ID Record) and one starting with 0x9b
+'(Data Record)'.
+
+This clearly need more work, but it is a start.
 
 Index File
 ==========

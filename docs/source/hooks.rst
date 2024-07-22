@@ -87,8 +87,11 @@ file descriptors.
 
 disk
 ^^^^
-The **disk** module is in its infancy. But the aim is to emulate a
-spinning disk with loadable files on it.
+The **disk** module provides a **Disk** class and a **Disk Control** class.
+The **control** class is used by the **z80io** module to perform disk functions
+during the registered io callback functions. The
+**disk** module holds the file system data, can move between tracks,
+read (but not yet write) data and respond to status commands.
 
 
 Applications

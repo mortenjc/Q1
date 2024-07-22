@@ -63,16 +63,9 @@ def main(args):
         if not args.nodecode:
             print(inst_str2, annot)
 
-        # IO hook for output
-        # if bytes[0] == 0xD3:
-        #     io.handle_io_out(bytes[1], cpu.m.a)
 
         if icount % args.dumpfreq == 0 and not args.nodump:
             cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
-
-        # if pc == 0x0818: # Break Point/Trigger point
-        #     cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
-        #     args.nodecode = False
 
         # main cpu emulation step
         cpu.step() # does the actual emulation of the next instruction
@@ -120,6 +113,10 @@ def main(args):
                     int38(cpu, io, 0x1b) # opt-c -> CLEAR ENTRY
                 elif ch == 181:        # opt-m -> INSERT MODE
                     int38(cpu, io, 0x1e)
+                elif ch == 170: # opt-a FDs
+                    ros.index()
+                    ros.file()
+                    ros.disk()
                 else:
                     int38(cpu, io, ch)
 
@@ -140,7 +137,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--stopafter", help = "stop after N instructions",
         type = int, default = -1)
     parser.add_argument("-p", "--poi", help = "Point of interest (PC)",
-                        type = auto_int, default = 0x0d8a)
+                        type = auto_int, default = 0x1ffff)
     parser.add_argument("--dumpfreq", help = "Hexdump every N instruction",
                         type = int, default = 256)
     parser.add_argument("-n", "--nodump", help = "Toggle hexdump", action='store_true')

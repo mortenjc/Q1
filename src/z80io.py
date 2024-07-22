@@ -12,7 +12,8 @@ def isprintable(c):
 
 class IO:
     def __init__(self, m):
-        self.disk = disk.Control()
+        self.disk1 = disk.Control(1)
+        self.disk2 = disk.Control(2)
         self.m = m
         self.incb = {}
         self.outcb = {}
@@ -162,10 +163,15 @@ class IO:
     def handle_disk_out_0a(self, val):
         if val != 0:
             self.print(f'IO out - disk1 (control 1 ) - (0x{val:02x})')
+        self.disk1.control1(val)
 
     def handle_disk_out_0b(self, val):
         if val != 0:
             self.print(f'IO out - disk1 (control 2 ) - (0x{val:02x})')
+        self.disk1.control2(val)
+        # if val & 0x20:
+        #     print(f'XXX track step at {self.m.pc:04x}')
+
 
 
 
@@ -173,31 +179,14 @@ class IO:
         self.print(f'IO out - disk1 (data) - (0x{val:02x})')
 
 
-    # def handle_ciu_out_0b(self, val):
-    #     self.print(f'IO out - CIU/DISK? (control 1) - (0x{val:02x})')
-
-
-    # def handle_ciu_out_0c(self, val):
-    #     if val == 0x81:
-    #         desc = 'synchronous mode, master reset'
-    #     else:
-    #         desc = 'unspecified'
-    #     self.print(f'IO out - CIU/DISK? (control 2) - {desc} (0x{val:02x})')
-
-
-    # def handle_disk_0c(self):
-    #     self.print('IO in  - CIU/DISK? (0xc) (control 1): 0x00')
-    #     return 0
-
     def handle_disk_in_0a(self):
-        self.print(f'IO in  - disk1 (0xa) (status): {self.diskstatus}')
-        return self.diskstatus # for now
+        retval = self.disk1.status()
+        self.print(f'IO in  - disk1 (0xa) (status): 0x{retval:02x}')
+        return retval
 
     def handle_disk_in_09(self):
-        retval = self.diskdata
-        self.print(f'IO in  - disk1 (0x9) (data): {retval}')
-
-        self.diskdata = 0
+        retval = self.disk1.data_in()
+        self.print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}')
         return retval
 
     # possibly not disk
@@ -208,19 +197,23 @@ class IO:
 
     ### Disk control (from Q1 Assembler p. 52)
     def handle_disk_in_19(self):
-        self.print(f'IO in  - disk2 (data): {self.diskdata}')
-        return self.diskdata
+        retval =self.disk2.data_in()
+        self.print(f'IO in  - disk2 (data): {retval}')
+        return retval
 
     def handle_disk_in_1a(self):
-        self.print(f'IO in  - disk2 (status): {self.diskstatus}')
-        return self.diskstatus
+        retval = self.disk2.status()
+        self.print(f'IO in  - disk2 (status): {retval}')
+        return retval
 
 
     def handle_disk_out_1a(self, val):
         if val != 0:
             self.print(f'IO out - disk2 (control 1 ) - (0x{val:02x})')
+        self.disk2.control1(val)
 
 
     def handle_disk_out_1b(self, val):
         if val != 0:
             self.print(f'IO out - disk2 (control 2 ) - (0x{val:02x})')
+        self.disk2.control2(val)
