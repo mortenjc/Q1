@@ -4,20 +4,18 @@ IO Addresses
 ============
 
 The two main sources of information for IO are the two versions of the
-"The Q1 Assembler" document.
+"The Q1 Assembler" document I am aware of.
 
 Karl's version (KIO) (only pages 64 to 80), dated 8/78.
 
-https://www.peel.dk/Q1/pdf/Q1%20ASM%20IO%20addresses%20usage%20Q1%20Lite.pdf
+[Karls ASM](https://www.peel.dk/Q1/pdf/Q1%20ASM%20IO%20addresses%20usage%20Q1%20Lite.pdf)
 
-From TheByteAttic(TBA) (whole document, marked preliminary), no date.
-
+From TheByteAttic (TBA): Whole document, marked preliminary, not dated.
 Pages 47 to 62 describes the IO addresses
-https://github.com/TheByteAttic/Q1/blob/main/Original%20Documentation/Q1%20Assembler.pdf
+
+[TheByteAttic](https://github.com/TheByteAttic/Q1/blob/main/Original%20Documentation/Q1%20Assembler.pdf)
 
 
-Differences
------------
 
 The two documents have some differences. For example the known IO addresses are
 
@@ -87,7 +85,9 @@ The two documents have some differences. For example the known IO addresses are
 
 
 Neither seem fully compatible with the JDC roms (todo add reference) as
-**out** commands are seen to both 0xa and 0x1a are in use:
+**out** commands to both addresses 0xa and 0x1a are in use (see below).
+Also I've seen **in()** commands to address 0xc which isn't documented in
+either.
 
 .. code-block:: console
 

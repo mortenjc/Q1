@@ -159,7 +159,8 @@ class IO:
         self.print(f'IO out - printer control - {desc}')
 
 
-    ### DISK
+    ### Disk 1? Data and Control
+    ### From "Q1 ASM IO addresses usage Q1 Lite" p. 77 - 80
     def handle_disk_out_0a(self, val):
         if val != 0:
             self.print(f'IO out - disk1 (control 1 ) - (0x{val:02x})')
@@ -169,10 +170,6 @@ class IO:
         if val != 0:
             self.print(f'IO out - disk1 (control 2 ) - (0x{val:02x})')
         self.disk1.control2(val)
-        # if val & 0x20:
-        #     print(f'XXX track step at {self.m.pc:04x}')
-
-
 
 
     def handle_disk_out_09(self, val):
@@ -189,13 +186,14 @@ class IO:
         self.print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}')
         return retval
 
-    # possibly not disk
+    # possibly not disk, could be rs232
     def handle_disk_in_0c(self):
         self.print(f'IO in  - disk1 ???????????? - (0x00)')
         return 0
 
 
-    ### Disk control (from Q1 Assembler p. 52)
+    ### Disk 2 Data and Control
+    ### From "Q1 Assembler" p. 52 - 54
     def handle_disk_in_19(self):
         retval =self.disk2.data_in()
         self.print(f'IO in  - disk2 (data): {retval}')

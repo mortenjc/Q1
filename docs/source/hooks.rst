@@ -80,8 +80,8 @@ setting the initial value of the program counter.
 ros
 ^^^
 The **ros** module provides mappings from addresses to variable names
-as given in the ROS User's Manual on pages 2 - 4. It also holds
-functions to print the individual fields of the INDEX nd LFILE
+as given in the "ROS User's Manual", pages 2 - 4. It also holds
+functions to print the individual fields of the INDEX and LFILE
 file descriptors.
 
 
@@ -89,9 +89,11 @@ disk
 ^^^^
 The **disk** module provides a **Disk** class and a **Disk Control** class.
 The **control** class is used by the **z80io** module to perform disk functions
-during the registered io callback functions. The
-**disk** module holds the file system data, can move between tracks,
-read (but not yet write) data and respond to status commands.
+due to the registered io callback functions.
+
+The **disk** module holds the file system data, can move between tracks,
+read (but not yet write) data and respond to status commands. It currently
+comes with an attempt of an intitialised filesystem.
 
 
 Applications

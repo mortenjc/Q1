@@ -10,7 +10,7 @@ Three sets of ROM images are currently available
 
    * - Name
      - Roms
-     - Description
+     - IC Description
    * - JDC
      - IC25 - IC32
      - From danish vendor JDC
@@ -21,6 +21,8 @@ Three sets of ROM images are currently available
      - IC25 - IC27, IC31, IC32
      - Mix of ROMs from serial numbers 615 and 580
 
+Since I have mainly worked with the JDC ROMs, these are the only ones
+that have annotation data in their **program** structures.
 
 Memory
 ======
