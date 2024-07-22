@@ -8,12 +8,12 @@ The two main sources of information for IO are the two versions of the
 
 Karl's version (KIO) (only pages 64 to 80), dated 8/78.
 
-[Karls ASM](https://www.peel.dk/Q1/pdf/Q1%20ASM%20IO%20addresses%20usage%20Q1%20Lite.pdf)
+.. Karls ASM: https://www.peel.dk/Q1/pdf/Q1%20ASM%20IO%20addresses%20usage%20Q1%20Lite.pdf
 
 From TheByteAttic (TBA): Whole document, marked preliminary, not dated.
 Pages 47 to 62 describes the IO addresses
 
-[TheByteAttic](https://github.com/TheByteAttic/Q1/blob/main/Original%20Documentation/Q1%20Assembler.pdf)
+.. TheByteAttic: https://github.com/TheByteAttic/Q1/blob/main/Original%20Documentation/Q1%20Assembler.pdf
 
 
 
