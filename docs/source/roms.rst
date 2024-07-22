@@ -1,5 +1,5 @@
 
-.. ROMS:
+.. _ROMS:
 
 ROM Images
 ==========
