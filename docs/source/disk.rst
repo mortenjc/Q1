@@ -18,18 +18,7 @@ I have had to reverse this logic. Perhaps I should have started at Track 76?
 I assume that the byte offset within a track is increasing on every read and
 also that it wraps around to 0 when reading past the last byte.
 
-In order to initialise the file system I fill out 55 records on each track
-with information compatible with figure2 on page 17 (same document):
 
-Each record looks like this
-
-|0x9e|Trk|Sect|Csum|0xa|x00 x00 x00 x00 x00 x00|0x9b|Trk|Sect|Csum|0xa|1234|x00 x00 x00 x00 x00 x00|
-
-So far I have seen no definition of what a sector is. So I am assuming the above
-record is two sectors, one starting with 0x9e (ID Record) and one starting with 0x9b
-'(Data Record)'.
-
-This clearly need more work, but it is a start.
 
 Index File
 ==========

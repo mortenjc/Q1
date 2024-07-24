@@ -49,3 +49,14 @@ emucrash = {
     "funcs" : [],
     "pois" : [],
 }
+
+
+test1 = {
+    "descr": "Clarification",
+    "start": 0x0000,
+    "data": [
+        ["snippet", [0x04, 0x04, 0xC5, 0xdd, 0xE1, 0x00, 0x00], 0x0000],
+    ],
+    "funcs" : [],
+    "pois" : [],
+}

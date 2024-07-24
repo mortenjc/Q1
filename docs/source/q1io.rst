@@ -110,7 +110,7 @@ However KIO has the following:
 **Bit 6** = 0 for 12 line = 1 for 6 line
 **Bit 5** = 1 for LITE; = 0 for LMC
 
-Neither seem to be complete as the code for the JDC roms (todo add references)
+Neither seem to be complete, as the code for the JDC roms
 at 0x2A0 seems to be testing **Bit 3** to select a 80 character width and
 **Bit 4** to select 40 bytes:
 

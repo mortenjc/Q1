@@ -23,11 +23,12 @@ def int38(cpu, io, ch):
 def main(args):
     prgobj = prg.proglist[args.program]
     funcs = prgobj["funcs"]
+
     cpu = c.Cpu(prgobj)
     io = z80io.IO(cpu.m)
     ros = r.ROS(cpu.mem)
-    #io.verbose = True
     key = kbd.Key()
+    #io.verbose = True
     cpu.reset()
     cpu.m.set_input_callback(io.handle_io_in)
     cpu.m.set_output_callback(io.handle_io_out)
@@ -70,6 +71,15 @@ def main(args):
         # main cpu emulation step
         cpu.step() # does the actual emulation of the next instruction
 
+        if pc == 0xd41:
+            print('DISK READ')
+        if pc == 0x85e:
+            print('DISK KEY')
+        if pc == 0x818:
+            print('DISK (error) REPORT')
+        if pc == 0xd21:
+            print('DISK OPEN')
+
         if args.breakpoint == pc:
             print(f'\n<<<< BREAKPOINT at 0x{pc:04x} >>>>\n')
             ros.index()
@@ -101,6 +111,8 @@ def main(args):
 
                 if ch == 0x222b:       # opt-b -> hexdump
                     cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+                elif ch == 8224: # opt-t
+                    args.nodecode = not args.nodecode
                 elif ch == 960:        # opt-p -> regdump
                     print(cpu.getregs())
                 elif ch == 0x0a:       # LF -> CR

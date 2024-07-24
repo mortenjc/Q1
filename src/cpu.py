@@ -83,7 +83,7 @@ class Cpu:
 
     def getregs(self):
         m = self.m
-        return f'PC={m.pc:04x}, SP={m.sp:04x}, A={m.a:02x}, BC={m.bc:04x}, DE={m.de:04x}, HL={m.hl:04x}'
+        return f'pc={m.pc:04x}, sp={m.sp:04x}, a={m.a:02x}, bc={m.bc:04x}, de={m.de:04x}, hl={m.hl:04x}, ix={m.ix:04x}'
 
 
     def decodestr(self, inst: str, bytes: []) -> str:
@@ -92,7 +92,9 @@ class Cpu:
         else:
             a_str = '   '
         m = self.m
-        l = f'{m.pc:04x} {bytes:12} ; {inst:25} | SP={m.sp:04x}, A={m.a:02x}{a_str} BC={m.bc:04x}, DE={m.de:04x}, HL={m.hl:04x}'
+        l = f'{m.pc:04x} {bytes:12} ; {inst:25} | sp={m.sp:04x}, ' + \
+            f'a={m.a:02x}{a_str} bc={m.bc:04x}, de={m.de:04x}, hl={m.hl:04x}, ' + \
+            f'ix={m.ix:04x}, iy={m.iy:04x}'
         self.bt.append(l)
         if len(self.bt) == 10:
             self.bt = self.bt[1:]

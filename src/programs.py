@@ -14,5 +14,6 @@ proglist = {
         "dummy"    : progs.misc.dummy,
         "loop"     : progs.misc.loop,
         "todec"    : progs.misc.todec,
-        "emucrash" : progs.misc.emucrash
+        "emucrash" : progs.misc.emucrash,
+        "test1"    : progs.misc.test1
     }

@@ -67,8 +67,10 @@ class IO:
         if inaddr in self.incb:
             return self.incb[inaddr]()
         else:
-            self.print(f'IO - unregistered input address 0x{inaddr:02x}, exiting')
-            sys.exit()
+            #print(f'IO - unregistered input address 0x{inaddr:02x} at pc {self.m.pc:04x}, exiting')
+            #print()
+            return 0
+            #sys.exit()
 
     def handle_io_out(self, outaddr, outval):
         outaddr = outaddr & 0xff
@@ -178,12 +180,16 @@ class IO:
 
     def handle_disk_in_0a(self):
         retval = self.disk1.status()
-        self.print(f'IO in  - disk1 (0xa) (status): 0x{retval:02x}')
+        t = self.disk1.disk.CurrentTrack
+        b = self.disk1.disk.CurrentByte
+        self.print(f'IO in  - disk1 (0xa) (status): 0x{retval:02x}, t{t}, b{b}')
         return retval
 
     def handle_disk_in_09(self):
+        t = self.disk1.disk.CurrentTrack
+        b = self.disk1.disk.CurrentByte
         retval = self.disk1.data_in()
-        self.print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}')
+        #print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}, t{t}, b{b}')
         return retval
 
     # possibly not disk, could be rs232
