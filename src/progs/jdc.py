@@ -321,16 +321,17 @@ pl1test = {
             ["file", "roms/JDC/IC32.bin", 0x1C00],
 
             # PL/1 Interpretive Program Counter
-            ["snippet", [0x00, 0x80], 0x40fe], # set IPC = x8000
+            ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
 
             # Setup two numbers to be added, run PL/1 program
-            ["snippet", [0x21, 0x80, 0x40 ], 0x6000], # hl = 4080
-            ["snippet", [0xf9 ],             0x6003], # SP = 4080
-            ["snippet", [0x21, 0x10, 0x00 ], 0x6004], # hl = 0010
-            ["snippet", [0xe5 ],             0x6007], # push hl
-            ["snippet", [0x21, 0x20, 0x00 ], 0x6008], # hl = 0020
-            ["snippet", [0xe5 ],             0x600b], # push hl
-            ["snippet", [0xc3, 0x7c, 0x18],  0x600c], # run PL/1 program
+            ["snippet", [0x00],              0x6000], # nop (for trace)
+            ["snippet", [0x21, 0x80, 0x40],  0x6001], # hl = 4080
+            ["snippet", [0xf9],              0x6004], # SP = 4080
+            ["snippet", [0x21, 0x10, 0x00],  0x6005], # hl = 0010
+            ["snippet", [0xe5],              0x6008], # push hl
+            ["snippet", [0x21, 0x20, 0x00],  0x6009], # hl = 0020
+            ["snippet", [0xe5],              0x600c], # push hl
+            ["snippet", [0xc3, 0x7c, 0x18],  0x600d], # run PL/1 program
 
             # PL/1 program
             ["snippet", [0x0a],              0x8000], # add two numbers

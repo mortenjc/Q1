@@ -98,17 +98,37 @@ is what PL/1 programs are compiled into.
 
 Created a simple program to add two numbers on the stack. It consists of two
 opcodes '0xa' for add and '0x1f' for return (Q1 Advanced PL/1 programmer's
-Manual p. 3 and 4). See program **pl1test** in **jdc.py**.
+Manual p. 3 and 4):
 
+.. code-block:: console
+  # PL/1 Interpretive Program Counter
+  ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
+
+  # Setup two numbers to be added, run PL/1 program
+  ["snippet", [0x00],              0x6000], # nop (for trace)
+  ["snippet", [0x21, 0x80, 0x40],  0x6001], # hl = 4080
+  ["snippet", [0xf9],              0x6004], # SP = 4080
+  ["snippet", [0x21, 0x10, 0x00],  0x6005], # hl = 0010
+  ["snippet", [0xe5],              0x6008], # push hl
+  ["snippet", [0x21, 0x20, 0x00],  0x6009], # hl = 0020
+  ["snippet", [0xe5],              0x600c], # push hl
+  ["snippet", [0xc3, 0x7c, 0x18],  0x600d], # run PL/1 program
+
+  # PL/1 program
+  ["snippet", [0x0a],              0x8000], # add two numbers
+  ["snippet", [0x1f],              0x8001]  # return
+
+The funtionality was verified by trace from the emulation:
 
 .. code-block:: console
 
-  6003 f9           ; ld sp, hl                 | sp=0000, a=00    bc=0000, de=0000, hl=4080, ix=0000, iy=0000
-  6004 21 10 00     ; ld hl, 0x10               | sp=4080, a=00    bc=0000, de=0000, hl=4080, ix=0000, iy=0000
-  6007 e5           ; push hl                   | sp=4080, a=00    bc=0000, de=0000, hl=0010, ix=0000, iy=0000
-  6008 21 20 00     ; ld hl, 0x20               | sp=407e, a=00    bc=0000, de=0000, hl=0010, ix=0000, iy=0000
-  600b e5           ; push hl                   | sp=407e, a=00    bc=0000, de=0000, hl=0020, ix=0000, iy=0000
-  600c c3 7c 18     ; jp 0x187c                 | sp=407c, a=00    bc=0000, de=0000, hl=0020, ix=0000, iy=0000
+  6001 21 80 40     ; ld hl, 0x4080             | sp=0000, a=00    bc=0000, de=0000, hl=0000, ix=0000, iy=0000
+  6004 f9           ; ld sp, hl                 | sp=0000, a=00    bc=0000, de=0000, hl=4080, ix=0000, iy=0000
+  6005 21 10 00     ; ld hl, 0x10               | sp=4080, a=00    bc=0000, de=0000, hl=4080, ix=0000, iy=0000
+  6008 e5           ; push hl                   | sp=4080, a=00    bc=0000, de=0000, hl=0010, ix=0000, iy=0000
+  6009 21 20 00     ; ld hl, 0x20               | sp=407e, a=00    bc=0000, de=0000, hl=0010, ix=0000, iy=0000
+  600c e5           ; push hl                   | sp=407e, a=00    bc=0000, de=0000, hl=0020, ix=0000, iy=0000
+  600d c3 7c 18     ; jp 0x187c                 | sp=407c, a=00    bc=0000, de=0000, hl=0020, ix=0000, iy=0000
   187c 2a fe 40     ; ld hl, (0x40fe)           | sp=407c, a=00    bc=0000, de=0000, hl=0020, ix=0000, iy=0000
   187f 7e           ; ld a, (hl)                | sp=407c, a=00    bc=0000, de=0000, hl=8000, ix=0000, iy=0000
   1880 23           ; inc hl                    | sp=407c, a=0a    bc=0000, de=0000, hl=8000, ix=0000, iy=0000
@@ -145,3 +165,12 @@ Manual p. 3 and 4). See program **pl1test** in **jdc.py**.
   1893 6f           ; ld l, a                   | sp=407e, a=38'8' bc=0000, de=0010, hl=194b, ix=0000, iy=0000
   1894 e9           ; jp (hl)                   | sp=407e, a=38'8' bc=0000, de=0010, hl=1938, ix=0000, iy=0000
   1938 c9           ; ret                       | sp=407e, a=38'8' bc=0000, de=0010, hl=1938, ix=0000, iy=0000
+
+
+First we put two numbers 0x0010 and 0x0020 on the stack, then call the pseudocode
+interpreter (pc 0x6001 - 0x600f). The 'add' pseudocode instruction is picked up at 0x187f, causing
+the add istructions at 0x18a5 - 0x 18a7, placing the correct result (0x0030) on the stack
+at 0x18a8.
+
+Then at 0x1875 the 'return from subroutine'  pseudocode instruction is retrieved,
+causing the return instruction at 0x1938.
