@@ -104,7 +104,9 @@ jdc = {
         0x086c: 'get disk# from index file',
         0x0870: 'THERE (address of file transfer)',
         0x0d21: 'call OPEN',
-        0x0d41: 'call LOAD',
+        0x0d2f: 'hl = Record #',
+        0x0d3f: 'Read 1 record',
+        0x0d41: 'call READ',
         0x0d90: 'clrdk()',
         0x0d93: 'CLEAR',
         0x0da7: 'Start of error messages',
@@ -116,10 +118,16 @@ jdc = {
         0x0dc8: 'STOP',
         0x0ddd: 'A=4 - fourth err msg: "NOT FOUND"',
         0x0fcb: 'jump to 0xfda if no ROM in addr 0x1000',
+        0x0fce: 'a = Disk #',
+        0x0fd4: 'max disk # reached ?',
+        0x0fd9: 'no, return ok?',
         0x0fea: '# records = 0x58 (88)',
         0x0fef: 'Records per Track = 0x82 (130)',
         0x0ff8: 'Record Length = 0x28 (24)',
         0x130b: 'drive 1, track# = 255',
+        0x130e: 'Skip 143 bytes (track 0)',
+        0x1313: 'Skip 1023 bytes (track 0)',
+        0x1316: 'Skip 1023 bytes (track 0)',
         0x1319: 'get disk status',
         0x131b: 'check if disk is ready',
         0x131d: 'goto error return',
@@ -129,22 +137,28 @@ jdc = {
         0x132e: 'set current record number on INDEX',
         0x1382: 'read byte (ID record)',
         0x1384: 'check if ID record (0x9e)',
-        0x138d: 'read byte from disk',
+        0x1389: 'get b = Track',
+        0x138b: 'get c = Sector',
+        0x138d: 'get a = check sum',
         0x1397: 'store track# for current record',
         0x1393: 'ID Record, read with good cksum',
+        0x1399: 'Track # for drive 1',
         0x139e: 'check for ?? end of tracks or not index track',
-        0x13e8: 'check if at index 0',
+        0x13e8: 'check if at Track 0',
         0x13ec: 'Track step bit',
-        0x13f4: 'Skip f(0x30) bytes ~ ',
+        0x13f4: 'Skip 191 bytes',
         0x13fb: 'Double density?',
-        0x13ff: 'l = 77 (number of tracks?)',
+        0x13ff: 'Skip 307 bytes',
         0x13ce: 'select drive (and side)',
+        0x140c: 'step to next track',
         0x140e: 'read byte from disk',
         0x1411: 'read byte from disk',
         0x1414: 'read byte from disk',
         0x1417: 'read byte from disk',
         0x141e: 'set ERC to 10',
+        0x1446: 'Skip 279 bytes',
         0x145a: 'Data Record (0x9b)',
+        0x1461: 'No Data Record found after 128 reads',
         0x146a: 'get disk status',
         0x146c: 'track 0 selected',
         0x1476: 'Track/Record',
@@ -161,7 +175,28 @@ jdc = {
         0x172e: 'hl = addr of ERC (disk error count)',
         0x1755: 'filename match on record',
         0x1779: 'checksum good on data record',
-        0x177b: 'end-of-record marker'
+        0x177b: 'end-of-record marker',
+        0x1800: 'PL/1 AAAA',
+        0x1803: 'PL/1 BBBB',
+        0x1806: 'PL/1 CCCC',
+        0x1809: 'PL/1 DDDD',
+        0x187c: 'Interpretive Program Counter',
+        0x18b5: 'call NhL routine',
+        0x18bd: 'call MUL routine',
+        0x18c5: 'call DIV routine',
+        0x18d3: 'Output routine for PUT',
+        0x18f5: 'call TOSTR routine',
+        0x1939: 'call GETDN routine',
+        0x194a: 'call NKEY routine',
+        0x1b5b: 'call KEY[SEARCH]',
+        0x1b71: 'call READ',
+        0x1b7e: 'call READ',
+        0x1b81: 'set ONCODE = a',
+        0x1ba3: 'call (error) REPORT',
+        0x1bb6: 'call WRITE',
+        0x1bc3: 'call REWRITE',
+        0x1bca: 'call OPEN',
+        0x1d2b: 'hl = IPC addr',
 
 
     },
@@ -242,10 +277,22 @@ jdc = {
         [0x1144, 0x1284, 'write??'],
         [0x1285, 0x147b, 'unknown (disk?) function'],
         [0x12c1, 0x12dd, 'Set PART1 and PART2'],
-        [0x140e, 0x141a, 'read f(L)th byte, possibly 3 + 4 * L'],
+        [0x1365, 0x140d, 'Search for valid ID Record'],
+        [0x140e, 0x141a, 'skip 4*l + 3 bytes'],
         [0x1475, 0x147b, '????'],
         [0x147c, 0x14a7, 'do checksum on all records on disk (inferred)'],
-        [0x166b, 0x1800, 'KEY ()?'],
+        [0x166b, 0x17ff, 'KEY ()?'],
+        [0x1800, 0x1877, 'PL/1 1'],
+        [0x1878, 0x187b, 'bbbb()'],
+        [0x187c, 0x1b80, 'dddd()'],
+        [0x1b81, 0x1ba2, 'return from file operations'],
+        [0x1cce, 0x1f52, 'aaaa()'],
+        [0x1d2b, 0x1d33, 'increment IPC value'],
+        [0x1d34, 0x1f52, 'unexplored'],
+        [0x1f53, 0x1f61, 'cccc() - clear 8 bytes in scratch'],
+        [0x1f62, 0x1fff, 'unexplored'],
+
+
     ]
 }
 
@@ -259,3 +306,36 @@ jdc = {
 #         ["file", "roms/JDC/IC28.bin", 0x0C00]
 #     ]
 # }
+
+pl1test = {
+    "descr": "first test of PL/1 program",
+    "start": 0x6000,
+    "data": [
+            ["file", "roms/JDC/IC25.bin", 0x0000],
+            ["file", "roms/JDC/IC26.bin", 0x0400],
+            ["file", "roms/JDC/IC27.bin", 0x0800],
+            ["file", "roms/JDC/IC28.bin", 0x0C00],
+            ["file", "roms/JDC/IC29.bin", 0x1000],
+            ["file", "roms/JDC/IC30.bin", 0x1400],
+            ["file", "roms/JDC/IC31.bin", 0x1800],
+            ["file", "roms/JDC/IC32.bin", 0x1C00],
+
+            # PL/1 Interpretive Program Counter
+            ["snippet", [0x00, 0x80], 0x40fe], # set IPC = x8000
+
+            # Setup two numbers to be added, run PL/1 program
+            ["snippet", [0x21, 0x80, 0x40 ], 0x6000], # hl = 4080
+            ["snippet", [0xf9 ],             0x6003], # SP = 4080
+            ["snippet", [0x21, 0x10, 0x00 ], 0x6004], # hl = 0010
+            ["snippet", [0xe5 ],             0x6007], # push hl
+            ["snippet", [0x21, 0x20, 0x00 ], 0x6008], # hl = 0020
+            ["snippet", [0xe5 ],             0x600b], # push hl
+            ["snippet", [0xc3, 0x7c, 0x18],  0x600c], # run PL/1 program
+
+            # PL/1 program
+            ["snippet", [0x0a],              0x8000], # add two numbers
+            ["snippet", [0x1f],              0x8001]  # return
+    ],
+    "funcs" : [],
+    "pois" : []
+}

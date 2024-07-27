@@ -18,6 +18,10 @@ I have had to reverse this logic. Perhaps I should have started at Track 76?
 I assume that the byte offset within a track is increasing on every read and
 also that it wraps around to 0 when reading past the last byte.
 
+The Q1 system seems to skip the first **2190** bytes on **track 0**, before
+trying to look for ID and Data records. Other offsets (not confirmed) seem
+to be present for the other tracks.
+
 
 
 Index File
