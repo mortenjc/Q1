@@ -101,6 +101,7 @@ opcodes '0xa' for add and '0x1f' for return (Q1 Advanced PL/1 programmer's
 Manual p. 3 and 4):
 
 .. code-block:: console
+
   # PL/1 Interpretive Program Counter
   ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
 
