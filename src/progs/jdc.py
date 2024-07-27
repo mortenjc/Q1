@@ -311,14 +311,7 @@ pl1test = {
     "descr": "first test of PL/1 program",
     "start": 0x6000,
     "data": [
-            ["file", "roms/JDC/IC25.bin", 0x0000],
-            ["file", "roms/JDC/IC26.bin", 0x0400],
-            ["file", "roms/JDC/IC27.bin", 0x0800],
-            ["file", "roms/JDC/IC28.bin", 0x0C00],
-            ["file", "roms/JDC/IC29.bin", 0x1000],
-            ["file", "roms/JDC/IC30.bin", 0x1400],
-            ["file", "roms/JDC/IC31.bin", 0x1800],
-            ["file", "roms/JDC/IC32.bin", 0x1C00],
+            ["file", "roms/JDC/full.bin", 0x0000],
 
             # PL/1 Interpretive Program Counter
             ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
@@ -335,8 +328,46 @@ pl1test = {
 
             # PL/1 program
             ["snippet", [0x0a],              0x8000], # add two numbers
-            ["snippet", [0x1f],              0x8001]  # return
+            ["snippet", [0x14],              0x8001], # one's compl
+            ["snippet", [0x1f],              0x8002]  # return
     ],
     "funcs" : [],
     "pois" : []
 }
+
+
+# pl1test2 = {
+#     "descr": "second test of PL/1 program",
+#     "start": 0x6000,
+#     "data": [
+#             ["file", "roms/JDC/full.bin", 0x0000],
+#
+#             # PL/1 Interpretive Program Counter
+#             ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
+#
+#             # Setup two numbers to be added, run PL/1 program
+#             ["snippet", [0x00],              0x6000], # nop (for trace)
+#             ["snippet", [0x21, 0x00, 0x90],  0x6001], # hl = 4080
+#             ["snippet", [0xf9],              0x6004], # SP = 4080
+#
+#             ["snippet", [0x21, 0x00, 0x90],  0x6005], # hl = 9000
+#             ["snippet", [0xe5],              0x6008], # push hl
+#             ["snippet", [0x21, 0x02, 0x90],  0x6005], # hl = 9002
+#             ["snippet", [0xe5],              0x6008], # push hl
+#
+#             ["snippet", [0xc3, 0x7c, 0x18],  0x6009], # run PL/1 program
+#
+#             # PL/1 program
+#             ["snippet", [0x00],              0x8000], # put number on stack
+#             ["snippet", [0x00],              0x8001], # put number on stack
+#             ["snippet", [0x0a],              0x8002], # add numbers on stack
+#             ["snippet", [0x1f],              0x8003], # return
+#
+#
+#             ["snippet", [0x22, 0x11],        0x9000], # data 0x1122
+#             ["snippet", [0x67, 0x45],        0x9002]  # data 0x4567
+#
+#     ],
+#     "funcs" : [],
+#     "pois" : []
+# }

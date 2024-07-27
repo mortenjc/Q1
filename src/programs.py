@@ -12,6 +12,7 @@ proglist = {
         "iws"      : progs.peeldk.iws,
         "jdc"      : progs.jdc.jdc,
         "pl1test"  : progs.jdc.pl1test,
+        #"pl1test2"  : progs.jdc.pl1test2,
         "dummy"    : progs.misc.dummy,
         "loop"     : progs.misc.loop,
         "todec"    : progs.misc.todec,

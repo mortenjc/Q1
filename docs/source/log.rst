@@ -1,6 +1,56 @@
 
 Log book
 ========
+Entries before July 22, 2024 have been reconstructed by git log history.
+
+2024 07 03
+----------
+
+Initial commit
+
+2024 07 06
+----------
+
+Capture input, boot prompt achieved.
+
+2024 07 09
+----------
+
+Work on IO hooks
+
+2024 07 10
+----------
+
+IO hooks for all input and output adddresses so far.
+
+20924 07 12
+-----------
+
+Added a flexible program loader to support rom images and code snippets.
+
+
+2024 07 13
+----------
+
+Added more ROM images from peel.dk
+
+2024 07 18
+----------
+
+Keyboard handling by kbhit() and injected keyboard interrupt, several
+line edit functions verifed (backspace, clear line, cursor.)
+
+2024 07 19
+----------
+
+Fixed major bug in Stack Pointer adjustment during keyboard interrupt.
+
+2024 07 21
+----------
+
+file descriptor investigations, annotations, ros module, match module, disk module
+
+
 
 2024 07 22
 ----------
