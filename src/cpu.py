@@ -3,10 +3,9 @@
 """Module providing a CPU abstraction"""
 
 import sys
-import argparse
+import z80
 import memory
 import ros as r
-import z80
 import z80io
 
 
@@ -14,14 +13,11 @@ class Cpu:
     MAX_INSTR_SIZE = 4
 
     def __init__(self, program):
-
         self.bt = [] # backtrace
         self.program = program
         self.e = z80
         self.m = z80.Z80Machine()
         self.b = z80._Z80InstrBuilder()
-        self.in_cbs = {}
-        self.out_cbs = {}
         self.mem = memory.Memory(self.m)
         self.ros = r.ROS(self.mem)
         self.fill = 0xfd

@@ -33,6 +33,10 @@ def main(args):
     cpu.m.set_input_callback(io.handle_io_in)
     cpu.m.set_output_callback(io.handle_io_out)
 
+    stoppc = 0x1ffff
+    if "stop" in prgobj:
+        stoppc = prgobj["stop"]
+
     icount = 0
     if args.hexdump:
         cpu.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
@@ -81,7 +85,7 @@ def main(args):
             if pc == 0xd21:
                 print('DISK OPEN')
 
-        if args.breakpoint == pc or pc == prgobj["stop"]:
+        if args.breakpoint == pc or pc == stoppc:
             print(f'\n<<<< BREAKPOINT at 0x{pc:04x} >>>>\n')
             cpu.exit(False, True, False)
             #cpu.exit()

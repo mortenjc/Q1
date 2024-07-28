@@ -76,6 +76,9 @@ class Disk:
         for i in range(len(name)):
             d[offset + 3 + i] = ord(name[i])
 
+        d[1] = recno & 0xff
+        d[2] = recno >> 8
+
         cksum = sum(d[offset:o-1])
         d[o - 2] = cksum & 0xff
         return o
@@ -84,12 +87,16 @@ class Disk:
     def step(self, direction):
         self.CurrentByte = 0 # assumption
         if direction: # UP
-            print(f'disk {self.disk}, step up 0x{direction:02x}, track {self.CurrentTrack} -> {self.CurrentTrack + 1}')
+            msg = f'disk {self.disk}, step up 0x{direction:02x}'
+            msg += f', track {self.CurrentTrack} -> {self.CurrentTrack + 1}'
+            print(msg)
             if self.CurrentTrack == self.Tracks - 1:
                 return
             self.CurrentTrack += 1
         else: # DOWN
-            print(f'disk {self.disk}, step down {direction:02x}, track {self.CurrentTrack} -> {self.CurrentTrack - 1}')
+            msg = f'disk {self.disk}, step down {direction:02x}'
+            msg += ', track {self.CurrentTrack} -> {self.CurrentTrack - 1}'
+            print(msg)
             if self.CurrentTrack == 0:
                 return
             self.CurrentTrack -= 1
@@ -141,7 +148,6 @@ class Control:
         # print(f'disk {self.disk.disk}, track {self.disk.CurrentTrack}, ' + \
         #       f'byte {self.disk.CurrentByte}, val {val:02x}, count {self.disk.BytesRead}')
         return val
-
 
 
     def control1(self, val):

@@ -35,7 +35,6 @@ class Memory():
     def hexdump(self, address, length, icount):
         nullpatt = "fd " * 16
         self.print(f"########### HEXDUMP 0x{address:x} - 0x{address+length:x} ####################################")
-        self.print(f'icount {icount}')
         hexline = f"{address:04x} "
         char = ""
         count = 0

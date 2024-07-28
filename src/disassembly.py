@@ -6,7 +6,6 @@ import sys
 import argparse
 import cpu
 import match
-import memory
 import ros as r
 import programs as prg
 
@@ -41,9 +40,6 @@ def disassemble(args, ranges):
 
 
 if __name__ == "__main__":
-
-
-    print()
 
     def auto_int(x):
         return int(x, 0)
