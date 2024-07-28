@@ -2,16 +2,16 @@
 
 """Module providing Z80 disassembly functionality"""
 
+import sys
 import argparse
 import cpu
 import match
 import memory
 import ros as r
-import sys
 import programs as prg
 
 
-def main(ranges):
+def disassemble(args, ranges):
     prgobj = prg.proglist[args.program]
     c = cpu.Cpu(prgobj)
     ros = r.ROS(c.mem)
@@ -22,7 +22,7 @@ def main(ranges):
         c.m.pc = start
         while True:
             # Decode the instruction.
-            inst_str, bytes, bytes_str = c.getinst()
+            inst_str, ibytes, bytes_str = c.getinst()
 
             annot = match.operandaddr(inst_str, ros.addrs)
             if annot == "":
@@ -31,7 +31,7 @@ def main(ranges):
 
             print(f'{c.m.pc:04x} {bytes_str:12} ; {inst_str:20} | {annot}')
 
-            c.m.pc += len(bytes)
+            c.m.pc += len(ibytes)
 
             if c.m.pc > end:
                 #print('-------------------------------------')
@@ -69,8 +69,8 @@ if __name__ == "__main__":
     if args.auto:
         try:
             known_ranges = prg.proglist[args.program]["known_ranges"]
-        except:
+        except KeyError:
             print(f'please specify known_ranges for {args.program}')
             sys.exit()
 
-    main(known_ranges)
+    disassemble(args, known_ranges)

@@ -2,10 +2,10 @@
 
 """Module providing a CPU abstraction"""
 
+import sys
 import argparse
 import memory
 import ros as r
-import sys
 import z80
 import z80io
 

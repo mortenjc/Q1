@@ -183,5 +183,5 @@ class Control:
 
 
 if __name__ == "__main__":
-    d = Disk(1)
-    print(d.data)
+    disk = Disk(1)
+    print(disk.data)
