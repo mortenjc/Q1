@@ -60,3 +60,18 @@ test1 = {
     "funcs" : [],
     "pois" : [],
 }
+
+
+loadhl = {
+    "descr": "fishing trip",
+    "start": 0x1000,
+    "data": [
+        ["snippet", [0x21, 0x82, 0x80],       0x1000], # hl = 0x8082
+        ["snippet", [0x6e],                   0x1003], # ld l, (hl)
+        ["snippet", [0x00, 0x00, 0x00],       0x1004], # 3 x NOP
+        ["snippet", [0xab, 0xbc, 0xcd, 0xde], 0x8082]  # data
+
+    ],
+    "funcs" : [],
+    "pois" : [],
+}

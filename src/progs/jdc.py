@@ -97,6 +97,7 @@ jdc = {
         0x0597: 'update display',
         0x05d4: 'hl = INSF',
         0x0600: 'done - update cursor position and current size of line',
+        0x0698: 'call divide() hl/10',
         0x0845: 'get disk# from index file',
         0x0851: 'Current record number on index?',
         0x085e: 'call KEY[SEARCH]',
@@ -124,6 +125,11 @@ jdc = {
         0x0fea: '# records = 0x58 (88)',
         0x0fef: 'Records per Track = 0x82 (130)',
         0x0ff8: 'Record Length = 0x28 (24)',
+        0x1094: 'set ERC (error count) to 32',
+        0x1103: 'is end of record?',
+        0x12c1: 'bc = record length',
+        0x12e6: 'Store INDEX (curr rec no on index)',
+        0x12e9: 'get l = disk# on INDEX',
         0x130b: 'drive 1, track# = 255',
         0x130e: 'Skip 143 bytes (track 0)',
         0x1313: 'Skip 1023 bytes (track 0)',
@@ -135,6 +141,10 @@ jdc = {
         0x1324: 'return error # 5 (inferred)',
         0x1325: 'rec before last',
         0x132e: 'set current record number on INDEX',
+        0x1344: 'copy record number (hi+lo) to last reordnumber on INDEX FD',
+        0x1351: 'get a = current record # on INDEX (LO)',
+        0x1354: 'compare with same (LO) on INDEX FD',
+        0x135a: 'compare with same (HI) on INDEX FD',
         0x1382: 'read byte (ID record)',
         0x1384: 'check if ID record (0x9e)',
         0x1389: 'get b = Track',
@@ -155,6 +165,9 @@ jdc = {
         0x1411: 'read byte from disk',
         0x1414: 'read byte from disk',
         0x1417: 'read byte from disk',
+        0x1421: 'record number (HI) from INDEX FD',
+        0x1424: 'record number (LO) from INDEX FD',
+        0x142a: 'first track (HI) ?',
         0x141e: 'set ERC to 10',
         0x1446: 'Skip 279 bytes',
         0x145a: 'Data Record (0x9b)',
@@ -172,6 +185,12 @@ jdc = {
         0X14a4: 'return error code 1?',
         0x14a9: 'read byte from disk',
         0x14ac: 'read byte from disk',
+        0x1676: 'get a = # of records HI',
+        0x1679: 'get a = # of records LO',
+        0x1688: 'checksum on FILE FD?',
+        0x1697: 'record len on INDEX FD (HI)',
+        0x169c: 'record len on INDEX FD (LO)',
+        0x16e7: 'hl = current record number',
         0x172e: 'hl = addr of ERC (disk error count)',
         0x1755: 'filename match on record',
         0x1779: 'checksum good on data record',
@@ -248,6 +267,12 @@ jdc = {
         [0x05f6, 0x0606, 'del_char()'],
         [0x0607, 0x062a, 'hexx_input()?'],
 
+        [0x0642, 0x0651, 'multiply() = de * bc'],
+        [0x0652, 0x0686, 'divide() = hl / de'],
+        [0x0687, 0x0689, '???'],
+        [0x068a, 0x06b0, 'bin_to_string()'],
+
+
         [0x0800, 0x0802, 'READ vec'],
         [0x0803, 0x0805, 'WRITE vec'],
         [0x0806, 0x0808, 'REWRITE vec'],
@@ -296,26 +321,14 @@ jdc = {
     ]
 }
 
-# jdc_small = {
-#     "descr": "Minimal images to complete boot (IC25-IC28)",
-#     "start": 0x0000,
-#     "data": [
-#         ["file", "roms/JDC/IC25.bin", 0x0000],
-#         ["file", "roms/JDC/IC26.bin", 0x0400],
-#         ["file", "roms/JDC/IC27.bin", 0x0800],
-#         ["file", "roms/JDC/IC28.bin", 0x0C00]
-#     ]
-# }
 
-pl1test = {
-    "descr": "first test of PL/1 program",
+psmcadd = {
+    "descr": "first test of PL/1 program (add)",
     "start": 0x6000,
     "data": [
             ["file", "roms/JDC/full.bin", 0x0000],
-
             # PL/1 Interpretive Program Counter
             ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
-
             # Setup two numbers to be added, run PL/1 program
             ["snippet", [0x00],              0x6000], # nop (for trace)
             ["snippet", [0x21, 0x80, 0x40],  0x6001], # hl = 4080
@@ -325,7 +338,6 @@ pl1test = {
             ["snippet", [0x21, 0x20, 0x00],  0x6009], # hl = 0020
             ["snippet", [0xe5],              0x600c], # push hl
             ["snippet", [0xc3, 0x7c, 0x18],  0x600d], # run PL/1 program
-
             # PL/1 program
             ["snippet", [0x0a],              0x8000], # add two numbers
             ["snippet", [0x14],              0x8001], # one's compl
@@ -335,39 +347,77 @@ pl1test = {
     "pois" : []
 }
 
+psmcmul = {
+    "descr": "Q1 pseudo machine code program (multiply)",
+    "start": 0x6000,
+    "data": [
+            ["file", "roms/JDC/full.bin", 0x0000],
+            # PL/1 Interpretive Program Counter
+            ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
+            # Setup two numbers to be added, run PL/1 program
+            ["snippet", [0x00],              0x6000], # nop (for trace)
+            ["snippet", [0x21, 0x80, 0x40],  0x6001], # hl = 4080h
+            ["snippet", [0xf9],              0x6004], # SP = 4080h
+            ["snippet", [0x21, 0x01, 0x01],  0x6005], # hl = 257 (dec)
+            ["snippet", [0xe5],              0x6008], # push hl
+            ["snippet", [0x21, 0xff, 0x00],  0x6009], # hl = 255 (dec)
+            ["snippet", [0xe5],              0x600c], # push hl
+            ["snippet", [0xc3, 0x7c, 0x18],  0x600d], # run program
+            # 'PL/1' program
+            ["snippet", [0x0e],              0x8000], # multiply
+            ["snippet", [0x1f],              0x8001]  # return
+    ],
+    "funcs" : [],
+    "pois" : []
+}
 
-# pl1test2 = {
-#     "descr": "second test of PL/1 program",
-#     "start": 0x6000,
-#     "data": [
-#             ["file", "roms/JDC/full.bin", 0x0000],
-#
-#             # PL/1 Interpretive Program Counter
-#             ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
-#
-#             # Setup two numbers to be added, run PL/1 program
-#             ["snippet", [0x00],              0x6000], # nop (for trace)
-#             ["snippet", [0x21, 0x00, 0x90],  0x6001], # hl = 4080
-#             ["snippet", [0xf9],              0x6004], # SP = 4080
-#
-#             ["snippet", [0x21, 0x00, 0x90],  0x6005], # hl = 9000
-#             ["snippet", [0xe5],              0x6008], # push hl
-#             ["snippet", [0x21, 0x02, 0x90],  0x6005], # hl = 9002
-#             ["snippet", [0xe5],              0x6008], # push hl
-#
-#             ["snippet", [0xc3, 0x7c, 0x18],  0x6009], # run PL/1 program
-#
-#             # PL/1 program
-#             ["snippet", [0x00],              0x8000], # put number on stack
-#             ["snippet", [0x00],              0x8001], # put number on stack
-#             ["snippet", [0x0a],              0x8002], # add numbers on stack
-#             ["snippet", [0x1f],              0x8003], # return
-#
-#
-#             ["snippet", [0x22, 0x11],        0x9000], # data 0x1122
-#             ["snippet", [0x67, 0x45],        0x9002]  # data 0x4567
-#
-#     ],
-#     "funcs" : [],
-#     "pois" : []
-# }
+
+psmcdiv = {
+    "descr": "Q1 pseudo machine code program (divide)",
+    "start": 0x6000,
+    "data": [
+            ["file", "roms/JDC/full.bin", 0x0000],
+            # PL/1 Interpretive Program Counter
+            ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
+            # Setup two numbers to be added, run PL/1 program
+            ["snippet", [0x00],              0x6000], # nop (for trace)
+            ["snippet", [0x21, 0x80, 0x40],  0x6001], # hl = 0x4080
+            ["snippet", [0xf9],              0x6004], # SP = 0x4080
+            ["snippet", [0x21, 0xfd, 0x7f],  0x6005], # hl = 0x7fff
+            ["snippet", [0xe5],              0x6008], # push hl
+            ["snippet", [0x21, 0x99, 0x19],  0x6009], # hl = 0x1999
+            ["snippet", [0xe5],              0x600c], # push hl
+            ["snippet", [0xc3, 0x7c, 0x18],  0x600d], # run program
+            # 'PL/1' program
+            ["snippet", [0x10],              0x8000], # divide
+            ["snippet", [0x1f],              0x8001]  # return
+    ],
+    "funcs" : [],
+    "pois" : []
+}
+
+
+psmcb2ch = {
+    "descr": "Q1 pseudo machine code program (bin to char)",
+    "start": 0x6000,
+    "stop" : 0x1938,
+    "data": [
+            ["file", "roms/JDC/full.bin", 0x0000],
+            # PL/1 Interpretive Program Counter
+            ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
+            # Setup two numbers to be added, run PL/1 program
+            ["snippet", [0x00],              0x6000], # nop (for trace)
+            ["snippet", [0x21, 0x80, 0x40],  0x6001], # hl = 0x4080
+            ["snippet", [0xf9],              0x6004], # SP = 0x4080
+            ["snippet", [0x21, 0xab, 0xcd],  0x6005], # hl = 0xabcd, unused
+            ["snippet", [0xe5],              0x6008], # push hl
+            ["snippet", [0x21, 0xff, 0x7f],  0x6009], # hl = 0x7fff (32767)
+            ["snippet", [0xe5],              0x600c], # push hl
+            ["snippet", [0xc3, 0x7c, 0x18],  0x600d], # run program
+            # 'PL/1' program
+            ["snippet", [0x19],              0x8000], # bin to character
+            ["snippet", [0x1f],              0x8001]  # return
+    ],
+    "funcs" : [],
+    "pois" : []
+}

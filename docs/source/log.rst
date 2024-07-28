@@ -225,3 +225,56 @@ at 0x18a8.
 
 Then at 0x1875 the 'return from subroutine'  pseudocode instruction is retrieved,
 causing the return instruction at 0x1938.
+
+
+2024 07 28
+----------
+
+Testing more pseudocode instructions: multiply, divide and binary to string.
+
+.. code-block:: python
+
+  psmcb2ch = {
+      "descr": "Q1 pseudo machine code program (bin to char)",
+      "start": 0x6000,
+      "stop" : 0x1938,
+      "data": [
+              ["file", "roms/JDC/full.bin", 0x0000],
+              # PL/1 Interpretive Program Counter
+              ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
+              # Setup two numbers to be added, run PL/1 program
+              ["snippet", [0x00],              0x6000], # nop (for trace)
+              ["snippet", [0x21, 0x80, 0x40],  0x6001], # hl = 0x4080
+              ["snippet", [0xf9],              0x6004], # SP = 0x4080
+              ["snippet", [0x21, 0xab, 0xcd],  0x6005], # hl = 0xabcd, unused
+              ["snippet", [0xe5],              0x6008], # push hl
+              ["snippet", [0x21, 0xff, 0x7f],  0x6009], # hl = 0x7fff
+              ["snippet", [0xe5],              0x600c], # push hl
+              ["snippet", [0xc3, 0x7c, 0x18],  0x600d], # run program
+              # 'PL/1' program
+              ["snippet", [0x19],              0x8000], # divide
+              ["snippet", [0x1f],              0x8001]  # return
+      ],
+      "funcs" : [],
+      "pois" : []
+  }
+
+
+Here 0x7fff is converted into ascii 32767 as verified from the hexdump:
+
+.. code-block:: console
+
+  ########### HEXDUMP 0x2000 - 0x10000 ####################################
+  ....
+  4070 03 00 44 00 9b 06 04 00 2e 42 05 00 2e 42 ab cd  ..D......B...B..
+  ....
+  40f0 fd fd fd fd fd fd fd fd fd fd fd fd fd fd 02 80  ................
+  ....
+  4220 fd fd fd fd fd fd fd fd fd fd fd fd fd fd 33 32  ..............32
+  4230 37 36 37 fd fd fd fd fd fd fd fd fd fd fd fd fd  767.............
+  ....
+  6000 00 21 80 40 f9 21 ab cd e5 21 ff 7f e5 c3 7c 18  .!.@.!...!......
+  ....
+  8000 19 1f fd fd fd fd fd fd fd fd fd fd fd fd fd fd  ................
+  ....
+  ########### HEXDUMP END #################################################

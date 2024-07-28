@@ -1,7 +1,6 @@
 
 import sys
 from enum import Enum
-
 # for now assume disk 1 only, drive 1 only, side 0 only
 
 data = [ 0x9b,
@@ -22,8 +21,14 @@ data = [ 0x9b,
          ]
 
 
+
+# Possibilities according to "Q1 Lite system overview"
+# Tracks  Bytes per track
+#   35    4608
+#   77    8316
+
 class Disk:
-    def __init__(self, disk, tracks=77, bpt=2468): # 2468 too small?
+    def __init__(self, disk, tracks=35, bpt=4608): #
         self.disk = disk
         self.Tracks = tracks
         self.BytesPerTrack = bpt
@@ -32,39 +37,35 @@ class Disk:
         self.CurrentByte = 0
         self.BytesRead = 0
 
-        self.idrecord(  2189, 17, 0)
-        self.idrecord(  2193, 0, 0)
-        self.datarecord(2197, 0, 25, 'MJC     ', data)
-        self.idrecord(  2240, 0, 0)
-        #self.idrecord(  2244, 0, 0)
-        self.datarecord(2244, 0, 26, 'MJC     ', data)
-        self.idrecord(  2287, 0, 0)
-        self.idrecord(  2291, 0, 0)
-        self.datarecord(2295, 0, 26, 'MJC     ', data)
-        for i in range(100):
-            self.data[0][2350+i] = 0x9e
+        if 1: # jdc rom addresses
+            self.idrecord(  0, 2189, 0, 0)
+            self.datarecord(0, 2193, 0, 'XXX     ', data)
+            self.idrecord(  0, 2194, 0, 0)
+            self.datarecord(0, 2198, 0, 'MJC     ', data)
+            self.idrecord(  0, 2241, 0, 0)
+            self.idrecord(  0, 2245, 0, 0)
+            self.datarecord(0, 2249, 0, 'YYY     ', data)
+            self.idrecord(  0, 2292, 0xff, 0x00)
 
 
-
-
-    def idrecord(self, offset, track, sector):
+    def idrecord(self, writetotrack, offset, track, sector):
         oldoff = offset
-        d = self.data[track]
+        d = self.data[writetotrack]
         d[offset] = 0x9e
         offset += 1
         d[offset] = track
         offset += 1
         d[offset] = sector
         offset += 1
-        d[offset] = track + sector
+        d[offset] = track + sector # cksum
         offset += 1
         d[offset] = 0x10
         offset += 1
         assert offset - oldoff == 5, offset - oldoff
+        return offset
 
 
-
-    def datarecord(self, offset, track, recno, name, data):
+    def datarecord(self, track, offset, recno, name, data):
         print(f'Disk {self.disk}: Data record at t{track}, b{offset}')
         o = offset
         d = self.data[track]
@@ -76,23 +77,19 @@ class Disk:
             d[offset + 3 + i] = ord(name[i])
 
         cksum = sum(d[offset:o-1])
-        #print('cksum', cksum & 0xff)
         d[o - 2] = cksum & 0xff
-        #print(d[offset:o])
-        #print(offset, o, o - offset)
         return o
 
 
-
-
     def step(self, direction):
-        print(f'disk {self.disk}, step {direction}, track {self.CurrentTrack}')
         self.CurrentByte = 0 # assumption
-        if not direction: # DOWN
-            if self.CurrentTrack == 76:
+        if direction: # UP
+            print(f'disk {self.disk}, step up 0x{direction:02x}, track {self.CurrentTrack} -> {self.CurrentTrack + 1}')
+            if self.CurrentTrack == self.Tracks - 1:
                 return
             self.CurrentTrack += 1
-        else: # UP
+        else: # DOWN
+            print(f'disk {self.disk}, step down {direction:02x}, track {self.CurrentTrack} -> {self.CurrentTrack - 1}')
             if self.CurrentTrack == 0:
                 return
             self.CurrentTrack -= 1
@@ -101,13 +98,9 @@ class Disk:
     def readbyte(self):
         track = self.CurrentTrack
         byte = self.CurrentByte
-        #print(f'readbyte: disk {self.disk} track {self.CurrentTrack} byte {self.CurrentByte} value {self.data[track][byte]:02x}')
         assert 0 <= track < self.Tracks
         assert 0 <= byte < self.BytesPerTrack, byte
-        if self.CurrentByte < self.BytesPerTrack - 1:
-            self.CurrentByte += 1
-        else:
-            self.CurrentByte = 0
+        self.CurrentByte = (self.CurrentByte + 1) % self.BytesPerTrack
         self.BytesRead += 1
         return self.data[track][byte]
 
@@ -120,11 +113,20 @@ class Disk:
         return True
 
 
-doubleside = 0x02
-track0     = 0x10
-index      = 0x20
-sdready    = 0x40
-busy       = 0x80
+
+# dbleside   = 0x02
+# track0     = 0x10
+# index      = 0x20
+# sdready    = 0x40
+# busy       = 0x80
+
+statusbits = {
+"dbleside"   : 0x02,
+"track0"     : 0x10,
+"index"      : 0x20,
+"sdready"    : 0x40,
+"busy"       : 0x80
+}
 
 class Control:
     def __init__(self, diskno):
@@ -144,18 +146,18 @@ class Control:
 
     def control1(self, val):
         if val == 0:
+            self.disk.CurrentByte = 0
             return
         side = val >> 7
         drive = (val & 0x7f)
-        assert drive in [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40]
+        assert drive in [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40], drive
         i = 1
         while True:
             if drive == 1:
                 break
             drive /= 2
             i += 1
-        assert 1 <= drive <= 7
-        assert 0 <= side <= 1
+        assert side == 0
         assert drive == 1
         self.CurrentByte = 0 # ?
 
@@ -169,14 +171,14 @@ class Control:
 
     def status(self):
         track = self.disk.CurrentTrack
-        status = sdready
+        status = statusbits["sdready"]
         if self.disk.CurrentByte == 0:
-            status += index
+            status += statusbits["index"]
         if self.disk.isbusy():
-            status += busy
+            status += statusbits["busy"]
         if track == 0:
-            status += track
-        # print(f'disk {self.disk.disk}, track {track}, CurrByte {self.disk.CurrentByte}, TotBytes {self.disk.BytesRead}, status {status:02x}')
+            status += statusbits["track0"]
+        #print(f'disk {self.disk.disk}, track {track}, CurrByte {self.disk.CurrentByte}, TotBytes {self.disk.BytesRead}, status {status:02x}')
         return status
 
 

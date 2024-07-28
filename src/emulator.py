@@ -34,24 +34,24 @@ def main(args):
     cpu.m.set_output_callback(io.handle_io_out)
 
     icount = 0
-    if not args.nodump:
+    if args.hexdump:
         cpu.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
 
     while True:
         pc = cpu.m.pc
         icount += 1
-        if icount >= args.stopafter:
-            print(f'max instruction count reached, exiting ...')
+        if icount >= args.stopafter or pc > 65530:
+            print(f'exiting ... {icount}')
             for l in cpu.bt:
                 print(l)
             print(f'printed characters ({len(io.displaystr)}):')
             print(f'{io.displaystr}')
             sys.exit()
 
-        if pc in funcs and not args.nodecode:
+        if pc in funcs and args.decode:
             print(f'; {funcs[pc]}')
 
-        if pc == args.poi and not args.nodecode: # PC of interest
+        if pc == args.poi and args.decode: # PC of interest
             print('\n<<<<< pc of interest >>>>>\n')
 
         # Decode the instruction.
@@ -61,41 +61,41 @@ def main(args):
         if annot == "":
             if cpu.m.pc in prgobj["pois"]:
                 annot = f'{prgobj["pois"][cpu.m.pc]}'
-        if not args.nodecode:
+        if args.decode:
             print(inst_str2, annot)
 
 
-        if icount % args.dumpfreq == 0 and not args.nodump:
+        if icount % args.dumpfreq == 0 and args.hexdump:
             cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
 
         # main cpu emulation step
         cpu.step() # does the actual emulation of the next instruction
 
-        if pc == 0xd41:
-            print('DISK READ')
-        if pc == 0x85e:
-            print('DISK KEY')
-        if pc == 0x818:
-            print('DISK (error) REPORT')
-        if pc == 0xd21:
-            print('DISK OPEN')
+        if 1:
+            if pc == 0xd41:
+                print('DISK READ')
+            if pc == 0x85e:
+                print('DISK KEY')
+            if pc == 0x818:
+                print('DISK (error) REPORT')
+            if pc == 0xd21:
+                print('DISK OPEN')
 
-        if args.breakpoint == pc:
+        if args.breakpoint == pc or pc == prgobj["stop"]:
             print(f'\n<<<< BREAKPOINT at 0x{pc:04x} >>>>\n')
-            ros.index()
-            ros.file()
-            ros.disk()
-            cpu.exit()
+            cpu.exit(False, True, False)
+            #cpu.exit()
 
         if args.trigger == pc:
             print(f'\n<<<< TRIGGER at 0x{pc:04x} >>>>\n')
             cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
-            args.nodecode = False
+            args.decode = True
             io.verbose = True
 
         if pc ==0x4cb:
             print(io.displaystr)
             io.displaystr = ""
+            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
             ros.index()
             ros.file()
             ros.disk()
@@ -112,7 +112,7 @@ def main(args):
                 if ch == 0x222b:       # opt-b -> hexdump
                     cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
                 elif ch == 8224: # opt-t
-                    args.nodecode = not args.nodecode
+                    args.decode = not args.decode
                 elif ch == 960:        # opt-p -> regdump
                     print(cpu.getregs())
                 elif ch == 0x0a:       # LF -> CR
@@ -152,8 +152,8 @@ if __name__ == "__main__":
                         type = auto_int, default = 0x1ffff)
     parser.add_argument("--dumpfreq", help = "Hexdump every N instruction",
                         type = int, default = 256)
-    parser.add_argument("-n", "--nodump", help = "Toggle hexdump", action='store_true')
-    parser.add_argument("-d", "--nodecode", help = "Decode instructions", action='store_true')
+    parser.add_argument("-x", "--hexdump", help = "Toggle hexdump", action='store_true')
+    parser.add_argument("-d", "--decode", help = "Decode instructions", action='store_true')
     parser.add_argument("--program", help = "name of program to load, see programs.py",
                         type = str, default = "jdc")
 

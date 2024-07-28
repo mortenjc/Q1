@@ -46,15 +46,16 @@ class Cpu:
             self.exit()
 
 
-    def exit(self):
-        print('#####################################################')
-        print('#####################################################')
-        self.ros.index()
-        self.ros.file()
-        self.ros.disk()
-        self.mem.hexdump(0x2000, 0x10000 - 0x2000, -1)
-        for l in self.bt:
-            print(l)
+    def exit(self, ros=True, dump=True, bt=True):
+        if ros:
+            self.ros.index()
+            self.ros.file()
+            self.ros.disk()
+        if dump:
+            self.mem.hexdump(0x2000, 0x10000 - 0x2000, -1)
+        if bt:
+            for l in self.bt:
+                print(l)
         print('exiting...')
         sys.exit()
 
