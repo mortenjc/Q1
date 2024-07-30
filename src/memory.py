@@ -119,7 +119,7 @@ if __name__ == '__main__':
             self.memory[2] = 2
             self.memory[3] = 3
 
-    Standin = Standin()
+    standin = Standin()
     mem = Memory(standin)
 
     assert mem.getu8(0) == 0
