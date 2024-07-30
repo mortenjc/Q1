@@ -46,4 +46,5 @@ Help wanted, please get in touch ;-)
 
         hooks
         running
+        annotate
         log
