@@ -27,7 +27,7 @@ def operandaddr(s, addrs):
 
 
 if __name__ == "__main__":
-    addrs = {
+    testaddrs = {
         "0x48f" : "Test",
         "0x408f" : "HEXX",
         "0x4093" : "CURSE",
@@ -39,11 +39,11 @@ if __name__ == "__main__":
     # res = re.match(r'ld (.*), \(?(0x[0-9a-f]*)\)?', "ld hl, (0x408f)")
     # print(res)
 
-    res = operandaddr("ld (0x408f), a", addrs)
-    assert res == "set HEXX = a"
-    res = operandaddr("ld (0x48f), a", addrs)
-    assert res == "set Test = a"
-    res = operandaddr("ld a, (0x408f)", addrs)
-    assert res == "get a = HEXX"
-    res = operandaddr("ld a, (0x4f)", addrs)
-    assert res == ""
+    testres = operandaddr("ld (0x408f), a", testaddrs)
+    assert testres == "set HEXX = a"
+    testres = operandaddr("ld (0x48f), a", testaddrs)
+    assert testres == "set Test = a"
+    testres = operandaddr("ld a, (0x408f)", testaddrs)
+    assert testres == "get a = HEXX"
+    testres = operandaddr("ld a, (0x4f)", testaddrs)
+    assert testres == ""
