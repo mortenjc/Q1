@@ -278,3 +278,10 @@ Here 0x7fff is converted into ascii 32767 as verified from the hexdump:
   8000 19 1f fd fd fd fd fd fd fd fd fd fd fd fd fd fd  ................
   ....
   ########### HEXDUMP END #################################################
+
+
+  2024 07 28
+  ----------
+
+  Mostly address and address range annotations. Some **pylint** related
+  changes.
