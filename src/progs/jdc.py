@@ -103,6 +103,9 @@ jdc = {
         0x0600: 'done - update cursor position and current size of line',
         0x0698: 'call divide() hl/10',
         0x0845: 'get disk# from index file',
+        0x0775: 'call getkey?',
+        0x0780: 'unknown input (0xc undocumented, rs232?)',
+
         0x0851: 'Current record number on index?',
         0x085e: 'call KEY[SEARCH]',
         0x0869: 'call READ',
@@ -243,11 +246,16 @@ jdc = {
         0x1bb6: 'call WRITE',
         0x1bc3: 'call REWRITE',
         0x1bca: 'call OPEN',
+        0x1cfc: 'push 8 0x00 on stack (subroutine?)',
         0x1d03: 'increment IPC',
         0x1d15: 'increment IPC',
         0x1d2b: 'hl = IPC addr',
+        0x1d3c: 'run microcode program',
         0x1df5: 'call aaaa()',
-        0x1df8: 'run microcode program'
+        0x1df8: 'run microcode program',
+        0x1fd8: 'run microcode program',
+        0x1fe4: 'run microcode program',
+        0x1ffc: 'run microcode program'
 
 
     },
@@ -303,6 +311,9 @@ jdc = {
         [0x0652, 0x0686, 'divide() = hl / de'],
         [0x0687, 0x0689, '???'],
         [0x068a, 0x06b0, 'bin_to_string()'],
+
+        [0x0767, 0x0774, 'called from x003c (nibbl rotation?)'],
+        [0x0775, 0x07ff, 'unexplored x700 region'],
 
 
         [0x0800, 0x0802, 'READ vec'],

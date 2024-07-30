@@ -19,10 +19,10 @@ https://www.thebyteattic.com/p/q1.html
 https://hackaday.com/2022/09/28/the-first-microcomputer-the-q1/
 
 
-People
-------
+Collaborators
+-------------
 
-Karl-Wilhelm Wacker used to work for the Q1 corporation.
+Karl-Wilhelm Wacker (kwwacker@ptd.net) used to work for the Q1 corporation.
 
 
 Manuals
