@@ -1,7 +1,7 @@
 import sys
 import termios
 from select import select
-from enum import Enum
+#from enum import Enum
 
 # class kMBP(Enum):
 #     optb = 0x222b
@@ -28,7 +28,7 @@ class Key:
         self.old_term = termios.tcgetattr(self.fd)
 
         # new terminal setting unbuffered
-        self.new_term[3] = (self.new_term[3] & ~termios.ICANON & ~termios.ECHO)
+        self.new_term[3] = self.new_term[3] & ~termios.ICANON & ~termios.ECHO
         termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.new_term)
 
 
@@ -43,9 +43,9 @@ class Key:
     def getch(self):
         return sys.stdin.read(1)
 
-    def getche(selg):
+    def getche(self):
         ch = self.getch()
-        putch(ch)
+        self.putch(ch)
         return ch
 
     def kbhit(self):
@@ -58,9 +58,9 @@ if __name__ == '__main__':
 
     while 1:
         if kbd.kbhit():
-            ch = kbd.getch()
+            char = kbd.getch()
             break
         print("A")
         #sys.stdout.write('.')
 
-    print(f'done {ch}')
+    print(f'done {char}')

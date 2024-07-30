@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
 import argparse
 import cpu as c
 import kbd
 import match
-import memory
 import ros as r
-import sys
-import z80
 import z80io
 import programs as prg
 
@@ -20,7 +18,7 @@ def int38(cpu, io, ch):
     cpu.m.pc = 0x38
 
 
-def main(args):
+def emulator(args):
     prgobj = prg.proglist[args.program]
     funcs = prgobj["funcs"]
 
@@ -59,7 +57,7 @@ def main(args):
             print('\n<<<<< pc of interest >>>>>\n')
 
         # Decode the instruction.
-        inst_str, bytes, bytes_str = cpu.getinst()
+        inst_str, _, bytes_str = cpu.getinst()
         inst_str2 = cpu.decodestr(inst_str, bytes_str)
         annot = match.operandaddr(inst_str, ros.addrs)
         if annot == "":
@@ -174,4 +172,4 @@ if __name__ == "__main__":
             print(p)
         sys.exit()
 
-    main(args)
+    emulator(args)
