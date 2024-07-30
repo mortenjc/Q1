@@ -116,6 +116,8 @@ jdc = {
         0x08ee: 'read byte from disk 2',
         0x08f4: 'read byte from disk 2',
         0x0903: 'read byte from disk 2',
+        0x0936: 'increment Record Number (LO)',
+        0x093b: 'increment Record Number (HI)',
         0x0d21: 'call OPEN',
         0x0d2f: 'hl = Record #',
         0x0d3f: 'Read 1 record',
@@ -278,10 +280,11 @@ jdc = {
         [0x0279, 0x029f, 'load prg???'],
         [0x02a0, 0x02b0, 'Display width?'],
         [0x02b1, 0x0367, 'interrupt processing routine()'],
-        [0x0368, 0x0380, 'unknown 1'],
+        [0x0368, 0x0380, 'unknown'],
         [0x0381, 0x038e, 'text string - CLR, PRINTER FAULT'],
         [0x038f, 0x03cb, 'check printer status'],
-        [0x03cd, 0x0409, 'unknown 3'],
+        [0x03cd, 0x03d4, 'unknown'],
+        [0x03d5, 0x0409, 'unknown'],
         [0x0410, 0x0438, 'clear keyboard buffer, update display'],
         [0x0439, 0x044d, 'XXX'],
         [0x044e, 0x0457, 'print A, E times (entry 0x450)'],
@@ -290,8 +293,8 @@ jdc = {
         [0x04a9, 0x04b2, 'wait for keyboard'],
         [0x04B3, 0x04CA, 'clear display?'],
         [0x04CB, 0x04D0, 'disable interrupt, get key?, enable interrupt'],
-        [0x04D1, 0x04D7, 'wait for key 0x0E'],
-        [0x04D8, 0x0547, 'read key(s)?'],
+        [0x04D1, 0x04D7, 'STOP, wait for key GO (0xe)'],
+        [0x04D8, 0x0547, 'read_key()'],
         [0x0548, 0x0552, 'unknown'],
         [0x0553, 0x0562, 'updis() - called after printing line?'],
         [0x0563, 0x056d, 'unknown key function?'],
@@ -308,12 +311,11 @@ jdc = {
         [0x0607, 0x062a, 'hexx_input()?'],
 
         [0x0642, 0x0651, 'multiply() = de * bc'],
-        [0x0652, 0x0686, 'divide() = hl / de'],
-        [0x0687, 0x0689, '???'],
+        [0x0652, 0x0689, 'divide() = hl / de'],
         [0x068a, 0x06b0, 'bin_to_string()'],
 
         [0x0767, 0x0774, 'called from x003c (nibbl rotation?)'],
-        [0x0775, 0x07ff, 'unexplored x700 region'],
+        [0x0775, 0x07ff, 'UNEXPLORED x700 region'],
 
 
         [0x0800, 0x0802, 'READ vec'],
@@ -326,11 +328,11 @@ jdc = {
         [0x0815, 0x0817, 'CLRDK vec'],
         [0x0818, 0x081a, 'REPORT vec'],
         [0x081b, 0x082f, 'unknown jump vectors'],
-        [0x0830, 0x0970, 'open()...'],
-
+        [0x0830, 0x088d, 'open()'],
         [0x088e, 0x0949, 'read()'],
         [0x094a, 0x0974, 'write()'],
         [0x0975, 0x0b3a, 'rewrite()'],
+        [0x0b3b, 0x0d1d, 'UNEXPLORED'],
         [0x0d1e, 0x0d6a, 'loader()'],
         [0x0d6b, 0x0d8a, 'clrdk() '],
         [0x0d8b, 0x0d8d, 'text string? - IWS'],
@@ -339,6 +341,7 @@ jdc = {
         [0x0de1, 0x0e4e, 'text strings - INDEX .. WEIRD ERR'],
         [0x0e4f, 0x0fe0, 'key search()'],
         [0x0fe1, 0x0fff, 'Setup disk: Records:88, Rec per Track: 130, Rec len 24 bytes'],
+
         # 1000 - 17ff marked as unused in ROS Manual!
         [0x1003, 0x1005, 'write?'],
         [0x1009, 0x100b, 'key search jump vector'],
@@ -346,28 +349,30 @@ jdc = {
         [0x1144, 0x1284, 'write??'],
         [0x1285, 0x12c0, 'unknown (disk?) function'],
         [0x12c1, 0x12dd, 'Set PART1 and PART2'],
-
+        [0x12de, 0x1364, 'UNEXPLORED'],
         [0x1365, 0x140d, 'Search for valid ID Record'],
         [0x140e, 0x141a, 'skip 4*l + 3 bytes'],
-        [0x141b, 0x1474, 'unexplored'],
+        [0x141b, 0x1474, 'UNEXPLORED'],
         [0x1475, 0x147b, '????'],
         [0x147c, 0x14a7, 'do checksum on all records on disk (inferred)'],
-
+        [0x14a8, 0x1569, 'UNEXPLORED'],
         [0x156a, 0x158d, 'unknown IWS function i'],
+
         [0x1594, 0x15ab, 'unknown IWS function ii'],
         [0x15ac, 0x1604, 'unknown IWS functions'],
         [0x1605, 0x166a, 'ASCI CHARS ERROR MESSAGES'],
         [0x166b, 0x17ff, 'KEY ()?'],
+        
         [0x1800, 0x1877, 'PL/1 1'],
         [0x1878, 0x187b, 'bbbb()'],
         [0x187c, 0x1b80, 'run microcode program'],
         [0x1b81, 0x1ba2, 'return from file operations'],
-        [0x1ba3, 0x1ccd, 'unexplored'],
+        [0x1ba3, 0x1ccd, 'UNEXPLORED'],
         [0x1cce, 0x1d2a, 'aaaa()'],
         [0x1d2b, 0x1d33, 'increment IPC value'],
-        [0x1d34, 0x1f52, 'unexplored'],
+        [0x1d34, 0x1f52, 'UNEXPLORED'],
         [0x1f53, 0x1f61, 'cccc() - clear 8 bytes in scratch'],
-        [0x1f62, 0x1fff, 'unexplored'],
+        [0x1f62, 0x1fff, 'UNEXPLORED'],
 
 
     ]

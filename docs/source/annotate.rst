@@ -313,7 +313,7 @@ From **disassembly.py -a** on 2024 07 30
   0366 fb           ; ei                   |
   0367 c9           ; ret                  |
 
-  ;unknown 1
+  ;unknown
   0368 7b           ; ld a, e              |
   0369 b2           ; or d                 |
   036a c8           ; ret z                |
@@ -390,13 +390,15 @@ From **disassembly.py -a** on 2024 07 30
   03ca f3           ; di                   |
   03cb ff           ; rst 0x38             |
 
-  ;unknown 3
+  ;unknown
   03cd c5           ; push bc              |
   03ce cd 86 40     ; call 0x4086          |
   03d1 c1           ; pop bc               |
   03d2 e1           ; pop hl               |
   03d3 f3           ; di                   |
   03d4 ff           ; rst 0x38             |
+
+  ;unknown
   03d5 18 b8        ; jr 0x38f             | check printer status
   03d7 cd 10 04     ; call 0x410           | clear keyboard buffer, update display
   03da cd a9 04     ; call 0x4a9           |
@@ -549,13 +551,13 @@ From **disassembly.py -a** on 2024 07 30
   04cf fb           ; ei                   |
   04d0 c9           ; ret                  |
 
-  ;wait for key 0x0E
+  ;STOP, wait for key GO (0xe)
   04d1 db 01        ; in a, (0x1)          |
   04d3 fe 0e        ; cp 0xe               | key: GO
   04d5 20 fa        ; jr nz, 0x4d1         |
   04d7 c9           ; ret                  |
 
-  ;read key(s)?
+  ;read_key()
   04d8 db 01        ; in a, (0x1)          |
   04da b7           ; or a                 |
   04db c8           ; ret z                |
@@ -829,8 +831,6 @@ From **disassembly.py -a** on 2024 07 30
   0684 6f           ; ld l, a              |
   0685 23           ; inc hl               |
   0686 c9           ; ret                  |
-
-  ;???
   0687 e1           ; pop hl               |
   0688 18 eb        ; jr 0x675             |
 
@@ -863,6 +863,99 @@ From **disassembly.py -a** on 2024 07 30
   06ae 1b           ; dec de               |
   06af 12           ; ld (de), a           |
   06b0 c9           ; ret                  |
+
+  ;called from x003c (nibbl rotation?)
+  0767 c5           ; push bc              |
+  0768 06 10        ; ld b, 0x10           |
+  076a 21 00 42     ; ld hl, 0x4200        |
+  076d af           ; xor a                |
+  076e ed 6f        ; rld                  |
+  0770 23           ; inc hl               |
+  0771 10 fb        ; djnz 0x76e           |
+  0773 c1           ; pop bc               |
+  0774 c9           ; ret                  |
+
+  ;UNEXPLORED x700 region
+  0775 cd d8 04     ; call 0x4d8           | call getkey?
+  0778 21 89 40     ; ld hl, 0x4089        |
+  077b 7e           ; ld a, (hl)           |
+  077c 23           ; inc hl               |
+  077d be           ; cp (hl)              |
+  077e 28 3c        ; jr z, 0x7bc          |
+  0780 db 0c        ; in a, (0xc)          | unknown input (0xc undocumented, rs232?)
+  0782 cb 77        ; bit 0x6, a           |
+  0784 28 06        ; jr z, 0x78c          |
+  0786 3e c0        ; ld a, 0xc0           |
+  0788 d3 0c        ; out (0xc), a         |
+  078a 18 30        ; jr 0x7bc             |
+  078c e6 80        ; and 0x80             |
+  078e 20 2c        ; jr nz, 0x7bc         |
+  0790 21 89 40     ; ld hl, 0x4089        |
+  0793 7e           ; ld a, (hl)           |
+  0794 23           ; inc hl               |
+  0795 96           ; sub (hl)             |
+  0796 28 24        ; jr z, 0x7bc          |
+  0798 6e           ; ld l, (hl)           |
+  0799 26 41        ; ld h, 0x41           |
+  079b 2c           ; inc l                |
+  079c 7d           ; ld a, l              |
+  079d f6 80        ; or 0x80              |
+  079f 32 8a 40     ; ld (0x408a), a       | set PTC = a
+  07a2 6f           ; ld l, a              |
+  07a3 7e           ; ld a, (hl)           |
+  07a4 fe 0d        ; cp 0xd               |
+  07a6 20 04        ; jr nz, 0x7ac         |
+  07a8 3e 0a        ; ld a, 0xa            |
+  07aa 18 06        ; jr 0x7b2             |
+  07ac fe 0a        ; cp 0xa               |
+  07ae 20 02        ; jr nz, 0x7b2         |
+  07b0 3e 0d        ; ld a, 0xd            |
+  07b2 fe 7f        ; cp 0x7f              |
+  07b4 20 02        ; jr nz, 0x7b8         |
+  07b6 3e 7e        ; ld a, 0x7e           |
+  07b8 e6 7f        ; and 0x7f             |
+  07ba d3 0c        ; out (0xc), a         |
+  07bc c3 36 00     ; jp 0x36              |
+  07bf 41           ; ld b, c              |
+  07c0 7e           ; ld a, (hl)           |
+  07c1 12           ; ld (de), a           |
+  07c2 7b           ; ld a, e              |
+  07c3 32 89 40     ; ld (0x4089), a       | set PLC = a
+  07c6 23           ; inc hl               |
+  07c7 0d           ; dec c                |
+  07c8 20 c8        ; jr nz, 0x792         |
+  07ca f3           ; di                   |
+  07cb ff           ; rst 0x38             |
+  07cc c9           ; ret                  |
+  07cd c5           ; push bc              |
+  07ce cd 86 40     ; call 0x4086          |
+  07d1 c1           ; pop bc               |
+  07d2 e1           ; pop hl               |
+  07d3 f3           ; di                   |
+  07d4 ff           ; rst 0x38             |
+  07d5 18 b8        ; jr 0x78f             |
+  07d7 cd 10 04     ; call 0x410           |
+  07da cd a9 04     ; call 0x4a9           |
+  07dd 3a 92 40     ; ld a, (0x4092)       | get a = TOOK
+  07e0 6f           ; ld l, a              |
+  07e1 26 41        ; ld h, 0x41           |
+  07e3 0e 00        ; ld c, 0x0            |
+  07e5 7e           ; ld a, (hl)           |
+  07e6 2c           ; inc l                |
+  07e7 fa d7 03     ; jp m, 0x3d7          |
+  07ea fe 20        ; cp 0x20              |
+  07ec 28 f7        ; jr z, 0x7e5          |
+  07ee 7d           ; ld a, l              |
+  07ef 3d           ; dec a                |
+  07f0 32 92 40     ; ld (0x4092), a       | set TOOK = a
+  07f3 06 08        ; ld b, 0x8            |
+  07f5 0c           ; inc c                |
+  07f6 7e           ; ld a, (hl)           |
+  07f7 23           ; inc hl               |
+  07f8 fe 30        ; cp 0x30              |
+  07fa 05           ; dec b                |
+  07fb 28 02        ; jr z, 0x7ff          |
+  07fd c3 75 07     ; jp 0x775             |
 
   ;READ vec
   0800 c3 8e 08     ; jp 0x88e             |
@@ -900,7 +993,7 @@ From **disassembly.py -a** on 2024 07 30
   082a c3 5a 0b     ; jp 0xb5a             |
   082d c3 67 0b     ; jp 0xb67             |
 
-  ;open()...
+  ;open()
   0830 97           ; sub a                |
   0831 32 ad 40     ; ld (0x40ad), a       | set Disk # = a
   0834 3e 80        ; ld a, 0x80           |
@@ -952,124 +1045,6 @@ From **disassembly.py -a** on 2024 07 30
   0889 e1           ; pop hl               |
   088a 01 df 0d     ; ld bc, 0xddf         |
   088d c9           ; ret                  |
-  088e cd b8 0f     ; call 0xfb8           |
-  0891 c3 00 10     ; jp 0x1000            |
-  0894 cd f0 0a     ; call 0xaf0           |
-  0897 c0           ; ret nz               |
-  0898 21 9d 40     ; ld hl, 0x409d        |
-  089b 36 20        ; ld (hl), 0x20        |
-  089d cd 5a 0b     ; call 0xb5a           |
-  08a0 cd d3 0a     ; call 0xad3           |
-  08a3 cd 3b 0b     ; call 0xb3b           |
-  08a6 1e ff        ; ld e, 0xff           |
-  08a8 cd 67 0b     ; call 0xb67           |
-  08ab ca 36 09     ; jp z, 0x936          |
-  08ae cd 8d 0c     ; call 0xc8d           |
-  08b1 c2 36 09     ; jp nz, 0x936         |
-  08b4 3a b8 40     ; ld a, (0x40b8)       | get a = PART2 unused length
-  08b7 3c           ; inc a                |
-  08b8 47           ; ld b, a              |
-  08b9 0e 19        ; ld c, 0x19           |
-  08bb d9           ; exx                  |
-  08bc 2a b6 40     ; ld hl, (0x40b6)      | get hl = PART1 (length to be transferred)
-  08bf 7c           ; ld a, h              |
-  08c0 1f           ; rra                  |
-  08c1 7d           ; ld a, l              |
-  08c2 1f           ; rra                  |
-  08c3 47           ; ld b, a              |
-  08c4 21 ee 08     ; ld hl, 0x8ee         |
-  08c7 30 04        ; jr nc, 0x8cd         |
-  08c9 21 f4 08     ; ld hl, 0x8f4         |
-  08cc 04           ; inc b                |
-  08cd e5           ; push hl              |
-  08ce 2a a2 40     ; ld hl, (0x40a2)      | get hl = TRKS  (track # for drive 2)
-  08d1 2b           ; dec hl               |
-  08d2 56           ; ld d, (hl)           |
-  08d3 db 1a        ; in a, (0x1a)         |
-  08d5 0e 1a        ; ld c, 0x1a           |
-  08d7 ed 78        ; in a, (c)            |
-  08d9 f2 d7 08     ; jp p, 0x8d7          |
-  08dc 0d           ; dec c                |
-  08dd db 19        ; in a, (0x19)         | read byte from disk 2
-  08df fe 9b        ; cp 0x9b              | is Data record?
-  08e1 c8           ; ret z                |
-  08e2 e1           ; pop hl               |
-  08e3 21 9d 40     ; ld hl, 0x409d        |
-  08e6 3e 02        ; ld a, 0x2            |
-  08e8 35           ; dec (hl)             |
-  08e9 28 4b        ; jr z, 0x936          |
-  08eb 18 b9        ; jr 0x8a6             |
-  08ed 23           ; inc hl               |
-  08ee ed 58        ; in e, (c)            | read byte from disk 2
-  08f0 72           ; ld (hl), d           |
-  08f1 23           ; inc hl               |
-  08f2 73           ; ld (hl), e           |
-  08f3 83           ; add a, e             |
-  08f4 ed 50        ; in d, (c)            | read byte from disk 2
-  08f6 82           ; add a, d             |
-  08f7 05           ; dec b                |
-  08f8 20 f3        ; jr nz, 0x8ed         |
-  08fa d9           ; exx                  |
-  08fb ed 68        ; in l, (c)            |
-  08fd 85           ; add a, l             |
-  08fe 05           ; dec b                |
-  08ff 20 fa        ; jr nz, 0x8fb         |
-  0901 95           ; sub l                |
-  0902 bd           ; cp l                 |
-  0903 db 19        ; in a, (0x19)         | read byte from disk 2
-  0905 20 dc        ; jr nz, 0x8e3         |
-  0907 d9           ; exx                  |
-  0908 23           ; inc hl               |
-  0909 72           ; ld (hl), d           |
-  090a fe 10        ; cp 0x10              |
-  090c 20 d5        ; jr nz, 0x8e3         |
-  090e 07           ; rlca                 |
-  090f 32 9d 40     ; ld (0x409d), a       | set ERC   (disk error count) = a
-  0912 2a a2 40     ; ld hl, (0x40a2)      | get hl = TRKS  (track # for drive 2)
-  0915 eb           ; ex de, hl            |
-  0916 2a 20 42     ; ld hl, (0x4220)      |
-  0919 19           ; add hl, de           |
-  091a 22 a2 40     ; ld (0x40a2), hl      | set TRKS  (track # for drive 2) = hl
-  091d d9           ; exx                  |
-  091e dd 34 00     ; inc (ix + 0x0)       |
-  0921 20 03        ; jr nz, 0x926         |
-  0923 dd 34 01     ; inc (ix + 0x1)       |
-  0926 3e 20        ; ld a, 0x20           |
-  0928 32 9d 40     ; ld (0x409d), a       | set ERC   (disk error count) = a
-  092b 97           ; sub a                |
-  092c 21 9c 40     ; ld hl, 0x409c        |
-  092f 1c           ; inc e                |
-  0930 35           ; dec (hl)             |
-  0931 c2 a8 08     ; jp nz, 0x8a8         |
-  0934 18 0f        ; jr 0x945             |
-  0936 dd 34 00     ; inc (ix + 0x0)       |
-  0939 20 03        ; jr nz, 0x93e         |
-  093b dd 34 01     ; inc (ix + 0x1)       |
-  093e 21 9c 40     ; ld hl, 0x409c        |
-  0941 35           ; dec (hl)             |
-  0942 20 f2        ; jr nz, 0x936         |
-  0944 b7           ; or a                 |
-  0945 fb           ; ei                   |
-  0946 dd e5        ; push ix              |
-  0948 c1           ; pop bc               |
-  0949 c9           ; ret                  |
-  094a cd b8 0f     ; call 0xfb8           |
-  094d c3 03 10     ; jp 0x1003            |
-  0950 cd f0 0a     ; call 0xaf0           |
-  0953 c0           ; ret nz               |
-  0954 cd 5a 0b     ; call 0xb5a           |
-  0957 cd d3 0a     ; call 0xad3           |
-  095a dd 5e 0e     ; ld e, (ix + 0xe)     |
-  095d 16 00        ; ld d, 0x0            |
-  095f dd 7e 10     ; ld a, (ix + 0x10)    |
-  0962 dd 96 12     ; sub (ix + 0x12)      |
-  0965 21 00 00     ; ld hl, 0x0           |
-  0968 3d           ; dec a                |
-  0969 19           ; add hl, de           |
-  096a 3c           ; inc a                |
-  096b 20 fc        ; jr nz, 0x969         |
-  096d dd 75 0a     ; ld (ix + 0xa), l     |
-  0970 dd 74 0b     ; ld (ix + 0xb), h     |
 
   ;read()
   088e cd b8 0f     ; call 0xfb8           |
@@ -1162,9 +1137,9 @@ From **disassembly.py -a** on 2024 07 30
   0930 35           ; dec (hl)             |
   0931 c2 a8 08     ; jp nz, 0x8a8         |
   0934 18 0f        ; jr 0x945             |
-  0936 dd 34 00     ; inc (ix + 0x0)       |
+  0936 dd 34 00     ; inc (ix + 0x0)       | increment Record Number (LO)
   0939 20 03        ; jr nz, 0x93e         |
-  093b dd 34 01     ; inc (ix + 0x1)       |
+  093b dd 34 01     ; inc (ix + 0x1)       | increment Record Number (HI)
   093e 21 9c 40     ; ld hl, 0x409c        |
   0941 35           ; dec (hl)             |
   0942 20 f2        ; jr nz, 0x936         |
@@ -1428,6 +1403,273 @@ From **disassembly.py -a** on 2024 07 30
   0b38 c1           ; pop bc               |
   0b39 b7           ; or a                 |
   0b3a c9           ; ret                  |
+
+  ;UNEXPLORED
+  0b3b dd 7e 16     ; ld a, (ix + 0x16)    |
+  0b3e dd 77 00     ; ld (ix + 0x0), a     |
+  0b41 dd 7e 17     ; ld a, (ix + 0x17)    |
+  0b44 dd 77 01     ; ld (ix + 0x1), a     |
+  0b47 2a 99 40     ; ld hl, (0x4099)      | get hl = THERE (addr for disk transfer)
+  0b4a 22 a2 40     ; ld (0x40a2), hl      | set TRKS  (track # for drive 2) = hl
+  0b4d 22 26 42     ; ld (0x4226), hl      |
+  0b50 3a 9c 40     ; ld a, (0x409c)       | get a = SNRT  (# recs to be transfd)
+  0b53 32 9b 40     ; ld (0x409b), a       | set NRT   (disk record count) = a
+  0b56 32 28 42     ; ld (0x4228), a       |
+  0b59 c9           ; ret                  |
+  0b5a dd 7e 00     ; ld a, (ix + 0x0)     |
+  0b5d dd 77 16     ; ld (ix + 0x16), a    |
+  0b60 dd 7e 01     ; ld a, (ix + 0x1)     |
+  0b63 dd 77 17     ; ld (ix + 0x17), a    |
+  0b66 c9           ; ret                  |
+  0b67 dd 7e 01     ; ld a, (ix + 0x1)     |
+  0b6a dd be 0b     ; cp (ix + 0xb)        |
+  0b6d 20 06        ; jr nz, 0xb75         |
+  0b6f dd 7e 00     ; ld a, (ix + 0x0)     |
+  0b72 dd be 0a     ; cp (ix + 0xa)        |
+  0b75 d8           ; ret c                |
+  0b76 97           ; sub a                |
+  0b77 3e 06        ; ld a, 0x6            |
+  0b79 c9           ; ret                  |
+  0b7a 0e 1a        ; ld c, 0x1a           |
+  0b7c 21 10 27     ; ld hl, 0x2710        |
+  0b7f f3           ; di                   |
+  0b80 ed 78        ; in a, (c)            |
+  0b82 ed 78        ; in a, (c)            |
+  0b84 fa 95 0b     ; jp m, 0xb95          |
+  0b87 2d           ; dec l                |
+  0b88 20 f8        ; jr nz, 0xb82         |
+  0b8a ed 78        ; in a, (c)            |
+  0b8c fa 95 0b     ; jp m, 0xb95          |
+  0b8f 25           ; dec h                |
+  0b90 20 f0        ; jr nz, 0xb82         |
+  0b92 fb           ; ei                   |
+  0b93 3c           ; inc a                |
+  0b94 c9           ; ret                  |
+  0b95 db 19        ; in a, (0x19)         |
+  0b97 fe 9e        ; cp 0x9e              |
+  0b99 20 e5        ; jr nz, 0xb80         |
+  0b9b 0d           ; dec c                |
+  0b9c ed 40        ; in b, (c)            |
+  0b9e ed 48        ; in c, (c)            |
+  0ba0 db 19        ; in a, (0x19)         |
+  0ba2 90           ; sub b                |
+  0ba3 91           ; sub c                |
+  0ba4 20 da        ; jr nz, 0xb80         |
+  0ba6 fb           ; ei                   |
+  0ba7 21 a1 40     ; ld hl, 0x40a1        |
+  0baa 70           ; ld (hl), b           |
+  0bab 21 a1 40     ; ld hl, 0x40a1        |
+  0bae 3a a0 40     ; ld a, (0x40a0)       | get a = DISK  (selected disk drive #)
+  0bb1 3c           ; inc a                |
+  0bb2 e6 fe        ; and 0xfe             |
+  0bb4 fe 06        ; cp 0x6               |
+  0bb6 28 0b        ; jr z, 0xbc3          |
+  0bb8 3a 1b 10     ; ld a, (0x101b)       |
+  0bbb fe c3        ; cp 0xc3              |
+  0bbd ca 1b 10     ; jp z, 0x101b         |
+  0bc0 c3 00 00     ; jp 0x0               |
+  0bc3 7e           ; ld a, (hl)           |
+  0bc4 72           ; ld (hl), d           |
+  0bc5 fe fe        ; cp 0xfe              |
+  0bc7 d0           ; ret nc               |
+  0bc8 47           ; ld b, a              |
+  0bc9 21 00 4d     ; ld hl, 0x4d00        |
+  0bcc bc           ; cp h                 |
+  0bcd 38 06        ; jr c, 0xbd5          |
+  0bcf ed 44        ; neg                  |
+  0bd1 c6 99        ; add a, 0x99          |
+  0bd3 47           ; ld b, a              |
+  0bd4 2c           ; inc l                |
+  0bd5 7a           ; ld a, d              |
+  0bd6 bc           ; cp h                 |
+  0bd7 38 07        ; jr c, 0xbe0          |
+  0bd9 ed 44        ; neg                  |
+  0bdb c6 99        ; add a, 0x99          |
+  0bdd 57           ; ld d, a              |
+  0bde cb fd        ; set 0x7, l           |
+  0be0 7d           ; ld a, l              |
+  0be1 b7           ; or a                 |
+  0be2 28 18        ; jr z, 0xbfc          |
+  0be4 fe 81        ; cp 0x81              |
+  0be6 28 14        ; jr z, 0xbfc          |
+  0be8 3a a0 40     ; ld a, (0x40a0)       | get a = DISK  (selected disk drive #)
+  0beb 67           ; ld h, a              |
+  0bec 3e 80        ; ld a, 0x80           |
+  0bee 07           ; rlca                 |
+  0bef 25           ; dec h                |
+  0bf0 20 fc        ; jr nz, 0xbee         |
+  0bf2 cb 85        ; res 0x0, l           |
+  0bf4 b5           ; or l                 |
+  0bf5 d3 1a        ; out (0x1a), a        |
+  0bf7 2e 02        ; ld l, 0x2            |
+  0bf9 cd 2c 0c     ; call 0xc2c           |
+  0bfc 78           ; ld a, b              |
+  0bfd 92           ; sub d                |
+  0bfe 47           ; ld b, a              |
+  0bff c8           ; ret z                |
+  0c00 0e 00        ; ld c, 0x0            |
+  0c02 30 05        ; jr nc, 0xc09         |
+  0c04 0e 40        ; ld c, 0x40           |
+  0c06 ed 44        ; neg                  |
+  0c08 47           ; ld b, a              |
+  0c09 79           ; ld a, c              |
+  0c0a b7           ; or a                 |
+  0c0b 20 09        ; jr nz, 0xc16         |
+  0c0d db 1a        ; in a, (0x1a)         |
+  0c0f e6 10        ; and 0x10             |
+  0c11 28 03        ; jr z, 0xc16          |
+  0c13 01 40 03     ; ld bc, 0x340         |
+  0c16 3e 20        ; ld a, 0x20           |
+  0c18 b1           ; or c                 |
+  0c19 d3 1b        ; out (0x1b), a        |
+  0c1b 79           ; ld a, c              |
+  0c1c d3 1b        ; out (0x1b), a        |
+  0c1e 2e d5        ; ld l, 0xd5           |
+  0c20 cd 2c 0c     ; call 0xc2c           |
+  0c23 cd 2c 0c     ; call 0xc2c           |
+  0c26 05           ; dec b                |
+  0c27 20 e0        ; jr nz, 0xc09         |
+  0c29 2e 9d        ; ld l, 0x9d           |
+  0c2b 04           ; inc b                |
+  0c2c db 19        ; in a, (0x19)         |
+  0c2e 2d           ; dec l                |
+  0c2f db 19        ; in a, (0x19)         |
+  0c31 c8           ; ret z                |
+  0c32 18 f8        ; jr 0xc2c             |
+  0c34 21 9d 40     ; ld hl, 0x409d        |
+  0c37 36 0a        ; ld (hl), 0xa         |
+  0c39 fb           ; ei                   |
+  0c3a dd 6e 00     ; ld l, (ix + 0x0)     |
+  0c3d dd 66 01     ; ld h, (ix + 0x1)     |
+  0c40 dd 7e 0e     ; ld a, (ix + 0xe)     |
+  0c43 dd 46 10     ; ld b, (ix + 0x10)    |
+  0c46 05           ; dec b                |
+  0c47 2f           ; cpl                  |
+  0c48 3c           ; inc a                |
+  0c49 5f           ; ld e, a              |
+  0c4a 16 ff        ; ld d, 0xff           |
+  0c4c 78           ; ld a, b              |
+  0c4d 19           ; add hl, de           |
+  0c4e 3c           ; inc a                |
+  0c4f 38 fc        ; jr c, 0xc4d          |
+  0c51 57           ; ld d, a              |
+  0c52 7d           ; ld a, l              |
+  0c53 93           ; sub e                |
+  0c54 5f           ; ld e, a              |
+  0c55 cd 7a 0b     ; call 0xb7a           |
+  0c58 21 a1 40     ; ld hl, 0x40a1        |
+  0c5b 56           ; ld d, (hl)           |
+  0c5c 28 2f        ; jr z, 0xc8d          |
+  0c5e 2e 9d        ; ld l, 0x9d           |
+  0c60 cd 2c 0c     ; call 0xc2c           |
+  0c63 21 00 80     ; ld hl, 0x8000        |
+  0c66 0e 1a        ; ld c, 0x1a           |
+  0c68 2d           ; dec l                |
+  0c69 28 0b        ; jr z, 0xc76          |
+  0c6b ed 40        ; in b, (c)            |
+  0c6d f2 68 0c     ; jp p, 0xc68          |
+  0c70 db 19        ; in a, (0x19)         |
+  0c72 d6 9b        ; sub 0x9b             |
+  0c74 28 17        ; jr z, 0xc8d          |
+  0c76 25           ; dec h                |
+  0c77 20 ef        ; jr nz, 0xc68         |
+  0c79 21 9d 40     ; ld hl, 0x409d        |
+  0c7c 35           ; dec (hl)             |
+  0c7d 01 00 01     ; ld bc, 0x100         |
+  0c80 28 3a        ; jr z, 0xcbc          |
+  0c82 db 1a        ; in a, (0x1a)         |
+  0c84 e6 10        ; and 0x10             |
+  0c86 20 34        ; jr nz, 0xcbc         |
+  0c88 cd 09 0c     ; call 0xc09           |
+  0c8b 18 d1        ; jr 0xc5e             |
+  0c8d 7b           ; ld a, e              |
+  0c8e dd 6e 0e     ; ld l, (ix + 0xe)     |
+  0c91 bd           ; cp l                 |
+  0c92 30 a5        ; jr nc, 0xc39         |
+  0c94 21 00 08     ; ld hl, 0x800         |
+  0c97 0e 1a        ; ld c, 0x1a           |
+  0c99 f3           ; di                   |
+  0c9a db 1a        ; in a, (0x1a)         |
+  0c9c ed 78        ; in a, (c)            |
+  0c9e f2 9c 0c     ; jp p, 0xc9c          |
+  0ca1 db 19        ; in a, (0x19)         |
+  0ca3 fe 9e        ; cp 0x9e              |
+  0ca5 20 0f        ; jr nz, 0xcb6         |
+  0ca7 db 19        ; in a, (0x19)         |
+  0ca9 ba           ; cp d                 |
+  0caa 20 14        ; jr nz, 0xcc0         |
+  0cac db 19        ; in a, (0x19)         |
+  0cae bb           ; cp e                 |
+  0caf 20 05        ; jr nz, 0xcb6         |
+  0cb1 db 19        ; in a, (0x19)         |
+  0cb3 93           ; sub e                |
+  0cb4 92           ; sub d                |
+  0cb5 c8           ; ret z                |
+  0cb6 fb           ; ei                   |
+  0cb7 2b           ; dec hl               |
+  0cb8 7d           ; ld a, l              |
+  0cb9 b4           ; or h                 |
+  0cba 20 dd        ; jr nz, 0xc99         |
+  0cbc 3e 01        ; ld a, 0x1            |
+  0cbe b7           ; or a                 |
+  0cbf c9           ; ret                  |
+  0cc0 4f           ; ld c, a              |
+  0cc1 db 19        ; in a, (0x19)         |
+  0cc3 47           ; ld b, a              |
+  0cc4 db 19        ; in a, (0x19)         |
+  0cc6 91           ; sub c                |
+  0cc7 90           ; sub b                |
+  0cc8 41           ; ld b, c              |
+  0cc9 0e 1a        ; ld c, 0x1a           |
+  0ccb 20 cc        ; jr nz, 0xc99         |
+  0ccd db 19        ; in a, (0x19)         |
+  0ccf fe 10        ; cp 0x10              |
+  0cd1 20 c6        ; jr nz, 0xc99         |
+  0cd3 78           ; ld a, b              |
+  0cd4 32 a1 40     ; ld (0x40a1), a       | set TRKS  (track # for drive 1) = a
+  0cd7 21 9d 40     ; ld hl, 0x409d        |
+  0cda 35           ; dec (hl)             |
+  0cdb 28 df        ; jr z, 0xcbc          |
+  0cdd c3 39 0c     ; jp 0xc39             |
+  0ce0 01 0a 00     ; ld bc, 0xa           |
+  0ce3 54           ; ld d, h              |
+  0ce4 5d           ; ld e, l              |
+  0ce5 09           ; add hl, bc           |
+  0ce6 eb           ; ex de, hl            |
+  0ce7 7e           ; ld a, (hl)           |
+  0ce8 36 00        ; ld (hl), 0x0         |
+  0cea 12           ; ld (de), a           |
+  0ceb 23           ; inc hl               |
+  0cec 13           ; inc de               |
+  0ced 7e           ; ld a, (hl)           |
+  0cee 36 00        ; ld (hl), 0x0         |
+  0cf0 12           ; ld (de), a           |
+  0cf1 13           ; inc de               |
+  0cf2 13           ; inc de               |
+  0cf3 13           ; inc de               |
+  0cf4 13           ; inc de               |
+  0cf5 1a           ; ld a, (de)           |
+  0cf6 32 ad 40     ; ld (0x40ad), a       | set Disk # = a
+  0cf9 cd e1 0f     ; call 0xfe1           |
+  0cfc 12           ; ld (de), a           |
+  0cfd 11 02 00     ; ld de, 0x2           |
+  0d00 01 9e 40     ; ld bc, 0x409e        |
+  0d03 02           ; ld (bc), a           |
+  0d04 03           ; inc bc               |
+  0d05 02           ; ld (bc), a           |
+  0d06 0b           ; dec bc               |
+  0d07 3e 08        ; ld a, 0x8            |
+  0d09 e5           ; push hl              |
+  0d0a 23           ; inc hl               |
+  0d0b cd 09 08     ; call 0x809           |
+  0d0e e1           ; pop hl               |
+  0d0f 20 09        ; jr nz, 0xd1a         |
+  0d11 2b           ; dec hl               |
+  0d12 3e 01        ; ld a, 0x1            |
+  0d14 11 14 00     ; ld de, 0x14          |
+  0d17 cc 03 08     ; call z, 0x803        |
+  0d1a 01 df 0d     ; ld bc, 0xddf         |
+  0d1d c9           ; ret                  |
 
   ;loader()
   0d1e 21 d0 40     ; ld hl, 0x40d0        |
@@ -2234,6 +2476,71 @@ From **disassembly.py -a** on 2024 07 30
   12da 22 b6 40     ; ld (0x40b6), hl      | set PART1 (length to be transferred) = hl
   12dd c9           ; ret                  |
 
+  ;UNEXPLORED
+  12de 22 99 40     ; ld (0x4099), hl      | set THERE (addr for disk transfer) = hl
+  12e1 32 9c 40     ; ld (0x409c), a       | set SNRT  (# recs to be transfd) = a
+  12e4 6b           ; ld l, e              |
+  12e5 62           ; ld h, d              |
+  12e6 22 20 42     ; ld (0x4220), hl      | Store INDEX (curr rec no on index)
+  12e9 dd 6e 0f     ; ld l, (ix + 0xf)     | get l = disk# on INDEX
+  12ec 3a a0 40     ; ld a, (0x40a0)       | get a = DISK  (selected disk drive #)
+  12ef bd           ; cp l                 |
+  12f0 28 27        ; jr z, 0x1319         |
+  12f2 3e 80        ; ld a, 0x80           |
+  12f4 65           ; ld h, l              |
+  12f5 07           ; rlca                 |
+  12f6 2d           ; dec l                |
+  12f7 20 fc        ; jr nz, 0x12f5        |
+  12f9 6c           ; ld l, h              |
+  12fa 67           ; ld h, a              |
+  12fb d3 0a        ; out (0xa), a         |
+  12fd db 0a        ; in a, (0xa)          |
+  12ff 0f           ; rrca                 |
+  1300 38 e7        ; jr c, 0x12e9         |
+  1302 7c           ; ld a, h              |
+  1303 d3 0a        ; out (0xa), a         |
+  1305 7d           ; ld a, l              |
+  1306 32 a0 40     ; ld (0x40a0), a       | set DISK  (selected disk drive #) = a
+  1309 3e ff        ; ld a, 0xff           |
+  130b 32 a1 40     ; ld (0x40a1), a       | set TRKS  (track # for drive 1) = a
+  130e 2e 24        ; ld l, 0x24           | Skip 143 bytes (track 0)
+  1310 cd 0e 14     ; call 0x140e          |
+  1313 cd 0e 14     ; call 0x140e          | Skip 1023 bytes (track 0)
+  1316 cd 0e 14     ; call 0x140e          | Skip 1023 bytes (track 0)
+  1319 db 0a        ; in a, (0xa)          | get disk status
+  131b e6 40        ; and 0x40             | check if disk is ready
+  131d 28 02        ; jr z, 0x1321         | goto error return
+  131f 97           ; sub a                |
+  1320 c9           ; ret                  | return OK
+  1321 3e 05        ; ld a, 0x5            |
+  1323 b7           ; or a                 |
+  1324 c9           ; ret                  | return error # 5 (inferred)
+  1325 dd 7e 16     ; ld a, (ix + 0x16)    | rec before last
+  1328 dd 77 00     ; ld (ix + 0x0), a     |
+  132b dd 7e 17     ; ld a, (ix + 0x17)    |
+  132e dd 77 01     ; ld (ix + 0x1), a     | set current record number on INDEX
+  1331 2a 99 40     ; ld hl, (0x4099)      | get hl = THERE (addr for disk transfer)
+  1334 22 a2 40     ; ld (0x40a2), hl      | set TRKS  (track # for drive 2) = hl
+  1337 22 26 42     ; ld (0x4226), hl      |
+  133a 3a 9c 40     ; ld a, (0x409c)       | get a = SNRT  (# recs to be transfd)
+  133d 32 9b 40     ; ld (0x409b), a       | set NRT   (disk record count) = a
+  1340 32 28 42     ; ld (0x4228), a       |
+  1343 c9           ; ret                  |
+  1344 dd 7e 00     ; ld a, (ix + 0x0)     | copy record number (hi+lo) to last reordnumber on INDEX FD
+  1347 dd 77 16     ; ld (ix + 0x16), a    |
+  134a dd 7e 01     ; ld a, (ix + 0x1)     |
+  134d dd 77 17     ; ld (ix + 0x17), a    |
+  1350 c9           ; ret                  |
+  1351 dd 7e 01     ; ld a, (ix + 0x1)     | get a = current record # on INDEX (LO)
+  1354 dd be 0b     ; cp (ix + 0xb)        | compare with same (LO) on INDEX FD
+  1357 c2 60 13     ; jp nz, 0x1360        |
+  135a dd 7e 00     ; ld a, (ix + 0x0)     | compare with same (HI) on INDEX FD
+  135d dd be 0a     ; cp (ix + 0xa)        |
+  1360 d8           ; ret c                |
+  1361 97           ; sub a                |
+  1362 3e 06        ; ld a, 0x6            |
+  1364 c9           ; ret                  |
+
   ;Search for valid ID Record
   1365 d5           ; push de              |
   1366 0e 0a        ; ld c, 0xa            |
@@ -2346,7 +2653,7 @@ From **disassembly.py -a** on 2024 07 30
   1417 db 09        ; in a, (0x9)          | read byte from disk
   1419 18 f3        ; jr 0x140e            |
 
-  ;unexplored
+  ;UNEXPLORED
   141b 21 9d 40     ; ld hl, 0x409d        |
   141e 36 0a        ; ld (hl), 0xa         | set ERC to 10
   1420 fb           ; ei                   |
@@ -2429,6 +2736,126 @@ From **disassembly.py -a** on 2024 07 30
   14a4 3e 01        ; ld a, 0x1            | return error code 1?
   14a6 b7           ; or a                 |
   14a7 c9           ; ret                  |
+
+  ;UNEXPLORED
+  14a8 4f           ; ld c, a              |
+  14a9 db 09        ; in a, (0x9)          | read byte from disk
+  14ab 47           ; ld b, a              |
+  14ac db 09        ; in a, (0x9)          | read byte from disk
+  14ae 91           ; sub c                |
+  14af 90           ; sub b                |
+  14b0 41           ; ld b, c              |
+  14b1 0e 0a        ; ld c, 0xa            |
+  14b3 20 cc        ; jr nz, 0x1481        |
+  14b5 db 09        ; in a, (0x9)          |
+  14b7 fe 10        ; cp 0x10              |
+  14b9 20 c6        ; jr nz, 0x1481        |
+  14bb 78           ; ld a, b              |
+  14bc 32 a1 40     ; ld (0x40a1), a       | set TRKS  (track # for drive 1) = a
+  14bf 21 9d 40     ; ld hl, 0x409d        |
+  14c2 35           ; dec (hl)             |
+  14c3 28 df        ; jr z, 0x14a4         |
+  14c5 c3 20 14     ; jp 0x1420            |
+  14c8 01 0a 00     ; ld bc, 0xa           |
+  14cb 54           ; ld d, h              |
+  14cc 5d           ; ld e, l              |
+  14cd 09           ; add hl, bc           |
+  14ce eb           ; ex de, hl            |
+  14cf 7e           ; ld a, (hl)           |
+  14d0 36 00        ; ld (hl), 0x0         |
+  14d2 12           ; ld (de), a           |
+  14d3 23           ; inc hl               |
+  14d4 13           ; inc de               |
+  14d5 7e           ; ld a, (hl)           |
+  14d6 36 00        ; ld (hl), 0x0         |
+  14d8 12           ; ld (de), a           |
+  14d9 13           ; inc de               |
+  14da 13           ; inc de               |
+  14db 13           ; inc de               |
+  14dc 13           ; inc de               |
+  14dd 1a           ; ld a, (de)           |
+  14de 32 ad 40     ; ld (0x40ad), a       | set Disk # = a
+  14e1 fe 07        ; cp 0x7               |
+  14e3 fa f0 14     ; jp m, 0x14f0         |
+  14e6 28 04        ; jr z, 0x14ec         |
+  14e8 fe 08        ; cp 0x8               |
+  14ea 20 04        ; jr nz, 0x14f0        |
+  14ec 3e 7a        ; ld a, 0x7a           |
+  14ee 18 02        ; jr 0x14f2            |
+  14f0 3e 82        ; ld a, 0x82           |
+  14f2 32 ac 40     ; ld (0x40ac), a       | set Records/Track = a
+  14f5 97           ; sub a                |
+  14f6 12           ; ld (de), a           |
+  14f7 11 02 00     ; ld de, 0x2           |
+  14fa 01 9e 40     ; ld bc, 0x409e        |
+  14fd 02           ; ld (bc), a           |
+  14fe 03           ; inc bc               |
+  14ff 02           ; ld (bc), a           |
+  1500 0b           ; dec bc               |
+  1501 3e 08        ; ld a, 0x8            |
+  1503 e5           ; push hl              |
+  1504 23           ; inc hl               |
+  1505 cd 09 10     ; call 0x1009          |
+  1508 e1           ; pop hl               |
+  1509 20 09        ; jr nz, 0x1514        |
+  150b 2b           ; dec hl               |
+  150c 3e 01        ; ld a, 0x1            |
+  150e 11 14 00     ; ld de, 0x14          |
+  1511 cc 03 10     ; call z, 0x1003       |
+  1514 01 03 16     ; ld bc, 0x1603        |
+  1517 c9           ; ret                  |
+  1518 21 d0 40     ; ld hl, 0x40d0        |
+  151b cd 30 10     ; call 0x1030          |
+  151e c0           ; ret nz               |
+  151f 06 03        ; ld b, 0x3            |
+  1521 3a da 40     ; ld a, (0x40da)       | get a = Number of Records (LFILE)
+  1524 4f           ; ld c, a              |
+  1525 78           ; ld a, b              |
+  1526 b9           ; cp c                 |
+  1527 30 37        ; jr nc, 0x1560        |
+  1529 21 d0 40     ; ld hl, 0x40d0        |
+  152c 70           ; ld (hl), b           |
+  152d 04           ; inc b                |
+  152e 04           ; inc b                |
+  152f 04           ; inc b                |
+  1530 04           ; inc b                |
+  1531 11 ff 00     ; ld de, 0xff          |
+  1534 c5           ; push bc              |
+  1535 01 d0 40     ; ld bc, 0x40d0        |
+  1538 21 00 42     ; ld hl, 0x4200        |
+  153b 3e 01        ; ld a, 0x1            |
+  153d cd 00 10     ; call 0x1000          |
+  1540 e1           ; pop hl               |
+  1541 c0           ; ret nz               |
+  1542 e5           ; push hl              |
+  1543 21 ff 42     ; ld hl, 0x42ff        |
+  1546 36 00        ; ld (hl), 0x0         |
+  1548 2c           ; inc l                |
+  1549 c1           ; pop bc               |
+  154a 7e           ; ld a, (hl)           |
+  154b b7           ; or a                 |
+  154c 28 d3        ; jr z, 0x1521         |
+  154e c5           ; push bc              |
+  154f 23           ; inc hl               |
+  1550 5e           ; ld e, (hl)           |
+  1551 23           ; inc hl               |
+  1552 56           ; ld d, (hl)           |
+  1553 23           ; inc hl               |
+  1554 4e           ; ld c, (hl)           |
+  1555 0c           ; inc c                |
+  1556 0d           ; dec c                |
+  1557 23           ; inc hl               |
+  1558 28 ef        ; jr z, 0x1549         |
+  155a 06 00        ; ld b, 0x0            |
+  155c ed b0        ; ldir                 |
+  155e 18 e9        ; jr 0x1549            |
+  1560 3e 03        ; ld a, 0x3            |
+  1562 a0           ; and b                |
+  1563 3d           ; dec a                |
+  1564 fe ff        ; cp 0xff              |
+  1566 c8           ; ret z                |
+  1567 47           ; ld b, a              |
+  1568 18 b7        ; jr 0x1521            |
 
   ;unknown IWS function i
   156a 97           ; sub a                |
@@ -3419,7 +3846,7 @@ From **disassembly.py -a** on 2024 07 30
   1b9d 22 f7 40     ; ld (0x40f7), hl      |
   1ba0 c3 7c 18     ; jp 0x187c            | run loaded program!
 
-  ;unexplored
+  ;UNEXPLORED
   1ba3 cd 18 08     ; call 0x818           | call (error) REPORT
   1ba6 c3 97 1b     ; jp 0x1b97            |
   1ba9 2a f9 40     ; ld hl, (0x40f9)      |
@@ -3626,7 +4053,7 @@ From **disassembly.py -a** on 2024 07 30
   1cf6 36 00        ; ld (hl), 0x0         |
   1cf8 c3 f3 1c     ; jp 0x1cf3            |
   1cfb d1           ; pop de               |
-  1cfc 01 00 00     ; ld bc, 0x0           |
+  1cfc 01 00 00     ; ld bc, 0x0           | push 8 0x00 on stack (subroutine?)
   1cff c5           ; push bc              |
   1d00 c5           ; push bc              |
   1d01 c5           ; push bc              |
@@ -3663,14 +4090,14 @@ From **disassembly.py -a** on 2024 07 30
   1d30 22 fe 40     ; ld (0x40fe), hl      |
   1d33 c9           ; ret                  |
 
-  ;unexplored
+  ;UNEXPLORED
   1d34 e1           ; pop hl               |
   1d35 c3 7f 18     ; jp 0x187f            |
   1d38 e1           ; pop hl               |
   1d39 c1           ; pop bc               |
   1d3a 78           ; ld a, b              |
   1d3b b1           ; or c                 |
-  1d3c c2 7c 18     ; jp nz, 0x187c        |
+  1d3c c2 7c 18     ; jp nz, 0x187c        | run microcode program
   1d3f c3 7f 18     ; jp 0x187f            |
   1d42 21 0b 00     ; ld hl, 0xb           |
   1d45 39           ; add hl, sp           |
@@ -4028,7 +4455,7 @@ From **disassembly.py -a** on 2024 07 30
   1f5e c2 59 1f     ; jp nz, 0x1f59        |
   1f61 c9           ; ret                  |
 
-  ;unexplored
+  ;UNEXPLORED
   1f62 83           ; add a, e             |
   1f63 27           ; daa                  |
   1f64 d2 69 1f     ; jp nc, 0x1f69        |
@@ -4107,14 +4534,14 @@ From **disassembly.py -a** on 2024 07 30
   1fd5 53           ; ld d, e              |
   1fd6 1b           ; dec de               |
   1fd7 d5           ; push de              |
-  1fd8 c3 7c 18     ; jp 0x187c            |
+  1fd8 c3 7c 18     ; jp 0x187c            | run microcode program
   1fdb c1           ; pop bc               |
   1fdc e1           ; pop hl               |
   1fdd cd e7 1f     ; call 0x1fe7          |
   1fe0 48           ; ld c, b              |
   1fe1 06 00        ; ld b, 0x0            |
   1fe3 c5           ; push bc              |
-  1fe4 c3 7c 18     ; jp 0x187c            |
+  1fe4 c3 7c 18     ; jp 0x187c            | run microcode program
   1fe7 0c           ; inc c                |
   1fe8 7e           ; ld a, (hl)           |
   1fe9 23           ; inc hl               |
@@ -4132,5 +4559,5 @@ From **disassembly.py -a** on 2024 07 30
   1ff7 47           ; ld b, a              |
   1ff8 cd 39 00     ; call 0x39            |
   1ffb e5           ; push hl              |
-  1ffc c3 7c 18     ; jp 0x187c            |
+  1ffc c3 7c 18     ; jp 0x187c            | run microcode program
   1fff ff           ; rst 0x38             |
