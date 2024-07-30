@@ -61,7 +61,7 @@ class IO:
         self.incb[inaddr] = infunc
 
     def handle_io_in(self, value) -> int:
-        reg = value >> 8
+        #reg = value >> 8
         inaddr = value & 0xFF
         if inaddr in self.incb:
             return self.incb[inaddr]()
@@ -110,7 +110,7 @@ class IO:
             desc = 'advance right (or new line)'
         else:
             desc = f'0x{val:02}'
-        #self.print(f"IO out - display control - {desc}")
+        self.print(f"IO out - display control - {desc}")
 
 
     ### Keyboard
@@ -148,7 +148,7 @@ class IO:
 
     ### Printer
     def handle_printer_in(self) -> int:
-        self.print(f'IO in  - printer status -  0 (no errors)')
+        self.print('IO in  - printer status -  0 (no errors)')
         return 0
 
 

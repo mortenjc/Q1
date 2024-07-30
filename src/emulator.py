@@ -70,7 +70,7 @@ def main(args):
 
 
         if icount % args.dumpfreq == 0 and args.hexdump:
-            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount) # dump RAM part of memory
+            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000) # dump RAM part of memory
 
         # main cpu emulation step
         cpu.step() # does the actual emulation of the next instruction
@@ -92,14 +92,14 @@ def main(args):
 
         if args.trigger == pc:
             print(f'\n<<<< TRIGGER at 0x{pc:04x} >>>>\n')
-            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000)
             args.decode = True
             io.verbose = True
 
         if pc ==0x4cb:
             print(io.displaystr)
             io.displaystr = ""
-            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000)
             ros.index()
             ros.file()
             ros.disk()

@@ -63,7 +63,7 @@ class ROS:
 
     def index(self):
         m = self.m
-        print(f'####   INDEX x40a6 - 40b5   ####')
+        print('####   INDEX x40a6 - 40b5   ####')
         print(f'0x40a6/7 - Record Number      {m.getu16(0x40a6)}')
         print(f'0x40a8/9 - Number of Records  {m.getu16(0x40a8)}')
         print(f'0x40aa/b - Record Length      {m.getu16(0x40aa)} 0x{m.getu16(0x40aa):02x}')
@@ -77,7 +77,7 @@ class ROS:
 
     def disk(self):
         m = self.m
-        print(f'#### DISK vars x4099 - 40a5   ####')
+        print('#### DISK vars x4099 - 40a5   ####')
         print(f'0x4099/a - THERE (addr for disk transfer) 0x{m.getu16(0x4099):04x}')
         print(f'0x409b   - NRT   (disk record count)      {m.getu8(0x409b)}')
         print(f'0x409c   - SNRT  (# recs to be transfd)   {m.getu8(0x409c)}')
@@ -101,7 +101,7 @@ class ROS:
 
     def file(self):
         m = self.m
-        print(f'####   LFILE x40d0 - 40e7   ####')
+        print('####   LFILE x40d0 - 40e7   ####')
         print(f'0x40d0/1 - Record Number      {m.getu16(0x40d0)}')
         print(f'0x40d2   - File name          "{self.filename(0x40d2)}"')
         print(f'0x40da/b - Number of Records  {m.getu16(0x40da)}')

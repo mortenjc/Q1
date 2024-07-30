@@ -22,17 +22,17 @@ class Memory():
         # The main program loader
         print(f'loading program: {program["descr"]}')
         pc = program["start"]
-        for type, source, addr in program["data"]:
-            if type == "file":
+        for datatype, source, addr in program["data"]:
+            if datatype == "file":
                 self._loadfile(source, addr)
             elif type == "snippet":
                 self._loaddata(source, addr)
             else:
-                print(f"Ignoring unknown data soure: {type}")
+                print(f"Ignoring unknown data soure: {datatype}")
         return pc
 
 
-    def hexdump(self, address, length, icount):
+    def hexdump(self, address, length):
         nullpatt = "fd " * 16
         self.print(f"########### HEXDUMP 0x{address:x} - 0x{address+length:x} ####################################")
         hexline = f"{address:04x} "
@@ -42,7 +42,7 @@ class Memory():
         for i in range(length):
             byte  = self.m[address + i]
             hexline += f"{byte:02x} "
-            if byte >=32 and byte < 122:
+            if 32 <= byte < 122:
                 char += chr(byte)
             else:
                 char += "."
@@ -52,13 +52,13 @@ class Memory():
                     self.print(f'{hexline} {char}')
                     prevempty = False
                 else:
-                    if prevempty == False:
+                    if prevempty is False:
                         self.print('....')
                         prevempty = True
                 hexline = f"{address +i+1:04x} "
                 char = ""
                 count = 0
-        self.print(f"########### HEXDUMP END #################################################")
+        self.print("########### HEXDUMP END #################################################")
 
 
     def writeu8(self, addr: int, val: int):
@@ -75,7 +75,7 @@ class Memory():
     def getu8(self, address: int) -> int:
         # Get byte from memory
         val = self.m[address]
-        assert val >= 0 and val <= 255
+        assert 0 <= val <= 255
         return val
 
 
@@ -119,8 +119,8 @@ if __name__ == '__main__':
             self.memory[2] = 2
             self.memory[3] = 3
 
-    s = Standin()
-    mem = Memory(s)
+    Standin = Standin()
+    mem = Memory(standin)
 
     assert mem.getu8(0) == 0
     assert mem.getu8(1) == 1

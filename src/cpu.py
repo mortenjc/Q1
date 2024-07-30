@@ -48,7 +48,7 @@ class Cpu:
             self.ros.file()
             self.ros.disk()
         if dump:
-            self.mem.hexdump(0x2000, 0x10000 - 0x2000, -1)
+            self.mem.hexdump(0x2000, 0x10000 - 0x2000)
         if bt:
             for l in self.bt:
                 print(l)
