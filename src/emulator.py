@@ -37,7 +37,7 @@ def emulator(args):
 
     icount = 0
     if args.hexdump:
-        cpu.mem.hexdump(0x2000, 0xFFFF - 0x2000, icount) # dump RAM part of memory
+        cpu.mem.hexdump(0x2000, 0xFFFF - 0x2000) # dump RAM part of memory
 
     while True:
         pc = cpu.m.pc
@@ -112,7 +112,7 @@ def emulator(args):
                     print(f'{ch}')
 
                 if ch == 0x222b:       # opt-b -> hexdump
-                    cpu.mem.hexdump(0x2000, 0x10000 - 0x2000, icount)
+                    cpu.mem.hexdump(0x2000, 0x10000 - 0x2000)
                 elif ch == 8224: # opt-t
                     args.decode = not args.decode
                 elif ch == 960:        # opt-p -> regdump
