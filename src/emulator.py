@@ -83,7 +83,7 @@ def emulator(args):
             if pc == 0xd21:
                 print('DISK OPEN')
 
-        if args.breakpoint == pc or pc == stoppc:
+        if pc in (args.breakpoint, stoppc):
             print(f'\n<<<< BREAKPOINT at 0x{pc:04x} >>>>\n')
             cpu.exit(False, True, False)
             #cpu.exit()

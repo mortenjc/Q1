@@ -1,6 +1,5 @@
 
-import sys
-from enum import Enum
+#from enum import Enum
 # for now assume disk 1 only, drive 1 only, side 0 only
 
 data = [ 0x9b,
@@ -155,7 +154,7 @@ class Control:
             self.disk.CurrentByte = 0
             return
         side = val >> 7
-        drive = (val & 0x7f)
+        drive = val & 0x7f
         assert drive in [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40], drive
         i = 1
         while True:
@@ -189,5 +188,5 @@ class Control:
 
 
 if __name__ == "__main__":
-    disk = Disk(1)
-    print(disk.data)
+    testdisk = Disk(1)
+    print(testdisk.data)

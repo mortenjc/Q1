@@ -83,13 +83,13 @@ class Cpu:
         return f'pc={m.pc:04x}, sp={m.sp:04x}, a={m.a:02x}, bc={m.bc:04x}, de={m.de:04x}, hl={m.hl:04x}, ix={m.ix:04x}'
 
 
-    def decodestr(self, inst: str, bytes: []) -> str:
+    def decodestr(self, inst: str, ibytes: []) -> str:
         if z80io.isprintable(self.m.a):
             a_str = f"'{chr(self.m.a)}'"
         else:
             a_str = '   '
         m = self.m
-        l = f'{m.pc:04x} {bytes:12} ; {inst:25} | sp={m.sp:04x}, ' + \
+        l = f'{m.pc:04x} {ibytes:12} ; {inst:25} | sp={m.sp:04x}, ' + \
             f'a={m.a:02x}{a_str} bc={m.bc:04x}, de={m.de:04x}, hl={m.hl:04x}, ' + \
             f'ix={m.ix:04x}, iy={m.iy:04x}'
         self.bt.append(l)
