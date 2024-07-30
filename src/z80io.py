@@ -1,6 +1,5 @@
 """Module to provide IO hooks for the Q1 Lite"""
 
-import sys
 import disk
 
 #
@@ -66,11 +65,11 @@ class IO:
         inaddr = value & 0xFF
         if inaddr in self.incb:
             return self.incb[inaddr]()
-        else:
-            #print(f'IO - unregistered input address 0x{inaddr:02x} at pc {self.m.pc:04x}, exiting')
-            #print()
-            return 0
-            #sys.exit()
+
+        #print(f'IO - unregistered input address 0x{inaddr:02x} at pc {self.m.pc:04x}, exiting')
+        #print()
+        return 0
+        #sys.exit()
 
     def handle_io_out(self, outaddr, outval):
         outaddr = outaddr & 0xff

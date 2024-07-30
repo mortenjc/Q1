@@ -59,6 +59,10 @@ jdc = {
         0x0213: 'CLRDK',
         0x027f: 'LOADER',
         0x028a: 'REPORT',
+        0x02a4: '80 characters',
+        0x02ab: '40 characters',
+        0x037b: 'move printer carriage',
+        0x0394: 'test for out of ribbon',
         0x039e: 'display PRINTER FAULT',
         0x03d5: 'check printer status',
         0x03d7: 'clear keyboard buffer, update display',
@@ -104,10 +108,17 @@ jdc = {
         0x0869: 'call READ',
         0x086c: 'get disk# from index file',
         0x0870: 'THERE (address of file transfer)',
+        0x08df: 'is Data record?',
+        0x08dd: 'read byte from disk 2',
+        0x08ee: 'read byte from disk 2',
+        0x08f4: 'read byte from disk 2',
+        0x0903: 'read byte from disk 2',
         0x0d21: 'call OPEN',
         0x0d2f: 'hl = Record #',
         0x0d3f: 'Read 1 record',
         0x0d41: 'call READ',
+        0x0d74: 'check if "IWS" version',
+        0x0d7b: 'call IWS specific code',
         0x0d90: 'clrdk()',
         0x0d93: 'CLEAR',
         0x0da7: 'Start of error messages',
@@ -185,6 +196,13 @@ jdc = {
         0X14a4: 'return error code 1?',
         0x14a9: 'read byte from disk',
         0x14ac: 'read byte from disk',
+        0x15c5: 'error text "FORMAT ERR"',
+        0x15d8: 'error text "ON"',
+        0x15d3: 'call DISPLAY',
+        0x15db: 'call DISPLAY',
+        0x15e3: 'call DISPLAY',
+        0x15ec: 'call STOP',
+        0x15fe: 'call DISPLAY',
         0x1676: 'get a = # of records HI',
         0x1679: 'get a = # of records LO',
         0x1688: 'checksum on FILE FD?',
@@ -203,19 +221,33 @@ jdc = {
         0x18b5: 'call NhL routine',
         0x18bd: 'call MUL routine',
         0x18c5: 'call DIV routine',
+        0x18cc: 'increment IPC',
+        0x18d0: 'increment IPC',
         0x18d3: 'Output routine for PUT',
         0x18f5: 'call TOSTR routine',
         0x1939: 'call GETDN routine',
         0x194a: 'call NKEY routine',
+        0x1958: 'call TOSTR',
+        0x1aea: 'call CARB (ch to binary)',
+        0x1b05: 'call BICHAR',
+        0x1b0a: 'call TOSTR',
+        0x1b24: 'call TODEC',
+        0x1b45: 'call NHL (negate binary in hl)',
         0x1b5b: 'call KEY[SEARCH]',
         0x1b71: 'call READ',
+        0x1b77: 'increment IPC',
         0x1b7e: 'call READ',
         0x1b81: 'set ONCODE = a',
+        0x1ba0: 'run loaded program!',
         0x1ba3: 'call (error) REPORT',
         0x1bb6: 'call WRITE',
         0x1bc3: 'call REWRITE',
         0x1bca: 'call OPEN',
+        0x1d03: 'increment IPC',
+        0x1d15: 'increment IPC',
         0x1d2b: 'hl = IPC addr',
+        0x1df5: 'call aaaa()',
+        0x1df8: 'run microcode program'
 
 
     },
@@ -299,19 +331,28 @@ jdc = {
         # 1000 - 17ff marked as unused in ROS Manual!
         [0x1003, 0x1005, 'write?'],
         [0x1009, 0x100b, 'key search jump vector'],
+        [0x1015, 0x1115, 'unknown IWS code jump vector'],
         [0x1144, 0x1284, 'write??'],
-        [0x1285, 0x147b, 'unknown (disk?) function'],
+        [0x1285, 0x12c0, 'unknown (disk?) function'],
         [0x12c1, 0x12dd, 'Set PART1 and PART2'],
+
         [0x1365, 0x140d, 'Search for valid ID Record'],
         [0x140e, 0x141a, 'skip 4*l + 3 bytes'],
+        [0x141b, 0x1474, 'unexplored'],
         [0x1475, 0x147b, '????'],
         [0x147c, 0x14a7, 'do checksum on all records on disk (inferred)'],
+
+        [0x156a, 0x158d, 'unknown IWS function i'],
+        [0x1594, 0x15ab, 'unknown IWS function ii'],
+        [0x15ac, 0x1604, 'unknown IWS functions'],
+        [0x1605, 0x166a, 'ASCI CHARS ERROR MESSAGES'],
         [0x166b, 0x17ff, 'KEY ()?'],
         [0x1800, 0x1877, 'PL/1 1'],
         [0x1878, 0x187b, 'bbbb()'],
-        [0x187c, 0x1b80, 'dddd()'],
+        [0x187c, 0x1b80, 'run microcode program'],
         [0x1b81, 0x1ba2, 'return from file operations'],
-        [0x1cce, 0x1f52, 'aaaa()'],
+        [0x1ba3, 0x1ccd, 'unexplored'],
+        [0x1cce, 0x1d2a, 'aaaa()'],
         [0x1d2b, 0x1d33, 'increment IPC value'],
         [0x1d34, 0x1f52, 'unexplored'],
         [0x1f53, 0x1f61, 'cccc() - clear 8 bytes in scratch'],
@@ -417,6 +458,41 @@ psmcb2ch = {
             # 'PL/1' program
             ["snippet", [0x19],              0x8000], # bin to character
             ["snippet", [0x1f],              0x8001]  # return
+    ],
+    "funcs" : [],
+    "pois" : []
+}
+
+
+psmcb2dec = {
+    "descr": "Q1 pseudo machine code program (bin to decimal)",
+    "start": 0x6000,
+    "stop" : 0x1938,
+    "data": [
+            ["file", "roms/JDC/full.bin", 0x0000],
+            # jump calls
+            ["snippet",[0xc3, 0x0f, 0x02, 0xc3, 0xfd, 0x07, 0xc3, 0x15, 0x08], 0x4080],
+            # PL/1 Interpretive Program Counter
+            ["snippet", [0x00, 0x80],        0x40fe], # set IPC = x8000
+            # Setup two numbers to be added, run PL/1 program
+            ["snippet", [0x00],              0x6000], # nop (for trace)
+            ["snippet", [0x21, 0x80, 0x40],  0x6001], # hl = 0x4080
+            ["snippet", [0xf9],              0x6004], # SP = 0x4080
+            ["snippet", [0x21, 0xff, 0x01],  0x6005], # hl = 0x01ff (to char)
+            ["snippet", [0xe5],              0x6008], # push hl
+            ["snippet", [0x21, 0x0b, 0x00],  0x6009], # hl = 0x000b unused?
+            ["snippet", [0xe5],              0x600c], # push hl
+            ["snippet", [0x21, 0x0c, 0x00],  0x600d], # hl = 0x000c unused?
+            ["snippet", [0xe5],              0x6010], # push hl
+            ["snippet", [0x21, 0x0d, 0x00],  0x6011], # hl = 0x000d unused?
+            ["snippet", [0xe5],              0x6014], # push hl
+            ["snippet", [0x21, 0x0e, 0x00],  0x6015], # hl = 0x000d unused?
+            ["snippet", [0xe5],              0x6018], # push hl
+            ["snippet", [0xc3, 0x7c, 0x18],  0x6019], # run program
+            # 'PL/1' program
+            ["snippet", [0x18],              0x8000], # bin to decimal
+            ["snippet", [0x1f],              0x8001], # return
+            ["snippet", [0x1f],              0x8002]  # return
     ],
     "funcs" : [],
     "pois" : []

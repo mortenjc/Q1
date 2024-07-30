@@ -17,7 +17,7 @@ class Cpu:
         self.program = program
         self.e = z80
         self.m = z80.Z80Machine()
-        self.b = z80._Z80InstrBuilder()
+        self.b = z80.Z80InstrBuilder()
         self.mem = memory.Memory(self.m)
         self.ros = r.ROS(self.mem)
         self.fill = 0xfd

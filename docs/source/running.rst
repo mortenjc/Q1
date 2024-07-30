@@ -11,7 +11,7 @@ should use the following invocation
 
 .. code-block:: console
 
-  > python3 emulator.py -n -d   # no instr. decode, no hexdump
+  > python3 emulator.py         # no instr. decode, no hexdump
 
 Typed-in keys are passed to the Q1 system via fake interrupts.
 Characters are echoed to the display, so you can see what you are doing,
@@ -28,7 +28,7 @@ On my MacBook Pro the following Q1 keys are implemented. Here,
 they referenced by their variable names, not the names printed on
 the keys (see emulator.py):
 
-.. list-table:: ROMs
+.. list-table:: Key bindings
    :header-rows: 1
 
    * - Key Name
@@ -43,6 +43,10 @@ the keys (see emulator.py):
      - Option-c
    * - INSERT MODE
      - Option-m
+   * - CHAR ADV
+     - Option-l
+   * - DEL CHAR
+     - Option-d
 
 In addition, I use Option-b to trigger hexdumps (much used) and Option-p
 to print Z80 registers (rarely used).
@@ -52,7 +56,7 @@ Execution decode
 
 .. code-block:: console
 
-  > python3 emulator.py -n   # instruction decode, no hexdump
+  > python3 emulator.py -d   # instruction decode, no hexdump
 
 
 
@@ -76,4 +80,4 @@ do This
 
 .. code-block:: console
 
-  > python3 emulator.py -n -d -b 0x1ff
+  > python3 emulator.py -t 0x1ff

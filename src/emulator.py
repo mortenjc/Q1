@@ -129,6 +129,10 @@ def main(args):
                     int38(cpu, io, 0x1b) # opt-c -> CLEAR ENTRY
                 elif ch == 181:        # opt-m -> INSERT MODE
                     int38(cpu, io, 0x1e)
+                elif ch == 172:        # opt-l -> CHAR ADV
+                    int38(cpu, io, 0x1c)
+                elif ch == 8706:       # opt-l -> DEL CHAR
+                    int38(cpu, io, 0x1d)
                 elif ch == 170: # opt-a FDs
                     ros.index()
                     ros.file()
