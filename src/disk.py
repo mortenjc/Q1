@@ -29,12 +29,12 @@ data = [ 0x9b,
 class Disk:
     def __init__(self, disk, tracks=35, bpt=4608): #
         self.disk = disk
-        self.Tracks = tracks
-        self.BytesPerTrack = bpt
-        self.data = [[0x00 for B in range(self.BytesPerTrack)] for A in range(self.Tracks)]
-        self.CurrentTrack = 0
-        self.CurrentByte = 0
-        self.BytesRead = 0
+        self.tracks = tracks
+        self.bytes_per_track = bpt
+        self.data = [[0x00 for B in range(self.bytes_per_track)] for A in range(self.tracks)]
+        self.current_track = 0
+        self.current_byte = 0
+        self.bytes_read = 0
 
         if 1: # jdc rom addresses
             self.idrecord(  0, 2189, 0, 0)
@@ -84,54 +84,45 @@ class Disk:
 
 
     def step(self, direction):
-        self.CurrentByte = 0 # assumption
+        self.current_byte = 0 # assumption
         if direction: # UP
             msg = f'disk {self.disk}, step up 0x{direction:02x}'
-            msg += f', track {self.CurrentTrack} -> {self.CurrentTrack + 1}'
+            msg += f', track {self.current_track} -> {self.current_track + 1}'
             print(msg)
-            if self.CurrentTrack == self.Tracks - 1:
-                return
-            self.CurrentTrack += 1
+            self.current_track = (self.current_track + 1) % self.tracks
         else: # DOWN
             msg = f'disk {self.disk}, step down {direction:02x}'
-            msg += ', track {self.CurrentTrack} -> {self.CurrentTrack - 1}'
+            msg += ', track {self.current_track} -> {self.current_track - 1}'
             print(msg)
-            if self.CurrentTrack == 0:
+            if self.current_track == 0:
                 return
-            self.CurrentTrack -= 1
+            self.current_track -= 1
 
 
     def readbyte(self):
-        track = self.CurrentTrack
-        byte = self.CurrentByte
-        assert 0 <= track < self.Tracks
-        assert 0 <= byte < self.BytesPerTrack, byte
-        self.CurrentByte = (self.CurrentByte + 1) % self.BytesPerTrack
-        self.BytesRead += 1
+        track = self.current_track
+        byte = self.current_byte
+        assert 0 <= track < self.tracks
+        assert 0 <= byte < self.bytes_per_track, byte
+        self.current_byte = (self.current_byte + 1) % self.bytes_per_track
+        self.bytes_read += 1
         return self.data[track][byte]
 
 
     def gettrackno(self):
-        return self.CurrentTrack
+        return self.current_track
 
 
     def isbusy(self):
         return True
 
 
-
-# dbleside   = 0x02
-# track0     = 0x10
-# index      = 0x20
-# sdready    = 0x40
-# busy       = 0x80
-
 statusbits = {
-"dbleside"   : 0x02,
-"track0"     : 0x10,
-"index"      : 0x20,
-"sdready"    : 0x40,
-"busy"       : 0x80
+    "dbleside"   : 0x02,
+    "track0"     : 0x10,
+    "index"      : 0x20,
+    "sdready"    : 0x40,
+    "busy"       : 0x80
 }
 
 class Control:
@@ -144,14 +135,14 @@ class Control:
 
     def data_in(self) -> int:
         val = self.disk.readbyte()
-        # print(f'disk {self.disk.disk}, track {self.disk.CurrentTrack}, ' + \
-        #       f'byte {self.disk.CurrentByte}, val {val:02x}, count {self.disk.BytesRead}')
+        # print(f'disk {self.disk.disk}, track {self.disk.current_track}, ' + \
+        #       f'byte {self.disk.current_byte}, val {val:02x}, count {self.disk.bytes_read}')
         return val
 
 
     def control1(self, val):
         if val == 0:
-            self.disk.CurrentByte = 0
+            self.disk.current_byte = 0
             return
         side = val >> 7
         drive = val & 0x7f
@@ -164,7 +155,8 @@ class Control:
             i += 1
         assert side == 0
         assert drive == 1
-        self.CurrentByte = 0 # ?
+        self.current_byte = 0 # ?
+
 
     def control2(self, val):
         stepdir = val & 0x40
@@ -175,15 +167,15 @@ class Control:
 
 
     def status(self):
-        track = self.disk.CurrentTrack
+        track = self.disk.current_track
         status = statusbits["sdready"]
-        if self.disk.CurrentByte == 0:
+        if self.disk.current_byte == 0:
             status += statusbits["index"]
         if self.disk.isbusy():
             status += statusbits["busy"]
         if track == 0:
             status += statusbits["track0"]
-        #print(f'disk {self.disk.disk}, track {track}, CurrByte {self.disk.CurrentByte}, TotBytes {self.disk.BytesRead}, status {status:02x}')
+        #print(f'disk {self.disk.disk}, track {track}, CurrByte {self.disk.current_byte}, TotBytes {self.disk.bytes_read}, status {status:02x}')
         return status
 
 
