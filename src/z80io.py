@@ -10,9 +10,9 @@ def isprintable(c):
 
 
 class IO:
-    def __init__(self, m):
-        self.disk1 = disk.Control(1)
-        self.disk2 = disk.Control(2)
+    def __init__(self, m, fs):
+        self.disk1 = disk.Control(1, fs)
+        self.disk2 = disk.Control(2, fs)
         self.m = m
         self.incb = {}
         self.outcb = {}
@@ -179,16 +179,16 @@ class IO:
 
     def handle_disk_in_0a(self):
         retval = self.disk1.status()
-        t = self.disk1.disk.CurrentTrack
-        b = self.disk1.disk.CurrentByte
+        t = self.disk1.disk.current_track
+        b = self.disk1.disk.current_byte
         self.print(f'IO in  - disk1 (0xa) (status): 0x{retval:02x}, t{t}, b{b}')
         return retval
 
     def handle_disk_in_09(self):
-        t = self.disk1.disk.CurrentTrack
-        b = self.disk1.disk.CurrentByte
+        t = self.disk1.disk.current_track
+        b = self.disk1.disk.current_byte
         retval = self.disk1.data_in()
-        #print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}, t{t}, b{b}')
+        print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}, t{t}, b{b}')
         return retval
 
     # possibly not disk, could be rs232

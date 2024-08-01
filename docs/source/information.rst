@@ -18,11 +18,15 @@ https://www.thebyteattic.com/p/q1.html
 
 https://hackaday.com/2022/09/28/the-first-microcomputer-the-q1/
 
+https://www.1000bit.it/scheda.asp?id=2409
+
 
 Collaborators
 -------------
 
 Karl-Wilhelm Wacker (kwwacker@ptd.net) used to work for the Q1 corporation.
+
+Mattis Lind (http://www.datormuseum.se/contact.html)
 
 
 Manuals

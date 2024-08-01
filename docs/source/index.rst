@@ -39,8 +39,10 @@ Help wanted, please get in touch ;-)
         :maxdepth: 3
         :hidden:
 
+        roms
         q1io
         disk
+
 
 
     .. toctree::
