@@ -1,17 +1,35 @@
 
+import disks.debugdisk.t0 as ddt0
 
+class FileSys:
 
-class filesys:
-
-    def __init__(self, tracks=35, bytes_per_track=4608):
+    def __init__(self, tracks=35, bytes_per_track=9000):
         self.tracks = tracks
         self.bpt = bytes_per_track
         self.data = [[0x00 for B in range(self.bpt)] for A in range(self.tracks)]
 
 
-    def idrecord(self, writetotrack, offset, track, sector):
+    def rawrecord(self, track, offset, data):
+        if data[0] == 0x9b and data[3] >= 0x30:
+            fn = ""
+            for i in range(8):
+                fn += chr(data[3+i])
+            print(f'INDEX:  {fn}')
+
+        l1 = len(data)
+        d = self.data[track]
+        cksum = sum(data[1:]) & 0xff
+        data.append(cksum)
+        data.append(0x10)
+        for i, e in enumerate(data):
+            d[offset + i] = e
+        assert l1 + 2 == len(data)
+        return offset + len(data)
+
+
+    def idrecord(self, track, offset, sector):
         oldoff = offset
-        d = self.data[writetotrack]
+        d = self.data[track]
         d[offset] = 0x9e
         offset += 1
         d[offset] = track
@@ -45,53 +63,65 @@ class filesys:
         return o
 
 
-    def w16(self, track, offset, value):
+    def le16(self, value):
         hi = value >> 8
         lo = value & 0xff
-        self.data[track][offset + 0] = lo
-        self.data[track][offset + 1] = hi
+        return [lo, hi]
 
 
     def datareci(self, offset, name, reclen):
         assert len(name) == 8
+        rec = []
         d = self.data[0]
         o = offset
 
-        d[o] = 0x9b
-        o += 1
-        self.w16(0, o, 0x0000)        # rec number, zero on index
-        for i, c in enumerate(name):  # filename
-            d[o + 2 + i] = ord(c)
-        self.w16(0, o + 0xa, 0x0001)  # number of records
-        self.w16(0, o + 0xc, reclen)  # record length
-        d[offset + 0xe] = 0x00        # R/T ??
-        d[offset + 0xf] = 0x00        # disk, 0 on index
-        self.w16(0, o + 0x10, 0x0001) # first track
-        self.w16(0, o + 0x12, 0x0001) # last track
-        self.w16(0, o + 0x14, 0xabcd) # unused
-        self.w16(0, o + 0x16, 0x0001) # recno bef. last
+        rec.append(0x9b)
+        rec += self.le16(0x0000)     # rec number, zero on index
+        for i, c in enumerate(name): # filename
+            rec.append(ord(c))
+        rec += self.le16(0x0001) # number of records
+        rec += self.le16(reclen) # record length
+        rec.append(0x00 )        # R/T ??
+        rec.append(0x00)         # disk, 0 on index
+        rec += self.le16(0x0001) # first track
+        rec += self.le16(0x0001) # last track
+        rec += self.le16(0xabcd) # unused
+        rec += self.le16(0x0001) # recno bef. last
 
-        self.w16(0, o + 0x18, 0x1100)
-        self.w16(0, o + 0x1a, 0x3322)
-        self.w16(0, o + 0x1c, 0x5544)
-        self.w16(0, o + 0x1e, 0x7766)
-        self.w16(0, o + 0x20, 0x9988)
-        self.w16(0, o + 0x22, 0xbbaa)
-        self.w16(0, o + 0x24, 0xddcc)
-        self.w16(0, o + 0x26, 0xffee)
+        rec += self.le16(0x1100)
+        rec += self.le16(0x3322)
+        rec += self.le16(0x5544)
+        rec += self.le16(0x7766)
+        rec += self.le16(0x9988)
+        rec += self.le16(0xbbaa)
+        rec += self.le16(0xddcc)
+        rec += self.le16(0xffee)
 
-        cksum = sum(d[offset:offset+41]) & 0xff
-        d[o + 0x28] =  cksum
-        d[o + 0x29] = 0x10
-        d[o + 0x30] = 0x00
-        return offset + 41
+        cksum = sum(rec) & 0xff
+        rec.append(cksum)
+        rec.append(0x10)
+        for i, ch in enumerate(rec):
+            d[offset + i] = ch
+        return offset + len(rec)
 
 
 
-fs1 = filesys()
-fs1.idrecord(0, 2189, 0, 0)
-fs1.idrecord(0, 2193, 0, 0)
+fs1 = FileSys()
+fs1.idrecord(0, 2189, 0)
+fs1.idrecord(0, 2193, 0)
 fs1.datareci(2197, 'MJC     ', 16)
-fs1.idrecord(0, 2240, 0, 0)
-fs1.idrecord(0, 2244, 0, 0)
+fs1.idrecord(0, 2240, 0)
+fs1.idrecord(0, 2244, 0)
 fs1.datareci(2248, 'IBM     ', 16)
+
+
+##
+ddfs = FileSys()
+# Create INDEX track
+offset = 2189
+for i, lst in enumerate(ddt0.t0):
+    #print(offset + i)
+    offset = ddfs.rawrecord(0, offset, lst)
+
+if __name__ == '__main__':
+    print(ddfs.data[0])

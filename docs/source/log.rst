@@ -280,8 +280,57 @@ Here 0x7fff is converted into ascii 32767 as verified from the hexdump:
   ########### HEXDUMP END #################################################
 
 
-  2024 07 30
-  ----------
+2024 07 30
+----------
 
-  Mostly address and address range annotations. Some **pylint** related
-  changes.
+Mostly address and address range annotations. Some **pylint** related
+changes.
+
+
+2024 08 02
+----------
+
+Found real Q1 disk images (from flux samples) here:
+https://github.com/MattisLind/q1decode/blob/main/Q1DISKS/README.md
+
+This clarified the sector numbering. converted testdiskette C_S0T00.000 into
+a python structure which is loaded when creating the filesystem. There are 23
+file on the disk, including the special INDEX file.
+
+.. code-block:: console
+
+  > python3 emulator.py
+  INDEX:  INDEX
+  INDEX:  SCR
+  INDEX:  DALIGN
+  INDEX:  PRINT
+  INDEX:  RTCTEST
+  INDEX:  CONV
+  INDEX:  PTEST
+  INDEX:  DANKB
+  INDEX:  DISPTEST
+  INDEX:  SWEDKB
+  INDEX:  GERMKB
+  INDEX:  SELKB
+  INDEX:  DINDEX
+  INDEX:  COPY
+  INDEX:  ALTER
+  INDEX:  MTEST
+  INDEX:  DISK
+  INDEX:  CTEST
+  INDEX:  BDTEST
+  INDEX:  SEL
+  INDEX:  VERIFY
+  INDEX:  SUM
+  INDEX:  FRENKB
+
+There are still some issues with accessing the files. For example if I type in
+'SCR' the emulator enters an infinite loop searching for iD records on Track 0.
+
+On track 0 all data records have size 40 bytes.
+
+(0x9e, track, sector, cksum, 0x10, 0x9b, 40 bytes, cksum, 0x10)
+
+On the other tracks records are 255 bytes:
+
+(0x9e, track, sector, cksum, 0x10, 0x9b, 255 bytes, cksum, 0x10)

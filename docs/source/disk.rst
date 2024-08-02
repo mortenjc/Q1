@@ -22,6 +22,14 @@ The Q1 system seems to skip the first **2190** bytes on **track 0**, before
 trying to look for ID and Data records. Other offsets (not confirmed) seem
 to be present for the other tracks.
 
+2024 08 02
+
+There seem to be way more bytes ona track, perhaps upwards of 8000 bytes.
+
+A major source of information on disk formats was found here:
+
+https://github.com/MattisLind/q1decode/
+
 
 
 Index File
