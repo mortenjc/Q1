@@ -25,7 +25,7 @@ class Memory():
         for datatype, source, addr in program["data"]:
             if datatype == "file":
                 self._loadfile(source, addr)
-            elif type == "snippet":
+            elif datatype == "snippet":
                 self._loaddata(source, addr)
             else:
                 print(f"Ignoring unknown data soure: {datatype}")

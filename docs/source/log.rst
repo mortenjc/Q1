@@ -334,3 +334,42 @@ On track 0 all data records have size 40 bytes.
 On the other tracks records are 255 bytes:
 
 (0x9e, track, sector, cksum, 0x10, 0x9b, 255 bytes, cksum, 0x10)
+
+
+2024 08 04
+----------
+
+Still a bit confused about the size of the disk. I've seen code
+for skipping 2189 bytes (reading them but not examining them) before
+looking for markers. So far I had assumed that something else was
+on the disk. Now I am not so sure. Perhaps this allows the disk to
+spin up before addressing the data?
+
+Added several disk **images** and a utility to load data recovered from the
+fluxsamples provided by Mattis Lind.
+
+For example.
+
+.. code-block:: console
+
+  src/disks/fluxsamples> python3 image.py
+  ...
+  nonz 0x52: load  78 bytes into address 0x4547
+  41 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20  A.
+  20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  20 20 20 20 20 20 20 cb 10 9e 01 02 03 10 9b 20         ........
+  20 20 20 20 20 20 20 44 41 54 45 2d 57 52 49 54         DATE-WRIT
+  54 45 4e 2e 20 20 20 20 20 20 20 20 20 20        TEN.
+
+  nonz 0x20: load  57 bytes into address 0x3120
+  38 34 2d 30 32 2d 30 36 2e 20 20 20 20 20 20 20  84-02-06.
+  20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  20 20 20 20 20 20 20 20 20 20 20 20 ac 10 9e 01              ....
+  03 04 10 9b 20 20 20 20 20                       ....
+
+  nonz 0x20: load  65 bytes into address 0x2020
+  55 54 48 4f 52 2e 20 20 20 20 20 20 20 20 20 20  UTHOR.
+  20 20 20 20 20 20 20 20 4f 4c 4c 45 2e 20 20 20          OLLE.
+  20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  ...

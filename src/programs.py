@@ -22,4 +22,5 @@ proglist = {
         "emucrash" : progs.misc.emucrash,
         "test1"    : progs.misc.test1,
         "loadhl"   : progs.misc.loadhl,
+        "scr"      : progs.misc.scr,
     }

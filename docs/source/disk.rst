@@ -4,7 +4,7 @@ File System
 ===========
 (Mostly unconfirmed)
 By tracing CPU instructions and doing annotated disassembly I have
-made the following colclusions and assumptions.
+made the following conclusions and assumptions.
 
 The disk consists of 77 tracks (0 - 76), each track having 2468 bytes. I've
 decided that the 'index' position is located at the first byte of each
@@ -24,7 +24,7 @@ to be present for the other tracks.
 
 2024 08 02
 
-There seem to be way more bytes ona track, perhaps upwards of 8000 bytes.
+There seem to be way more bytes on a track, perhaps upwards of 8000 bytes.
 
 A major source of information on disk formats was found here:
 
@@ -115,3 +115,8 @@ the address range 0x40d0 - 0x40e7.
    * - 0x40e6
      - Rec# bef. last op.
      -
+
+
+2024 08 04
+
+Or maybe not, see log comment from same date

@@ -367,7 +367,7 @@ jdc = {
         [0x140e, 0x141a, 'skip 4*l + 3 bytes'],
         [0x141b, 0x1474, 'UNEXPLORED'],
         [0x1475, 0x147b, '????'],
-        [0x147c, 0x14a7, 'do checksum on all records on disk (inferred)'],
+        [0x147c, 0x14a7, 'search for INDEX file?'],
         [0x14a8, 0x1569, 'UNEXPLORED'],
         [0x156a, 0x158d, 'unknown IWS function i'],
 

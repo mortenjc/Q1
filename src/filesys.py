@@ -1,5 +1,4 @@
 
-import disks.debugdisk.t0 as ddt0
 
 class FileSys:
 
@@ -10,21 +9,21 @@ class FileSys:
 
 
     def rawrecord(self, track, offset, data):
-        if data[0] == 0x9b and data[3] >= 0x30:
+        if track == 0 and data[0] == 0x9b and data[3] >= 0x30:
             fn = ""
             for i in range(8):
                 fn += chr(data[3+i])
-            print(f'INDEX:  {fn}')
+            print(f'fd:  {fn}')
+        # if data[0] == 0x9e:
+        #     print(f'track {data[1]}, record {data[2]}')
 
-        l1 = len(data)
         d = self.data[track]
         cksum = sum(data[1:]) & 0xff
-        data.append(cksum)
-        data.append(0x10)
         for i, e in enumerate(data):
             d[offset + i] = e
-        assert l1 + 2 == len(data)
-        return offset + len(data)
+        d[offset + i + 1] = cksum
+        d[offset + i + 2] = 0x10
+        return offset + len(data) + 2
 
 
     def idrecord(self, track, offset, sector):
@@ -105,6 +104,54 @@ class FileSys:
         return offset + len(rec)
 
 
+    def datainfo(self, track, records, record_size):
+        d = self.data[track]
+        for record in range(records):
+            firstline = False
+            i = 0
+            overhead = 8
+            offset = record * (record_size + overhead)
+            assert d[offset + i] == 0x9e, f'{i=}, {d[offset + i]=}'
+            i += 5
+            assert d[offset + i] == 0x9b
+            i += 1
+            while 255 - i  >= 5:
+                nonz = d[offset + i]
+                if nonz == 0:
+                    break
+                if not firstline:
+                    firstline = True
+                    print(f'\ntrack {track}, record {record}')
+
+                i += 1
+                addr = d[offset + i]
+                i += 1
+                addr += d[offset + i] << 8
+                i += 1
+                bytecount = d[offset + i]
+                i += 1
+                print(f'nonz 0x{nonz:02x}: load {bytecount:3} bytes into address 0x{addr:04x}')
+                brk = 0
+                s1 = ''
+                s2 = ''
+                for j in range(bytecount):
+                    val = d[offset + i]
+                    i += 1
+                    s1 += f'{val:02x} '
+                    if 32 <= val <= 127:
+                        s2 += chr(val)
+                    else:
+                        s2 += '.'
+                    brk += 1
+                    if brk == 16:
+                        brk = 0
+                        print(s1, s2)
+                        s1 = ''
+                        s2 = ''
+                print(f'{s1:48} {s2}')
+                print()
+
+
 
 fs1 = FileSys()
 fs1.idrecord(0, 2189, 0)
@@ -113,15 +160,3 @@ fs1.datareci(2197, 'MJC     ', 16)
 fs1.idrecord(0, 2240, 0)
 fs1.idrecord(0, 2244, 0)
 fs1.datareci(2248, 'IBM     ', 16)
-
-
-##
-ddfs = FileSys()
-# Create INDEX track
-offset = 2189
-for i, lst in enumerate(ddt0.t0):
-    #print(offset + i)
-    offset = ddfs.rawrecord(0, offset, lst)
-
-if __name__ == '__main__':
-    print(ddfs.data[0])

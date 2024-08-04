@@ -9,6 +9,7 @@ import match
 import ros as r
 import z80io
 import programs as prg
+import disks.debugdisk.image as ddim
 
 
 def int38(cpu, io, ch):
@@ -24,7 +25,7 @@ def emulator(args):
     funcs = prgobj["funcs"]
 
     cpu = c.Cpu(prgobj)
-    io = z80io.IO(cpu.m, filesys.ddfs)
+    io = z80io.IO(cpu.m, ddim.ddfs) # todo select from multiple
     ros = r.ROS(cpu.mem)
     key = kbd.Key()
     #io.verbose = True
@@ -83,8 +84,8 @@ def emulator(args):
                 print('DISK (error) REPORT')
             if pc == 0xd21:
                 print('DISK OPEN')
-            # if pc == 0x1384:
-            #     print('Is ID Record?')
+            if pc == 0x1393:
+                print('ID Record w. good cksum')
             # if pc == 0x145a:
             #     print('Is Data Record?')
 
