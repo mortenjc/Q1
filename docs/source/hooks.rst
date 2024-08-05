@@ -91,14 +91,20 @@ The **disk** module provides a **Disk** class and a **Disk Control** class.
 The **control** class is used by the **z80io** module to perform disk functions
 due to the registered io callback functions.
 
-The **disk** module holds the file system data, can move between tracks,
-read (but not yet write) data and respond to status commands. It currently
-comes with an attempt of an intitialised filesystem.
+The **disk** can move (step) between tracks,read (but not yet write) data and
+respond to status commands. The disk needs to be initialised with a
+preformatted filesystem.
 
 
 filesys
 ^^^^^^^
 
+**filesys** provides funtions to create a filesystem. Either by loading
+track files reconstructed by Mattis Lind using **loadtracks()**. The contents
+of the tracks can be inspected by ****
+
+Or by constructing tracks using id and data record functions using
+**idrecord()**, **datarecord()** and **datareci()**.
 
 
 Applications
