@@ -1,29 +1,7 @@
 
 # for now assume disk 1 only, drive 1 only, side 0 only
 
-data = [ 0x9b,
-         0x00, 0x00, # Record number
-         ord('A'), ord('B'), ord('C'), ord('D'),
-         ord('E'), ord('F'), ord('G'), ord('H'),
-         0x01, 0x00, # Number of records
-         0x0a, 0x00, # Record len
-         0x00, 0x00, # R/T, Disk number
-         0x00, 0x00, # first track
-         0x00, 0x00, # last track
-         0xab, 0xcd, # unused
-         0x00, 0x00, # rec bef last
-         0x01, 0x00, 0x70, 0x0c, 0x00, 0x01, 0x02, 0x03, # data
-         0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
-         0x00,       # cksum
-         0x10        # end marker
-         ]
 
-
-
-# Possibilities according to "Q1 Lite system overview"
-# Tracks  Bytes per track
-#   35    4608
-#   77    8316
 
 class Disk:
     def __init__(self, disk, fs): #

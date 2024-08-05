@@ -2,7 +2,11 @@
 
 class FileSys:
 
-    def __init__(self, tracks=35, bytes_per_track=9000):
+    # Possibilities according to "Q1 Lite system overview"
+    # Tracks  Bytes per track
+    #   35    4608
+    #   77    8316
+    def __init__(self, tracks=77, bytes_per_track=8316):
         self.tracks = tracks
         self.bpt = bytes_per_track
         self.data = [[0x00 for B in range(self.bpt)] for A in range(self.tracks)]
@@ -13,9 +17,7 @@ class FileSys:
             fn = ""
             for i in range(8):
                 fn += chr(data[3+i])
-            print(f'fd:  {fn}')
-        # if data[0] == 0x9e:
-        #     print(f'track {data[1]}, record {data[2]}')
+            print(f'INDEX Record:  {fn}')
 
         d = self.data[track]
         cksum = sum(data[1:]) & 0xff
@@ -26,21 +28,22 @@ class FileSys:
         return offset + len(data) + 2
 
 
+    #
+    def loadtracks(self, track_list): # assume contiguous, starting with t0
+        for track, trackdata in enumerate(track_list):
+            offset = 0
+            for lst in trackdata.data:
+                offset = self.rawrecord(track, offset, lst)
+
+
     def idrecord(self, track, offset, sector):
-        oldoff = offset
         d = self.data[track]
-        d[offset] = 0x9e
-        offset += 1
-        d[offset] = track
-        offset += 1
-        d[offset] = sector
-        offset += 1
-        d[offset] = track + sector # cksum
-        offset += 1
-        d[offset] = 0x10
-        offset += 1
-        assert offset - oldoff == 5, offset - oldoff
-        return offset
+        d[offset+0] = 0x9e
+        d[offset+1] = track
+        d[offset+2] = sector
+        d[offset+3] = (track + sector) & 0xff # cksum
+        d[offset+4] = 0x10
+        return offset + 5
 
 
     def datarecord(self, track, offset, recno, name, data):
@@ -104,34 +107,33 @@ class FileSys:
         return offset + len(rec)
 
 
-    def datainfo(self, track, records, record_size):
+    def trackinfo(self, track, records, record_size):
         d = self.data[track]
         for record in range(records):
+            overhead = 8
             firstline = False
             i = 0
-            overhead = 8
             offset = record * (record_size + overhead)
             assert d[offset + i] == 0x9e, f'{i=}, {d[offset + i]=}'
             i += 5
             assert d[offset + i] == 0x9b
             i += 1
             while 255 - i  >= 5:
-                nonz = d[offset + i]
-                if nonz == 0:
+                block_separator = d[offset + i]
+                if block_separator == 0:
                     break
                 if not firstline:
                     firstline = True
-                    print(f'\ntrack {track}, record {record}')
+                    print(f'\nTrack {track}, Record {record}')
 
                 i += 1
-                addr = d[offset + i]
-                i += 1
-                addr += d[offset + i] << 8
-                i += 1
+                addr = d[offset + i] + (d[offset + i + 1] << 8)
+                i += 2
                 bytecount = d[offset + i]
                 i += 1
-                print(f'nonz 0x{nonz:02x}: load {bytecount:3} bytes into address 0x{addr:04x}')
+                print(f'separator 0x{block_separator:02x}: load {bytecount:3} bytes into address 0x{addr:04x}')
                 brk = 0
+                s0 = f'{addr:04x}'
                 s1 = ''
                 s2 = ''
                 for j in range(bytecount):
@@ -145,10 +147,13 @@ class FileSys:
                     brk += 1
                     if brk == 16:
                         brk = 0
-                        print(s1, s2)
+                        s0 = f'{addr:04x}'
+                        print(s0, s1, s2)
+                        addr += 16
                         s1 = ''
                         s2 = ''
-                print(f'{s1:48} {s2}')
+                s0 = f'{addr:04x}'
+                print(f'{s0} {s1:48} {s2}')
                 print()
 
 
