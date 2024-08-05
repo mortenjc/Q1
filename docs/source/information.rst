@@ -32,6 +32,9 @@ Mattis Lind (http://www.datormuseum.se/contact.html)
 Manuals
 -------
 
+If the scanned manuals contain page numbers I will always refer to these. If
+not I will instead refer to the page count of the pdf document itself.
+
 .. list-table:: Documentation from TheByteAttic
    :header-rows: 1
 

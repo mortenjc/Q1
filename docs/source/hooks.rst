@@ -101,7 +101,8 @@ filesys
 
 **filesys** provides funtions to create a filesystem. Either by loading
 track files reconstructed by Mattis Lind using **loadtracks()**. The contents
-of the tracks can be inspected by ****
+of the tracks can be inspected by **trackinfo()** which parses the
+records according to Figure 3 of ROS User's Manual (page 18).
 
 Or by constructing tracks using id and data record functions using
 **idrecord()**, **datarecord()** and **datareci()**.
