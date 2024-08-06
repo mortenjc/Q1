@@ -148,7 +148,7 @@ of the program counter, registers, decoded instructions, etc.
 
 .. code-block:: console
 
-  > python3 emulator.py
+  > python3 emulator.py -d
   ; jump to START
   0000 c3 e5 01     ; jp 0x1e5        | SP=0000, A=00    BC=0000, DE=0000, HL=0000
   ; START()
@@ -163,13 +163,12 @@ of the program counter, registers, decoded instructions, etc.
   ; 01f3 copy (function calls) from 0x003f:0x0047 to 0x4080:
   01f3 01 09 00     ; ld bc, 0x9      | SP=4080, A=04    BC=0000, DE=4080, HL=003f
 
-For interactive sessions it is better to disable periodic hexdump and instruction decode.
-This is done using the -d and -n option.
+For interactive sessions it is better to disable periodic hexdump and instruction decode
 
 
 .. code-block:: console
 
-  > python3 emulator.py -n -d -s -1
+  > python3 emulator.py
   loading program: Combined Q1 image from IC25-IC32
   loaded 1024 bytes from roms/JDC/IC25.bin at address 0000h
   loaded 1024 bytes from roms/JDC/IC26.bin at address 0400h

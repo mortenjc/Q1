@@ -11,5 +11,6 @@ fluxfs.loadtracks([t0, t1, t2]) #
 
 
 if __name__ == '__main__':
-    #fluxfs.trackinfo(1, 82, 79)
-    fluxfs.trackinfo(2, 82, 79)
+    track = filesys.Track()
+    track.info(1, fluxfs.data[1], 82, 79)
+    track.info(2, fluxfs.data[2], 82, 79)

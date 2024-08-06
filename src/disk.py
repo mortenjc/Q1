@@ -1,6 +1,5 @@
 
-# for now assume disk 1 only, drive 1 only, side 0 only
-
+# for now assume disk/drive 1 only, side 0 only
 
 
 class Disk:
@@ -62,6 +61,7 @@ class Control:
         self.trackdir = 0
         self.write = 0
         self.disk = Disk(diskno, fs)
+        self.selected_drive = 0
 
 
     def data_in(self) -> int:
@@ -75,17 +75,17 @@ class Control:
         if val == 0:
             self.disk.current_byte = 0
             return
-        side = val >> 7
-        drive = val & 0x7f
-        assert drive in [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40], drive
+        #side = val >> 7
+        drive = val #& 0x7f
+        assert drive in [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80], f'val: 0x{val:02x}'
         i = 1
         while True:
             if drive == 1:
                 break
             drive /= 2
             i += 1
-        assert side == 0
-        assert drive == 1
+        #assert side == 0
+        self.selected_drive = i
         self.current_byte = 0 # ?
 
 
@@ -99,7 +99,9 @@ class Control:
 
     def status(self):
         track = self.disk.current_track
-        status = statusbits["sdready"]
+        status = 0
+        if self.disk == self.selected_drive:
+            status = statusbits["sdready"]
         if self.disk.current_byte == 0:
             status += statusbits["index"]
         if self.disk.isbusy():

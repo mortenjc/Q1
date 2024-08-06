@@ -11,7 +11,8 @@ ddfs.loadtracks([t0, t1, t2, t3])
 
 
 if __name__ == '__main__':
-    ddfs.trackinfo(1, 30, 255)
-    ddfs.trackinfo(2, 30, 255)
-    ddfs.trackinfo(3, 30, 255)
-    #s.data[1])
+    track = filesys.Track()
+    track.info(0, ddfs.data[0], 130, 40)
+    track.info(1, ddfs.data[1], 30, 255)
+    track.info(2, ddfs.data[2], 30, 255)
+    track.info(3, ddfs.data[3], 30, 255)

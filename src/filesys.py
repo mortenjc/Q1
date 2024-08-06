@@ -1,5 +1,82 @@
 
 
+class Track:
+    def index(self, track, data, records, record_size):
+        d = data
+        for record in range(records):
+            overhead = 8
+            firstline = False
+            i = 0
+            offset = record * (record_size + overhead)
+            assert d[offset + i] == 0x9e, f'{i=}, {d[offset + i]=}'
+            i += 5
+            assert d[offset + i] == 0x9b
+            i += 1
+
+            recno = d[offset + i] + (d[offset + i + 1] << 8)
+            filename = ''.join([chr(x) for x in d[offset + i + 2: offset + i + 10]])
+            nrecs =  d[offset + i + 10] + (d[offset + i + 11] << 8)
+            recsz =  d[offset + i + 12] + (d[offset + i + 13] << 8)
+            ftrack = d[offset + i + 16] + (d[offset + i + 17] << 8)
+            ltrack = d[offset + i + 18] + (d[offset + i + 19] << 8)
+            assert recno == 0
+            if nrecs:
+                print(f'{filename}: nrecs {nrecs:2}, record size {recsz:3}, first track {ftrack:2}, last track {ltrack:2}')
+
+
+    def info(self, track, data, records, record_size):
+        if track == 0:
+            self.index(track, data, records, record_size)
+
+        d = data
+        for record in range(records):
+            overhead = 8
+            firstline = False
+            i = 0
+            offset = record * (record_size + overhead)
+            assert d[offset + i] == 0x9e, f'{i=}, {d[offset + i]=}'
+            i += 5
+            assert d[offset + i] == 0x9b
+            i += 1
+            while 255 - i  >= 5:
+                block_separator = d[offset + i]
+                if block_separator == 0:
+                    break
+                if not firstline:
+                    firstline = True
+                    print(f'\nTrack {track}, Record {record}')
+
+                i += 1
+                addr = d[offset + i] + (d[offset + i + 1] << 8)
+                i += 2
+                bytecount = d[offset + i]
+                i += 1
+                print(f'separator 0x{block_separator:02x}: load {bytecount:3} bytes into address 0x{addr:04x}')
+                brk = 0
+                s0 = f'{addr:04x}'
+                s1 = ''
+                s2 = ''
+                for j in range(bytecount):
+                    val = d[offset + i]
+                    i += 1
+                    s1 += f'{val:02x} '
+                    if 32 <= val <= 127:
+                        s2 += chr(val)
+                    else:
+                        s2 += '.'
+                    brk += 1
+                    if brk == 16:
+                        brk = 0
+                        s0 = f'{addr:04x}'
+                        print(s0, s1, s2)
+                        addr += 16
+                        s1 = ''
+                        s2 = ''
+                s0 = f'{addr:04x}'
+                print(f'{s0} {s1:48} {s2}')
+                print()
+
+
 class FileSys:
 
     # Possibilities according to "Q1 Lite system overview"
@@ -17,7 +94,7 @@ class FileSys:
             fn = ""
             for i in range(8):
                 fn += chr(data[3+i])
-            print(f'INDEX Record:  {fn}')
+            #print(f'INDEX Record:  {fn}')
 
         d = self.data[track]
         cksum = sum(data[1:]) & 0xff
@@ -106,55 +183,6 @@ class FileSys:
             d[offset + i] = ch
         return offset + len(rec)
 
-
-    def trackinfo(self, track, records, record_size):
-        d = self.data[track]
-        for record in range(records):
-            overhead = 8
-            firstline = False
-            i = 0
-            offset = record * (record_size + overhead)
-            assert d[offset + i] == 0x9e, f'{i=}, {d[offset + i]=}'
-            i += 5
-            assert d[offset + i] == 0x9b
-            i += 1
-            while 255 - i  >= 5:
-                block_separator = d[offset + i]
-                if block_separator == 0:
-                    break
-                if not firstline:
-                    firstline = True
-                    print(f'\nTrack {track}, Record {record}')
-
-                i += 1
-                addr = d[offset + i] + (d[offset + i + 1] << 8)
-                i += 2
-                bytecount = d[offset + i]
-                i += 1
-                print(f'separator 0x{block_separator:02x}: load {bytecount:3} bytes into address 0x{addr:04x}')
-                brk = 0
-                s0 = f'{addr:04x}'
-                s1 = ''
-                s2 = ''
-                for j in range(bytecount):
-                    val = d[offset + i]
-                    i += 1
-                    s1 += f'{val:02x} '
-                    if 32 <= val <= 127:
-                        s2 += chr(val)
-                    else:
-                        s2 += '.'
-                    brk += 1
-                    if brk == 16:
-                        brk = 0
-                        s0 = f'{addr:04x}'
-                        print(s0, s1, s2)
-                        addr += 16
-                        s1 = ''
-                        s2 = ''
-                s0 = f'{addr:04x}'
-                print(f'{s0} {s1:48} {s2}')
-                print()
 
 
 

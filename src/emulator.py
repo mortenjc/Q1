@@ -101,13 +101,13 @@ def emulator(args):
             args.decode = True
             io.verbose = True
 
-        if pc ==0x4cb:
+        if pc ==0x4cb and args.program == 'jdc':
             print(io.displaystr)
             io.displaystr = ""
-            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000)
-            ros.index()
-            ros.file()
-            ros.disk()
+            # cpu.mem.hexdump(0x2000, 0x10000 - 0x2000)
+            # ros.index()
+            # ros.file()
+            # ros.disk()
             print("<STOP>")
 
         if (icount % 1000) == 0: # int_disabled check?
@@ -157,8 +157,6 @@ if __name__ == "__main__":
         type = auto_int, default = 0x1FFFF)
     parser.add_argument("-t", "--trigger", help = "start decode at trigger address",
         type = auto_int, default = 0x1FFFF)
-    parser.add_argument("-l", "--list", help = "showavailable programs",
-        action='store_true')
     parser.add_argument("-s", "--stopafter", help = "stop after N instructions",
         type = int, default = -1)
     parser.add_argument("-p", "--poi", help = "Point of interest (PC)",
@@ -167,6 +165,8 @@ if __name__ == "__main__":
                         type = int, default = 256)
     parser.add_argument("-x", "--hexdump", help = "Toggle hexdump", action='store_true')
     parser.add_argument("-d", "--decode", help = "Decode instructions", action='store_true')
+    parser.add_argument("-l", "--list", help = "show available programs",
+        action='store_true')
     parser.add_argument("--program", help = "name of program to load, see programs.py",
                         type = str, default = "jdc")
 
