@@ -96,16 +96,16 @@ class Memory():
         fh = open(file, 'rb')
         block = list(fh.read())
         assert len(block) + address < 65535
-        for i in range(len(block)):
-            self.m[address + i] = block[i]
+        for i, d in enumerate(block):
+            self.m[address + i] = d
         print(f'loaded {len(block)} bytes from {file} at address {address:04x}h')
         fh.close()
 
 
     def _loaddata(self, data: list, address: int):
         # Helper code to load a list of bytes into a specified address
-        for i in range(len(data)):
-            self.m[address+i] = data[i]
+        for i, d in enumerate(data):
+            self.m[address+i] = d
         print(f'loaded {len(data)} bytes from list at address {address:04x}h')
 
 

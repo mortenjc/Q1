@@ -56,7 +56,7 @@ class Track:
                 s0 = f'{addr:04x}'
                 s1 = ''
                 s2 = ''
-                for j in range(bytecount):
+                for _ in range(bytecount):
                     val = d[offset + i]
                     i += 1
                     s1 += f'{val:02x} '
@@ -128,11 +128,11 @@ class FileSys:
         o = offset
         d = self.data[track]
         assert len(name) == 8
-        for i in range(len(data)):
-            d[o] = data[i]
+        for i, val in enumerate(data):
+            d[o] = val
             o+=1
-        for i in range(len(name)):
-            d[offset + 3 + i] = ord(name[i])
+        for i, ch in enumerate(name):
+            d[offset + 3 + i] = ord(ch)
 
         d[1] = recno & 0xff
         d[2] = recno >> 8
