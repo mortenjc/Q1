@@ -76,8 +76,8 @@ def emulator(args):
         cpu.step() # does the actual emulation of the next instruction
 
         if 1:
-            if pc == 0xd41:
-                print('DISK READ')
+            # if pc == 0xd41:
+            #     print('DISK READ')
             if pc == 0x85e:
                 print('DISK KEY')
             if pc == 0x818:
@@ -85,7 +85,9 @@ def emulator(args):
             if pc == 0xd21:
                 print('DISK OPEN')
             if pc == 0x1393:
-                print('ID Record w. good cksum')
+                print(f'ID Record w. good cksum: Track {cpu.m.b}, Record {cpu.m.c}')
+            if pc == 0x1497:
+                print(f'Expected Record {cpu.m.e}, got Record {cpu.m.a}')
             # if pc == 0x145a:
             #     print('Is Data Record?')
 
@@ -113,7 +115,7 @@ def emulator(args):
         if (icount % 1000) == 0: # int_disabled check?
             if key.kbhit():
                 ch = ord(key.getch())
-                if ch >= 32 and ch < 127:
+                if 32 <= ch < 127:
                     print(f'{chr(ch)}')
                 else:
                     print(f'{ch}')

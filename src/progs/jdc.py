@@ -15,6 +15,7 @@ jdc = {
         ["file", "roms/JDC/IC30.bin", 0x1400],
         ["file", "roms/JDC/IC31.bin", 0x1800],
         ["file", "roms/JDC/IC32.bin", 0x1C00]
+        # ["snippet", [0xff], 0x1000] # force different disk access path
     ],
     "funcs" : {
        0x0000: "jump to START",

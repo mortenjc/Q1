@@ -14,7 +14,7 @@ class Memory():
 
     def clear(self, val: int):
         # Clear memory (set to val)
-        for i in range(len(self.m)):
+        for i, _ in enumerate(self.m):
             self.m[i] = val
 
 
@@ -62,7 +62,7 @@ class Memory():
 
 
     def writeu8(self, addr: int, val: int):
-        assert val >=0 and val <= 255
+        assert 0 <= val <= 255
         self.m[addr] = val
 
     def writeu16(self, addr: int, val: int):
@@ -93,13 +93,12 @@ class Memory():
 
     def _loadfile(self, file: str, address: int):
         # Helper code to load a file into a specidied address
-        fh = open(file, 'rb')
-        block = list(fh.read())
-        assert len(block) + address < 65535
-        for i, d in enumerate(block):
-            self.m[address + i] = d
-        print(f'loaded {len(block)} bytes from {file} at address {address:04x}h')
-        fh.close()
+        with open(file, 'rb') as fh:
+            block = list(fh.read())
+            assert len(block) + address < 65535
+            for i, d in enumerate(block):
+                self.m[address + i] = d
+            print(f'loaded {len(block)} bytes from {file} at address {address:04x}h')
 
 
     def _loaddata(self, data: list, address: int):

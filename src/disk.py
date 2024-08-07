@@ -100,8 +100,10 @@ class Control:
     def status(self):
         track = self.disk.current_track
         status = 0
-        if self.disk == self.selected_drive:
+        if self.disk.disk == self.selected_drive:
             status = statusbits["sdready"]
+        else:
+            print(f'disk not ready mydrive: {self.disk.disk}, selected drive {self.selected_drive}')
         if self.disk.current_byte == 0:
             status += statusbits["index"]
         if self.disk.isbusy():

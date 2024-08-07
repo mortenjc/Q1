@@ -193,7 +193,7 @@ class IO:
 
     # possibly not disk, could be rs232
     def handle_disk_in_0c(self):
-        self.print(f'IO in  - disk1 ???????????? - (0x00)')
+        self.print('IO in  - disk1 ???????????? - (0x00)')
         return 0
 
 

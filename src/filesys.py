@@ -5,7 +5,6 @@ class Track:
         d = data
         for record in range(records):
             overhead = 8
-            firstline = False
             i = 0
             offset = record * (record_size + overhead)
             assert d[offset + i] == 0x9e, f'{i=}, {d[offset + i]=}'
@@ -17,11 +16,13 @@ class Track:
             filename = ''.join([chr(x) for x in d[offset + i + 2: offset + i + 10]])
             nrecs =  d[offset + i + 10] + (d[offset + i + 11] << 8)
             recsz =  d[offset + i + 12] + (d[offset + i + 13] << 8)
+            rpt = d[offset + i + 14]
+            disk = d[offset + i + 15]
             ftrack = d[offset + i + 16] + (d[offset + i + 17] << 8)
             ltrack = d[offset + i + 18] + (d[offset + i + 19] << 8)
             assert recno == 0
             if nrecs:
-                print(f'{filename}: nrecs {nrecs:2}, record size {recsz:3}, first track {ftrack:2}, last track {ltrack:2}')
+                print(f'{filename}: nrecs {nrecs:2}, record size {recsz:3}, recs/trk: {rpt:3}, disk {disk}, first track {ftrack:2}, last track {ltrack:2}')
 
 
     def info(self, track, data, records, record_size):
@@ -90,10 +91,10 @@ class FileSys:
 
 
     def rawrecord(self, track, offset, data):
-        if track == 0 and data[0] == 0x9b and data[3] >= 0x30:
-            fn = ""
-            for i in range(8):
-                fn += chr(data[3+i])
+        # if track == 0 and data[0] == 0x9b and data[3] >= 0x30:
+        #     fn = ""
+        #     for i in range(8):
+        #         fn += chr(data[3+i])
             #print(f'INDEX Record:  {fn}')
 
         d = self.data[track]

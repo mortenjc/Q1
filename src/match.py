@@ -9,7 +9,6 @@ def operandaddr(s, addrs):
     res = re.match(setpatt, s)
     if res:
         resstr = res.group(1)
-        addr = int(resstr, 16)
         if resstr in addrs:
             var = addrs[resstr]
             return f'set {var} = {res.group(2)}'
@@ -19,7 +18,6 @@ def operandaddr(s, addrs):
 
     if res:
         resstr = res.group(2)
-        addr = int(resstr, 16)
         if resstr in addrs:
             var = addrs[resstr]
             return f'get {res.group(1)} = {var}'
