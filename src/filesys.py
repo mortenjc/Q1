@@ -1,7 +1,7 @@
 
 
 class Track:
-    def index(self, track, data, records, record_size):
+    def index(self, data, records, record_size):
         d = data
         for record in range(records):
             overhead = 8
@@ -27,7 +27,7 @@ class Track:
 
     def info(self, track, data, records, record_size):
         if track == 0:
-            self.index(track, data, records, record_size)
+            self.index(data, records, record_size)
 
         d = data
         for record in range(records):
@@ -101,9 +101,10 @@ class FileSys:
         cksum = sum(data[1:]) & 0xff
         for i, e in enumerate(data):
             d[offset + i] = e
+        i = len(data)
         d[offset + i + 1] = cksum
         d[offset + i + 2] = 0x10
-        return offset + len(data) + 2
+        return offset + i + 2
 
 
     #
@@ -153,7 +154,6 @@ class FileSys:
         assert len(name) == 8
         rec = []
         d = self.data[0]
-        o = offset
 
         rec.append(0x9b)
         rec += self.le16(0x0000)     # rec number, zero on index

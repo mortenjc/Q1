@@ -86,7 +86,6 @@ class Control:
             i += 1
         #assert side == 0
         self.selected_drive = i
-        self.current_byte = 0 # ?
 
 
     def control2(self, val):

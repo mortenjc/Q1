@@ -3,7 +3,6 @@
 import sys
 import argparse
 import cpu as c
-import filesys
 import kbd
 import match
 import ros as r
