@@ -42,7 +42,7 @@ class Cpu:
             self.exit()
 
 
-    def exit(self, ros=True, dump=True, bt=True):
+    def info(self, ros=True, dump=True, bt=True):
         if ros:
             self.ros.index()
             self.ros.file()
@@ -52,6 +52,9 @@ class Cpu:
         if bt:
             for l in self.bt:
                 print(l)
+
+    def exit(self, ros=True, dump=True, bt=True):
+        self.info(ros, dump, bt)
         print('exiting...')
         sys.exit()
 

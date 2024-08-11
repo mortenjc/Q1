@@ -102,8 +102,8 @@ class FileSys:
         for i, e in enumerate(data):
             d[offset + i] = e
         i = len(data)
-        d[offset + i + 1] = cksum
-        d[offset + i + 2] = 0x10
+        d[offset + i + 0] = cksum
+        d[offset + i + 1] = 0x10
         return offset + i + 2
 
 

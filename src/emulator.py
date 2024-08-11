@@ -93,14 +93,14 @@ def emulator(args):
 
         if pc in (args.breakpoint, stoppc):
             print(f'\n<<<< BREAKPOINT at 0x{pc:04x} >>>>\n')
-            cpu.exit(False, True, False)
-            #cpu.exit()
+            #cpu.e(False, True, False)
+            cpu.exit()
 
         if args.trigger == pc:
             print(f'\n<<<< TRIGGER at 0x{pc:04x} >>>>\n')
-            cpu.mem.hexdump(0x2000, 0x10000 - 0x2000)
             args.decode = True
             io.verbose = True
+            cpu.info()
 
         if pc ==0x4cb and args.program == 'jdc':
             print(io.displaystr)

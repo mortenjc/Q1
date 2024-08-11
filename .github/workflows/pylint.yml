@@ -20,4 +20,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --fail-under 4 -d E0401,C0114,C0115,C0116,C0301,R0801 $(git ls-files 'src/*.py')
+        pylint --fail-under 4 -d E0401,C0114,C0115,C0116,C0301,R0801,R0903 $(git ls-files 'src/*.py')
