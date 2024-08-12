@@ -16,3 +16,10 @@ if __name__ == '__main__':
     track.info(1, ddfs.data[1], 30, 255)
     track.info(2, ddfs.data[2], 30, 255)
     track.info(3, ddfs.data[3], 30, 255)
+
+    # print(ddfs.data[0][:48])
+    # print()
+    # print(ddfs.data[0][48:96])
+    # print()
+    # print(ddfs.data[1][:263])
+    # print(ddfs.data[1][263:293])
