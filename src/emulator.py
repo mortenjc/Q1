@@ -123,8 +123,12 @@ def emulator(args):
                     cpu.mem.hexdump(0x2000, 0x10000 - 0x2000)
                 elif ch == 8224: # opt-t
                     args.decode = not args.decode
+                elif ch == 8721:       # opt-w -> HEX
+                    int38(cpu, io, 0x1a)
                 elif ch == 960:        # opt-p -> regdump
                     print(cpu.getregs())
+                elif ch == 0x09:       # TAB
+                    int38(cpu, io, 0x09)
                 elif ch == 0x0a:       # LF -> CR
                     int38(cpu, io, 0x0d)
                 elif ch == 169:        # opt-g GO
@@ -139,6 +143,8 @@ def emulator(args):
                     int38(cpu, io, 0x1c)
                 elif ch == 8706:       # opt-l -> DEL CHAR
                     int38(cpu, io, 0x1d)
+                elif ch == 339:       # opt-q -> SET TAB
+                    int38(cpu, io, 0x03)
                 elif ch == 170: # opt-a FDs
                     ros.index()
                     ros.file()
