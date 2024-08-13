@@ -2,7 +2,7 @@
 Annotated disassembly
 =====================
 
-From **disassembly.py -a** on 2024 07 30
+From **disassembly.py -a** on 2024 08 13
 
 .. code-block:: console
 
@@ -59,129 +59,100 @@ From **disassembly.py -a** on 2024 07 30
   01e0 d5           ; push de              |
   01e1 e5           ; push hl              |
   01e2 c3 83 40     ; jp 0x4083            |
-  01e5 ed 56        ; im 0x1               |
-  01e7 3e 04        ; ld a, 0x4            |
-  01e9 d3 01        ; out (0x1), a         |
-  01eb 11 3f 00     ; ld de, 0x3f          |
-  01ee 21 80 40     ; ld hl, 0x4080        |
 
-  ;set keyboard mode 2 (ASM IO page 10)
+  ;start()
   01e5 ed 56        ; im 0x1               |
-  01e7 3e 04        ; ld a, 0x4            |
+  01e7 3e 04        ; ld a, 0x4            | set keyboard mode 2 (ASM IO page 73)
   01e9 d3 01        ; out (0x1), a         |
-
-  ;prepare registers for copy and clearing
-  01eb 11 3f 00     ; ld de, 0x3f          |
+  01eb 11 3f 00     ; ld de, 0x3f          | prepare registers for copy and clearing
   01ee 21 80 40     ; ld hl, 0x4080        |
   01f1 f9           ; ld sp, hl            |
   01f2 eb           ; ex de, hl            |
-
-  ;copy jump tables from 003f:0047 to 4080:4088
   01f3 01 09 00     ; ld bc, 0x9           |
-  01f6 ed b0        ; ldir                 |
-
-  ;clear RAM from 4089 to 40ff
+  01f6 ed b0        ; ldir                 | copy jump tables from 003f:0047 to 4080:4088
   01f8 97           ; sub a                |
   01f9 12           ; ld (de), a           |
   01fa 1c           ; inc e                |
-  01fb 20 fb        ; jr nz, 0x1f8         |
-
-  ;printer control - reset printer, raise ribbon
-  01fd 3e a0        ; ld a, 0xa0           |
+  01fb 20 fb        ; jr nz, 0x1f8         | clear RAM from 4089 to 40ff
+  01fd 3e a0        ; ld a, 0xa0           | printer control - reset printer, raise ribbon
   01ff d3 07        ; out (0x7), a         |
-
-  ;printer status  - check result (0 is good)
-  0201 db 05        ; in a, (0x5)          |
+  0201 db 05        ; in a, (0x5)          | printer status  - check result (0 is good)
   0203 b7           ; or a                 |
   0204 20 06        ; jr nz, 0x20c         |
   0206 21 fd 07     ; ld hl, 0x7fd         |
   0209 22 84 40     ; ld (0x4084), hl      |
-  020c cd 10 04     ; call 0x410           |
+  020c cd 10 04     ; call 0x410           | clear keyboard buffer, update display
 
-  ;DONE()?
-  020f 21 80 40     ; ld hl, 0x4080        |
+  ;Main program loop
+  020f 21 80 40     ; ld hl, 0x4080        | reset stack pointer to x4080
   0212 f9           ; ld sp, hl            |
   0213 cd 15 08     ; call 0x815           | CLRDK
   0216 3a 8e 40     ; ld a, (0x408e)       | get a = Unused
   0219 0f           ; rrca                 |
   021a 38 15        ; jr c, 0x231          |
   021c 21 89 40     ; ld hl, 0x4089        |
-  021f 7e           ; ld a, (hl)           |
+  021f 7e           ; ld a, (hl)           | a = PLC (lsb of addr of last char loaded to printer buffer)
   0220 23           ; inc hl               |
-  0221 96           ; sub (hl)             |
+  0221 96           ; sub (hl)             | ensure there are no buffered chars to print???
   0222 20 ef        ; jr nz, 0x213         |
-  0224 db 0c        ; in a, (0xc)          |
-  0226 cb 77        ; bit 0x6, a           |
+  0224 db 0c        ; in a, (0xc)          | UNKNOWN INPUT from 0xc
+  0226 cb 77        ; bit 0x6, a           | check bit 6 - unknown
   0228 20 07        ; jr nz, 0x231         |
   022a 07           ; rlca                 |
   022b 38 e6        ; jr c, 0x213          |
   022d 3e 81        ; ld a, 0x81           |
-  022f d3 0c        ; out (0xc), a         |
-  0231 cd b3 04     ; call 0x4b3           |
-  0234 db 1a        ; in a, (0x1a)         |
+  022f d3 0c        ; out (0xc), a         | UNKNOWN OUTPUT to 0xc
+  0231 cd b3 04     ; call 0x4b3           | clear display
+  0234 db 1a        ; in a, (0x1a)         | Get status for disk 2
   0236 b7           ; or a                 |
-  0237 28 0b        ; jr z, 0x244          |
-  0239 e6 08        ; and 0x8              |
+  0237 28 0b        ; jr z, 0x244          | disk status == 0 -> Q1-Lite
+  0239 e6 08        ; and 0x8              | else if bit 3 (0x8) clear -> Q1-Magnus
   023b 20 07        ; jr nz, 0x244         |
-  023d 21 5e 00     ; ld hl, 0x5e          |
+  023d 21 5e 00     ; ld hl, 0x5e          | HL -> " Q1-Magnus klar til brug"
   0240 0e 18        ; ld c, 0x18           |
   0242 18 05        ; jr 0x249             |
-  0244 21 55 00     ; ld hl, 0x55          |
+  0244 21 55 00     ; ld hl, 0x55          | HL -> " Q1-Lite"
   0247 0e 16        ; ld c, 0x16           |
-  0249 cd a0 02     ; call 0x2a0           |
+  0249 cd a0 02     ; call 0x2a0           | get display width
   024c 91           ; sub c                |
   024d cb 3f        ; srl a                |
   024f 47           ; ld b, a              |
   0250 c5           ; push bc              |
   0251 e5           ; push hl              |
-  0252 cd 93 02     ; call 0x293           |
+  0252 cd 93 02     ; call 0x293           | ???
   0255 e1           ; pop hl               |
   0256 0e 0a        ; ld c, 0xa            |
-  0258 cd 58 04     ; call 0x458           |
+  0258 cd 58 04     ; call 0x458           | print " Q1-Magnus/Lite"
   025b 21 68 00     ; ld hl, 0x68          |
   025e 0e 0e        ; ld c, 0xe            |
-  0260 cd 58 04     ; call 0x458           |
+  0260 cd 58 04     ; call 0x458           | print " Klar til brug"
   0263 c1           ; pop bc               |
-  0264 db 04        ; in a, (0x4)          |
-  0266 e6 18        ; and 0x18             |
+  0264 db 04        ; in a, (0x4)          | get display status
+  0266 e6 18        ; and 0x18             | check if 40 or 80 bytes
   0268 20 01        ; jr nz, 0x26b         |
   026a 04           ; inc b                |
   026b cd 93 02     ; call 0x293           |
   026e 21 8e 40     ; ld hl, 0x408e        |
   0271 cb 8e        ; res 0x1, (hl)        |
-  0273 cd da 03     ; call 0x3da           |
-  0276 cd b3 04     ; call 0x4b3           |
-  0279 21 0f 02     ; ld hl, 0x20f         |
-  027c 22 81 40     ; ld (0x4081), hl      |
-  027f cd 0f 08     ; call 0x80f           | LOADER
-  0282 21 8e 40     ; ld hl, 0x408e        |
-  0285 cb ce        ; set 0x1, (hl)        |
-  0287 ca 80 40     ; jp z, 0x4080         |
-  028a cd 18 08     ; call 0x818           | REPORT
-  028d cd 10 04     ; call 0x410           |
-  0290 c3 0f 02     ; jp 0x20f             |
-  0293 21 55 00     ; ld hl, 0x55          |
-  0296 c5           ; push bc              |
-  0297 0e 01        ; ld c, 0x1            |
-  0299 cd 58 04     ; call 0x458           |
-  029c c1           ; pop bc               |
-  029d 10 f4        ; djnz 0x293           |
-  029f c9           ; ret                  |
+  0273 cd da 03     ; call 0x3da           | get keyboard input (returns when command is entered)
+  0276 cd b3 04     ; call 0x4b3           | clear display
 
-  ;load prg???
-  0279 21 0f 02     ; ld hl, 0x20f         |
+  ;load and run program
+  0279 21 0f 02     ; ld hl, 0x20f         | set return to Main loop
   027c 22 81 40     ; ld (0x4081), hl      |
   027f cd 0f 08     ; call 0x80f           | LOADER
-  0282 21 8e 40     ; ld hl, 0x408e        |
+  0282 21 8e 40     ; ld hl, 0x408e        | USE OF FIELD REPORTED AS UNUSED
   0285 cb ce        ; set 0x1, (hl)        |
-  0287 ca 80 40     ; jp z, 0x4080         |
+  0287 ca 80 40     ; jp z, 0x4080         | jump to loaded program start???
   028a cd 18 08     ; call 0x818           | REPORT
-  028d cd 10 04     ; call 0x410           |
-  0290 c3 0f 02     ; jp 0x20f             |
-  0293 21 55 00     ; ld hl, 0x55          |
+  028d cd 10 04     ; call 0x410           | clear keyboard buffer, update display
+  0290 c3 0f 02     ; jp 0x20f             | back to Main loop
+
+  ;print "Q1 Lite/Magnus ..."
+  0293 21 55 00     ; ld hl, 0x55          | String "Q1 Lite"
   0296 c5           ; push bc              |
   0297 0e 01        ; ld c, 0x1            |
-  0299 cd 58 04     ; call 0x458           |
+  0299 cd 58 04     ; call 0x458           | display(SPC)
   029c c1           ; pop bc               |
   029d 10 f4        ; djnz 0x293           |
   029f c9           ; ret                  |
@@ -401,7 +372,7 @@ From **disassembly.py -a** on 2024 07 30
   ;unknown
   03d5 18 b8        ; jr 0x38f             | check printer status
   03d7 cd 10 04     ; call 0x410           | clear keyboard buffer, update display
-  03da cd a9 04     ; call 0x4a9           |
+  03da cd a9 04     ; call 0x4a9           | get keyboard input, result in a
   03dd 3a 92 40     ; ld a, (0x4092)       | get a = TOOK
   03e0 6f           ; ld l, a              |
   03e1 26 41        ; ld h, 0x41           |
@@ -409,7 +380,7 @@ From **disassembly.py -a** on 2024 07 30
   03e5 7e           ; ld a, (hl)           |
   03e6 2c           ; inc l                |
   03e7 fa d7 03     ; jp m, 0x3d7          |
-  03ea fe 20        ; cp 0x20              |
+  03ea fe 20        ; cp 0x20              | ignore leading spaces (0x20)
   03ec 28 f7        ; jr z, 0x3e5          |
   03ee 7d           ; ld a, l              |
   03ef 3d           ; dec a                |
@@ -630,7 +601,7 @@ From **disassembly.py -a** on 2024 07 30
   055c 47           ; ld b, a              |
   055d 04           ; inc b                |
   055e 0e 03        ; ld c, 0x3            |
-  0560 ed           ; db 0xed              |
+  0560 ed           ; db 0xed              | z80 otir instruction - B bytes from HL to port C
   0561 b3           ; or e                 |
   0562 c9           ; ret                  |
 
@@ -973,7 +944,7 @@ From **disassembly.py -a** on 2024 07 30
   080c c3 30 08     ; jp 0x830             |
 
   ;LOADER vec
-  080f c3 1e 0d     ; jp 0xd1e             |
+  080f c3 1e 0d     ; jp 0xd1e             | jump to loader()
 
   ;CLOSE vec
   0812 c3 e0 0c     ; jp 0xce0             |
@@ -1000,21 +971,21 @@ From **disassembly.py -a** on 2024 07 30
   0836 32 13 42     ; ld (0x4213), a       |
   0839 e5           ; push hl              |
   083a 3a a5 40     ; ld a, (0x40a5)       | get a = AD (access denined)
-  083d 2f           ; cpl                  |
+  083d 2f           ; cpl                  | a = bit mask of allowed drives
   083e 47           ; ld b, a              |
   083f 21 13 42     ; ld hl, 0x4213        |
   0842 7e           ; ld a, (hl)           |
-  0843 07           ; rlca                 |
+  0843 07           ; rlca                 | get next potential disk
   0844 77           ; ld (hl), a           |
   0845 21 ad 40     ; ld hl, 0x40ad        | get disk# from index file
   0848 34           ; inc (hl)             |
-  0849 a0           ; and b                |
+  0849 a0           ; and b                | is disk available?
   084a e1           ; pop hl               |
   084b 28 2f        ; jr z, 0x87c          |
   084d e5           ; push hl              |
   084e 11 02 00     ; ld de, 0x2           |
   0851 01 9f 40     ; ld bc, 0x409f        | Current record number on index?
-  0854 cd e1 0f     ; call 0xfe1           |
+  0854 cd e1 0f     ; call 0xfe1           | setup FD for INDEX (rpt, #records, record size)
   0857 02           ; ld (bc), a           |
   0858 0b           ; dec bc               |
   0859 02           ; ld (bc), a           |
@@ -1149,7 +1120,7 @@ From **disassembly.py -a** on 2024 07 30
   0948 c1           ; pop bc               |
   0949 c9           ; ret                  |
 
-  ;write()
+  ;write jump()
   094a cd b8 0f     ; call 0xfb8           |
   094d c3 03 10     ; jp 0x1003            |
   0950 cd f0 0a     ; call 0xaf0           |
@@ -1216,13 +1187,11 @@ From **disassembly.py -a** on 2024 07 30
   09d1 d3 19        ; out (0x19), a        |
   09d3 d2 c8 0a     ; jp nc, 0xac8         |
   09d6 86           ; add a, (hl)          |
-  09d7 ed           ; db 0xed              |
-  09d8 a3           ; and e                |
+  09d7 ed a3        ; outi                 |
   09d9 20 fb        ; jr nz, 0x9d6         |
   09db 43           ; ld b, e              |
   09dc 86           ; add a, (hl)          |
-  09dd ed           ; db 0xed              |
-  09de a3           ; and e                |
+  09dd ed a3        ; outi                 |
   09df 20 fb        ; jr nz, 0x9dc         |
   09e1 15           ; dec d                |
   09e2 28 05        ; jr z, 0x9e9          |
@@ -1335,13 +1304,11 @@ From **disassembly.py -a** on 2024 07 30
   0ac2 32 9b 40     ; ld (0x409b), a       | set NRT   (disk record count) = a
   0ac5 c3 9f 09     ; jp 0x99f             |
   0ac8 86           ; add a, (hl)          |
-  0ac9 ed           ; db 0xed              |
-  0aca a3           ; and e                |
+  0ac9 ed a3        ; outi                 |
   0acb 43           ; ld b, e              |
   0acc 05           ; dec b                |
   0acd 86           ; add a, (hl)          |
-  0ace ed           ; db 0xed              |
-  0acf a3           ; and e                |
+  0ace ed a3        ; outi                 |
   0ad0 c3 dc 09     ; jp 0x9dc             |
   0ad3 dd 4e 0c     ; ld c, (ix + 0xc)     |
   0ad6 dd 46 0d     ; ld b, (ix + 0xd)     |
@@ -1672,7 +1639,7 @@ From **disassembly.py -a** on 2024 07 30
   0d1d c9           ; ret                  |
 
   ;loader()
-  0d1e 21 d0 40     ; ld hl, 0x40d0        |
+  0d1e 21 d0 40     ; ld hl, 0x40d0        | loader() - hl = FD for loaded file
   0d21 cd 30 08     ; call 0x830           | call OPEN
   0d24 c0           ; ret nz               |
   0d25 3a da 40     ; ld a, (0x40da)       | get a = Number of Records (LFILE)
@@ -1732,6 +1699,8 @@ From **disassembly.py -a** on 2024 07 30
   0d78 13           ; inc de               |
   0d79 10 f8        ; djnz 0xd73           |
   0d7b cd 15 10     ; call 0x1015          | call IWS specific code
+
+  ;deselect all disks()
   0d7e 97           ; sub a                |
   0d7f 32 a0 40     ; ld (0x40a0), a       | set DISK  (selected disk drive #) = a
   0d82 d3 1b        ; out (0x1b), a        |
@@ -1747,17 +1716,6 @@ From **disassembly.py -a** on 2024 07 30
 
   ;report()
   0d8e c5           ; push bc              |
-  0d8f f5           ; push af              |
-  0d90 cd 6b 0d     ; call 0xd6b           | clrdk()
-  0d93 21 ec 0d     ; ld hl, 0xdec         | CLEAR
-  0d96 0e 01        ; ld c, 0x1            |
-  0d98 cd 27 00     ; call 0x27            |
-  0d9b f1           ; pop af               |
-  0d9c fe 04        ; cp 0x4               |
-  0d9e 28 33        ; jr z, 0xdd3          |
-  0da0 fe 09        ; cp 0x9               |
-  0da2 fa a7 0d     ; jp m, 0xda7          |
-  0da5 3e 09        ; ld a, 0x9            |
 
   ;print nth error message
   0da7 21 ed 0d     ; ld hl, 0xded         | Start of error messages
@@ -2076,13 +2034,15 @@ From **disassembly.py -a** on 2024 07 30
   0fb2 dd 77 01     ; ld (ix + 0x1), a     |
   0fb5 1e ff        ; ld e, 0xff           |
   0fb7 c9           ; ret                  |
+
+  ;write()
   0fb8 c5           ; push bc              |
   0fb9 dd e1        ; pop ix               |
   0fbb 08           ; ex af, af'           |
   0fbc 3a a0 40     ; ld a, (0x40a0)       | get a = DISK  (selected disk drive #)
   0fbf dd be 0f     ; cp (ix + 0xf)        |
   0fc2 28 03        ; jr z, 0xfc7          |
-  0fc4 cd 7e 0d     ; call 0xd7e           |
+  0fc4 cd 7e 0d     ; call 0xd7e           | deselect disks
   0fc7 3a 00 10     ; ld a, (0x1000)       |
   0fca 3c           ; inc a                |
   0fcb ca da 0f     ; jp z, 0xfda          | jump to 0xfda if no ROM in addr 0x1000
@@ -2262,6 +2222,33 @@ From **disassembly.py -a** on 2024 07 30
   110f 2a 20 42     ; ld hl, (0x4220)      |
   1112 19           ; add hl, de           |
   1113 22 a2 40     ; ld (0x40a2), hl      | set TRKS  (track # for drive 2) = hl
+  1116 d9           ; exx                  |
+  1117 dd 34 00     ; inc (ix + 0x0)       |
+  111a 20 03        ; jr nz, 0x111f        |
+  111c dd 34 01     ; inc (ix + 0x1)       |
+  111f 3e 20        ; ld a, 0x20           |
+  1121 32 9d 40     ; ld (0x409d), a       | set ERC   (disk error count) = a
+  1124 97           ; sub a                |
+  1125 21 9c 40     ; ld hl, 0x409c        |
+  1128 1c           ; inc e                |
+  1129 35           ; dec (hl)             |
+  112a c2 a1 10     ; jp nz, 0x10a1        |
+  112d 18 10        ; jr 0x113f            | jump to return of (unknown) disk function
+
+  ;increment current record number (and return)
+  112f dd 34 00     ; inc (ix + 0x0)       |
+  1132 20 03        ; jr nz, 0x1137        |
+  1134 dd 34 01     ; inc (ix + 0x1)       |
+  1137 21 9c 40     ; ld hl, 0x409c        |
+  113a 35           ; dec (hl)             |
+  113b c2 2f 11     ; jp nz, 0x112f        |
+  113e b7           ; or a                 |
+
+  ;return from (unknown) disk function
+  113f fb           ; ei                   |
+  1140 dd e5        ; push ix              |
+  1142 c1           ; pop bc               |
+  1143 c9           ; ret                  |
 
   ;write??
   1144 cd de 12     ; call 0x12de          |
@@ -2321,25 +2308,23 @@ From **disassembly.py -a** on 2024 07 30
   11b8 01 09 00     ; ld bc, 0x9           |
   11bb db 09        ; in a, (0x9)          |
   11bd 3e 9b        ; ld a, 0x9b           |
-  11bf d3 09        ; out (0x9), a         |
+  11bf d3 09        ; out (0x9), a         | write Data Record identifier 0x9b
   11c1 d2 b6 12     ; jp nc, 0x12b6        |
   11c4 86           ; add a, (hl)          |
-  11c5 ed           ; db 0xed              |
-  11c6 a3           ; and e                |
+  11c5 ed a3        ; outi                 | write (hl+i) to disk, i = 0 to b
   11c7 20 fb        ; jr nz, 0x11c4        |
   11c9 43           ; ld b, e              |
   11ca 86           ; add a, (hl)          |
-  11cb ed           ; db 0xed              |
-  11cc a3           ; and e                |
+  11cb ed a3        ; outi                 | write (hl+i) to disk, i = 0 to b
   11cd 20 fb        ; jr nz, 0x11ca        |
   11cf 15           ; dec d                |
   11d0 28 05        ; jr z, 0x11d7         |
-  11d2 ed 41        ; out (c), b           |
+  11d2 ed 41        ; out (c), b           | write checksum
   11d4 15           ; dec d                |
   11d5 20 fb        ; jr nz, 0x11d2        |
   11d7 d3 09        ; out (0x9), a         |
   11d9 2a 24 42     ; ld hl, (0x4224)      |
-  11dc 16 10        ; ld d, 0x10           |
+  11dc 16 10        ; ld d, 0x10           | write end of record terminator 0x10
   11de ed 51        ; out (c), d           |
   11e0 86           ; add a, (hl)          |
   11e1 77           ; ld (hl), a           |
@@ -2447,13 +2432,11 @@ From **disassembly.py -a** on 2024 07 30
   12b0 32 9b 40     ; ld (0x409b), a       | set NRT   (disk record count) = a
   12b3 c3 8d 11     ; jp 0x118d            |
   12b6 86           ; add a, (hl)          |
-  12b7 ed           ; db 0xed              |
-  12b8 a3           ; and e                |
+  12b7 ed a3        ; outi                 |
   12b9 43           ; ld b, e              |
   12ba 05           ; dec b                |
   12bb 86           ; add a, (hl)          |
-  12bc ed           ; db 0xed              |
-  12bd a3           ; and e                |
+  12bc ed a3        ; outi                 |
   12be c3 ca 11     ; jp 0x11ca            |
 
   ;Set PART1 and PART2
@@ -2476,7 +2459,7 @@ From **disassembly.py -a** on 2024 07 30
   12da 22 b6 40     ; ld (0x40b6), hl      | set PART1 (length to be transferred) = hl
   12dd c9           ; ret                  |
 
-  ;UNEXPLORED
+  ;Select disk, wait for drive/data ready
   12de 22 99 40     ; ld (0x4099), hl      | set THERE (addr for disk transfer) = hl
   12e1 32 9c 40     ; ld (0x409c), a       | set SNRT  (# recs to be transfd) = a
   12e4 6b           ; ld l, e              |
@@ -2498,7 +2481,7 @@ From **disassembly.py -a** on 2024 07 30
   12ff 0f           ; rrca                 |
   1300 38 e7        ; jr c, 0x12e9         |
   1302 7c           ; ld a, h              |
-  1303 d3 0a        ; out (0xa), a         |
+  1303 d3 0a        ; out (0xa), a         | select disk
   1305 7d           ; ld a, l              |
   1306 32 a0 40     ; ld (0x40a0), a       | set DISK  (selected disk drive #) = a
   1309 3e ff        ; ld a, 0xff           |
@@ -2515,6 +2498,8 @@ From **disassembly.py -a** on 2024 07 30
   1321 3e 05        ; ld a, 0x5            |
   1323 b7           ; or a                 |
   1324 c9           ; ret                  | return error # 5 (inferred)
+
+  ;Copy rec before last to ROS INDEX
   1325 dd 7e 16     ; ld a, (ix + 0x16)    | rec before last
   1328 dd 77 00     ; ld (ix + 0x0), a     |
   132b dd 7e 17     ; ld a, (ix + 0x17)    |
@@ -2526,11 +2511,15 @@ From **disassembly.py -a** on 2024 07 30
   133d 32 9b 40     ; ld (0x409b), a       | set NRT   (disk record count) = a
   1340 32 28 42     ; ld (0x4228), a       |
   1343 c9           ; ret                  |
+
+  ;Adjust last record number???
   1344 dd 7e 00     ; ld a, (ix + 0x0)     | copy record number (hi+lo) to last reordnumber on INDEX FD
   1347 dd 77 16     ; ld (ix + 0x16), a    |
   134a dd 7e 01     ; ld a, (ix + 0x1)     |
   134d dd 77 17     ; ld (ix + 0x17), a    |
   1350 c9           ; ret                  |
+
+  ;Compare ROS INDEX with INDEX FD???
   1351 dd 7e 01     ; ld a, (ix + 0x1)     | get a = current record # on INDEX (LO)
   1354 dd be 0b     ; cp (ix + 0xb)        | compare with same (LO) on INDEX FD
   1357 c2 60 13     ; jp nz, 0x1360        |
@@ -2544,7 +2533,7 @@ From **disassembly.py -a** on 2024 07 30
   ;Search for valid ID Record
   1365 d5           ; push de              |
   1366 0e 0a        ; ld c, 0xa            |
-  1368 21 10 27     ; ld hl, 0x2710        |
+  1368 21 10 27     ; ld hl, 0x2710        | test for disk ready h*l times (0x27 * 0x10)
   136b f3           ; di                   |
   136c ed 78        ; in a, (c)            |
   136e ed 78        ; in a, (c)            |
@@ -2558,7 +2547,7 @@ From **disassembly.py -a** on 2024 07 30
   137e fb           ; ei                   |
   137f d1           ; pop de               |
   1380 3c           ; inc a                |
-  1381 c9           ; ret                  |
+  1381 c9           ; ret                  | drive was not ready for a while
   1382 db 09        ; in a, (0x9)          | read byte (ID record)
   1384 fe 9e        ; cp 0x9e              | check if ID record (0x9e)
   1386 20 e4        ; jr nz, 0x136c        |
@@ -2568,7 +2557,7 @@ From **disassembly.py -a** on 2024 07 30
   138d db 09        ; in a, (0x9)          | get a = check sum
   138f 90           ; sub b                |
   1390 91           ; sub c                |
-  1391 20 d9        ; jr nz, 0x136c        |
+  1391 20 d9        ; jr nz, 0x136c        | bad cksum, find next ID record
   1393 fb           ; ei                   | ID Record, read with good cksum
   1394 21 a1 40     ; ld hl, 0x40a1        |
   1397 70           ; ld (hl), b           | store track# for current record
@@ -2608,14 +2597,14 @@ From **disassembly.py -a** on 2024 07 30
   13cd b5           ; or l                 |
   13ce d3 0a        ; out (0xa), a         | select drive (and side)
   13d0 2e 05        ; ld l, 0x5            |
-  13d2 cd 0e 14     ; call 0x140e          |
+  13d2 cd 0e 14     ; call 0x140e          | skip 23 bytes
   13d5 78           ; ld a, b              |
   13d6 92           ; sub d                |
   13d7 47           ; ld b, a              |
   13d8 c8           ; ret z                |
   13d9 0e 00        ; ld c, 0x0            |
   13db 30 05        ; jr nc, 0x13e2        |
-  13dd 0e 40        ; ld c, 0x40           |
+  13dd 0e 40        ; ld c, 0x40           | step direction UP
   13df ed 44        ; neg                  |
   13e1 47           ; ld b, a              |
   13e2 79           ; ld a, c              |
@@ -2708,7 +2697,7 @@ From **disassembly.py -a** on 2024 07 30
   1479 bd           ; cp l                 |
   147a 30 a4        ; jr nc, 0x1420        |
 
-  ;do checksum on all records on disk (inferred)
+  ;search for INDEX file?
   147c 21 00 08     ; ld hl, 0x800         |
   147f 0e 0a        ; ld c, 0xa            |
   1481 f3           ; di                   |
@@ -2746,9 +2735,9 @@ From **disassembly.py -a** on 2024 07 30
   14af 90           ; sub b                |
   14b0 41           ; ld b, c              |
   14b1 0e 0a        ; ld c, 0xa            |
-  14b3 20 cc        ; jr nz, 0x1481        |
+  14b3 20 cc        ; jr nz, 0x1481        | checksum good if a = 0
   14b5 db 09        ; in a, (0x9)          |
-  14b7 fe 10        ; cp 0x10              |
+  14b7 fe 10        ; cp 0x10              | end of record marker
   14b9 20 c6        ; jr nz, 0x1481        |
   14bb 78           ; ld a, b              |
   14bc 32 a1 40     ; ld (0x40a1), a       | set TRKS  (track # for drive 1) = a
@@ -3048,7 +3037,7 @@ From **disassembly.py -a** on 2024 07 30
   168c 47           ; ld b, a              |
   168d 3e 9b        ; ld a, 0x9b           |
   168f 2b           ; dec hl               |
-  1690 86           ; add a, (hl)          |
+  1690 86           ; add a, (hl)          | checksum on filename (increment)
   1691 10 fc        ; djnz 0x168f          |
   1693 08           ; ex af, af'           |
   1694 c5           ; push bc              |
