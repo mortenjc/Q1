@@ -92,3 +92,15 @@ scr = {
     "funcs" : [],
     "pois" : [],
 }
+
+
+ed_instrs = {
+    "descr": "ED instruction disassembly (emulator bug)",
+    "start": 0x0000,
+    "data": [
+        ["snippet", [0xed, 0xb0, 0xed, 0xb1, 0xed, 0xb2, 0xed, 0xb3], 0x0000],
+        ["snippet", [0xed, 0xb8, 0xed, 0xb9, 0xed, 0xba, 0xed, 0xbb], 0x0008],
+    ],
+    "funcs" : [],
+    "pois" : [],
+}

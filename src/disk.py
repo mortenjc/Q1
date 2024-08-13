@@ -3,8 +3,8 @@
 
 
 class Disk:
-    def __init__(self, disk, fs): #
-        self.disk = disk
+    def __init__(self, diskno, fs): #
+        self.diskno = diskno
         self.tracks = fs.tracks
         self.bytes_per_track = fs.bpt
         self.data = fs.data
@@ -16,12 +16,12 @@ class Disk:
     def step(self, direction):
         self.current_byte = 0 # assumption
         if direction: # UP
-            msg = f'disk {self.disk}, step up 0x{direction:02x}'
+            msg = f'disk {self.diskno}, step up 0x{direction:02x}'
             msg += f', track {self.current_track} -> {self.current_track + 1}'
             print(msg)
             self.current_track = (self.current_track + 1) % self.tracks
         else: # DOWN
-            msg = f'disk {self.disk}, step down {direction:02x}'
+            msg = f'disk {self.diskno}, step down {direction:02x}'
             msg += f', track {self.current_track} -> {self.current_track - 1}'
             print(msg)
             if self.current_track == 0:
@@ -97,12 +97,15 @@ class Control:
 
 
     def status(self):
+        if self.disk.diskno == 2:
+            return 0 # Lite, for Magnus use 0x01
+        assert self.disk.diskno == 1
         track = self.disk.current_track
         status = 0
-        if self.disk.disk == self.selected_drive:
+        if self.selected_drive == 1:
             status = statusbits["sdready"]
         else:
-            print(f'disk not ready mydrive: {self.disk.disk}, selected drive {self.selected_drive}')
+            print(f'disk {self.disk.diskno} drive {self.selected_drive} not ready')
         if self.disk.current_byte == 0:
             status += statusbits["index"]
         if self.disk.isbusy():

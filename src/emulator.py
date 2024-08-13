@@ -85,8 +85,8 @@ def emulator(args):
                 print('DISK OPEN')
             if pc == 0x1393:
                 print(f'ID Record w. good cksum: Track {cpu.m.b}, Record {cpu.m.c}')
-            if pc == 0x1497:
-                print(f'Expected Record {cpu.m.e}, got Record {cpu.m.a}')
+            # if pc == 0x1497:
+            #     print(f'Expected Record {cpu.m.e}, got Record {cpu.m.a}')
             # if pc == 0x145a:
             #     print('Is Data Record?')
 
