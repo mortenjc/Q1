@@ -8,6 +8,7 @@ class Disk:
         self.tracks = fs.tracks
         self.bytes_per_track = fs.bpt
         self.data = fs.data
+        self.marks = fs.marks
         self.current_track = 0
         self.current_byte = 0
         self.bytes_read = 0
@@ -42,9 +43,27 @@ class Disk:
     def gettrackno(self):
         return self.current_track
 
-
+    # Very unsure about the correct implementation
     def isbusy(self):
+        # Idea 1 - always return true even when not on a mark. This approach
+        # is slow but 'works' except currently files are not found during KEY
+        # search
         return True
+
+        # Idea 2 - only return True when on a mark, current_byte is only
+        # icremented on reads. This one seems to get stuck permanently
+        # if self.current_byte in self.marks[self.current_track]:
+        #     return True
+        # return False
+
+        # Idea 3 - assume disk looks for the next mark and advances current_byte
+        # always returns True. Only finds one case of good checksum
+        while self.current_byte not in self.marks[self.current_track]:
+            self.current_byte = (self.current_byte + 1) % self.bytes_per_track
+        return True
+
+
+
 
 
 statusbits = {

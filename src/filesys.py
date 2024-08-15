@@ -88,6 +88,7 @@ class FileSys:
         self.tracks = tracks
         self.bpt = bytes_per_track
         self.data = [[0x00 for B in range(self.bpt)] for A in range(self.tracks)]
+        self.marks = [set() for A in range(self.tracks)]
 
 
     def rawrecord(self, track, offset, data):
@@ -112,6 +113,7 @@ class FileSys:
         for track, trackdata in enumerate(track_list):
             offset = 0
             for lst in trackdata.data:
+                self.marks[track].add(offset)
                 offset = self.rawrecord(track, offset, lst)
 
 
