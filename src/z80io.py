@@ -181,20 +181,20 @@ class IO:
         retval = self.disk1.status()
         t = self.disk1.disk.current_track
         b = self.disk1.disk.current_byte
-        self.print(f'IO in  - disk1 (0xa) (status): 0x{retval:02x}, t{t}, b{b}')
+        #self.print(f'IO in  - disk1 (0xa) (status): 0x{retval:02x}, t{t}, b{b}')
         return retval
 
     def handle_disk_in_09(self):
         t = self.disk1.disk.current_track
         b = self.disk1.disk.current_byte
         retval = self.disk1.data_in()
-        #print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}, t{t}, b{b}')
+        print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}, t{t}, b{b}')
         return retval
 
     # possibly not disk, could be rs232
     def handle_disk_in_0c(self):
-        self.print('IO in  - disk1 ???????????? - (0x00)')
-        return 0
+        self.print('IO in  - disk1 ???????????? - (0xff)')
+        return 0xff
 
 
     ### Disk 2 Data and Control

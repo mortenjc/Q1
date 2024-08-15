@@ -99,6 +99,8 @@ class FileSys:
 
         d = self.data[track]
         cksum = sum(data[1:]) & 0xff
+        if data[0] == 0x9b:
+            cksum = (cksum + 0x9b) & 0xff
         for i, e in enumerate(data):
             d[offset + i] = e
         i = len(data)
