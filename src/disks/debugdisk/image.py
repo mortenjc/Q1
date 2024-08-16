@@ -24,4 +24,4 @@ if __name__ == '__main__':
     # print(ddfs.data[1][:263])
     # print(ddfs.data[1][263:293])
     #print(ddfs.marks[1])
-    print(ddfs.data)
+    #print(ddfs.data)

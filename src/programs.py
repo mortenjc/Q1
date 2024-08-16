@@ -16,6 +16,7 @@ proglist = {
         "psmcdiv"  : progs.jdc.psmcdiv,
         "psmcb2ch" : progs.jdc.psmcb2ch,
         "psmcb2dec" : progs.jdc.psmcb2dec,
+        "SCR"       : progs.jdc.SCR,
         "dummy"    : progs.misc.dummy,
         "loop"     : progs.misc.loop,
         "todec"    : progs.misc.todec,

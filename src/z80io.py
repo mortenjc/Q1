@@ -124,20 +124,6 @@ class IO:
         return retval
 
 
-    # First version with magic values 0x0F and 0x0E
-    # def handle_key_in(self) -> int:
-    #     self.keyincount += 1
-    #     retval = 0
-    #     if self.keyincount == 1:
-    #         retval = 0x0F
-    #     elif self.keyincount == 2:
-    #         retval = 0x0E
-    #     else:
-    #         retval = 0x00
-    #     self.print(f'IO in  - key (calls: {self.keyincount}): 0x{retval:02x}')
-    #     return retval
-
-
     def handle_key_out(self, val):
         if val == 0x04:
             desc = 'keyboard mode 2'
@@ -188,7 +174,7 @@ class IO:
         t = self.disk1.disk.current_track
         b = self.disk1.disk.current_byte
         retval = self.disk1.data_in()
-        print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}, t{t}, b{b}')
+        #print(f'IO in  - disk1 (0x9) (data): 0x{retval:02x}, t{t}, b{b}')
         return retval
 
     # possibly not disk, could be rs232
