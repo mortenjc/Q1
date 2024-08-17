@@ -42,7 +42,7 @@ Help wanted, please get in touch ;-)
         roms
         q1io
         disk
-
+        q1decode
 
 
     .. toctree::

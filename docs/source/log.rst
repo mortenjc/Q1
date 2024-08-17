@@ -373,3 +373,79 @@ For example.
   20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
   20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
   ...
+
+
+  2024 08 17
+  ----------
+
+  Oops, forgot to update the log for a while. But yesterday I succeeded in
+  loading and running the 'SCR' program from (emulated) disk.
+
+  This marks a major milestone in this project. The sequence of commands that
+  verifies this are
+
+.. code-block:: console
+
+  > python3 emulator.py
+  > SCR <enter>
+  > opt-b
+  ########### HEXDUMP 0x2000 - 0x10000 ####################################
+  ....
+  4060 fd fd fd fd fd fd fd fd fd fd 47 04 56 05 78 07  ..........G.V.x.
+  4070 19 13 00 00 04 14 4b 14 d0 40 44 0d 01 02 82 02  ......K..@D.....
+  4080 c3 00 43 c3 fd 07 c3 15 08 00 00 00 00 00 02 00  ..C.............
+  4090 00 0d 00 00 20 00 00 00 00 00 42 01 00 20 02 00  .... .....B.. ..
+  40a0 01 01 01 40 00 00 00 00 82 00 28 00 82 01 00 00  ...@......(.....
+  40b0 00 00 00 00 01 00 ff 00 00 00 00 00 00 00 00 00  ................
+  40c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  40d0 01 00 53 43 52 20 20 20 20 20 01 00 ff 00 1e 01  ..SCR     ......
+  40e0 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  40f0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  4100 00 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20  .
+  4110 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  4120 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  4130 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  4140 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  4150 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  4160 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  4170 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+  ....
+  4200 0d 00 43 6f f3 3e 00 d3 0a 3e 05 d3 04 16 00 7a  ..Co.>...>......
+  4210 d3 03 14 7a fe 80 ca 36 43 2e ff 2d c2 17 43 db  .......6C..-..C.
+  4220 01 fe 00 ca 0b 43 fe 0e ca 0b 43 fe 0f c2 0b 43  .....C....C....C
+  4230 db 01 fe 0e c2 2c 43 c3 0b 43 21 42 43 0e 03 06  .....,C..C!BC...
+  4240 2d ed b3 c3 09 43 20 20 20 20 20 20 20 20 20 20  -....C
+  4250 20 20 20 54 48 49 53 20 53 50 41 43 45 20 46 4f     THIS SPACE FO
+  4260 52 20 52 45 4e 54 20 20 20 20 20 20 20 20 20 20  R RENT
+  4270 20 20 20 0d 81 40 02 00 43 00 20 20 20 20 20 11     ..@..C.     .
+  4280 00 21 00 43 0e 01 cd 1e 00 3a 00 43 fe 2c c2 d3  .!.C.....:.C.,..
+  4290 43 32 80 43 32 81 43 21 00 43 0e 01 cd 1e 00 cd  C2.C2.C!.C......
+  42a0 1b 00 21 d0 40 cd 0c 08 c4 18 08 21 00 00 22 da  ..!.@......!..".
+  42b0 40 c3 e7 43 0d 59 4f 55 52 20 46 49 4c 45 20 49  @..C.YOUR FILE I
+  42c0 53 20 45 4d 50 54 59 21 b5 43 0e 13 cd 27 00 c3  S EMPTY!.C...'..
+  42d0 d0 43 cd 1b 00 21 d0 40 cd 0c 08 c4 18 08 2a da  .C...!.@......*.
+  42e0 40 7c b5 ca c8 43 cd 24 00 21 d0 40 0e 16 11 c0  @....C.$.!.@....
+  42f0 42 cd 00 78 75 45 3c 39 36 2f 2a 25 1e 18 02 00  B..xuE<96/*%....
+  4300 f3 3e 00 d3 0a 3e 05 d3 04 16 00 7a d3 03 14 7a  .>...>..........
+  4310 fe 80 ca 36 43 2e ff 2d c2 17 43 db 01 fe 00 ca  ...6C..-..C.....
+  4320 0b 43 fe 0e ca 0b 43 fe 0f c2 0b 43 db 01 fe 0e  .C....C....C....
+  4330 c2 2c 43 c3 0b 43 21 42 43 0e 03 06 2d ed b3 c3  .,C..C!BC...-...
+  4340 09 43 20 20 20 20 20 20 20 20 20 20 20 20 20 54  .C             T
+  4350 48 49 53 20 53 50 41 43 45 20 46 4f 52 20 52 45  HIS SPACE FOR RE
+  4360 4e 54 20 20 20 20 20 20 20 20 20 20 20 20 20 fd  NT             .
+  ....
+  ########### HEXDUMP END #################################################
+  > <enter>
+  VWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOP
+  QRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJK
+  LMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'()*+,-./0123456789:;<=>?@ABCDEF
+  GHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'()*+,-./0123456789:;<=>?@A
+  BCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'()*+,-./0123456789:;<
+  =>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'()*+,-./01234567
+  89:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'()*+,-./012
+  3456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'()*+,-
+  ./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#$%&'(
+  )*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT              !"#
+  $%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT
+    !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT
+           !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT
