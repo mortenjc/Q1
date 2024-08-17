@@ -2,7 +2,7 @@
 Annotated disassembly
 =====================
 
-From **disassembly.py -a** on 2024 08 13
+From **disassembly.py -a** on 2024 08 17
 
 .. code-block:: console
 
@@ -605,7 +605,7 @@ From **disassembly.py -a** on 2024 08 13
   0561 b3           ; or e                 |
   0562 c9           ; ret                  |
 
-  ;unknown key function?
+  ;handle tab clear (clears tab bit in hl?)
   0563 fe 02        ; cp 0x2               | key: TAB CLR
   0565 20 07        ; jr nz, 0x56e         |
   0567 cd b5 05     ; call 0x5b5           |
@@ -655,13 +655,13 @@ From **disassembly.py -a** on 2024 08 13
   05a4 0e 00        ; ld c, 0x0            |
   05a6 18 db        ; jr 0x583             |
 
-  ;unknown
+  ;get tab position bit??
   05b5 79           ; ld a, c              |
   05b6 e6 f8        ; and 0xf8             |
   05b8 0f           ; rrca                 |
   05b9 0f           ; rrca                 |
   05ba 0f           ; rrca                 |
-  05bb c6 c0        ; add a, 0xc0          |
+  05bb c6 c0        ; add a, 0xc0          | hl = tab positions
   05bd 26 40        ; ld h, 0x40           |
   05bf 6f           ; ld l, a              |
   05c0 79           ; ld a, c              |
@@ -746,6 +746,26 @@ From **disassembly.py -a** on 2024 08 13
   0625 36 00        ; ld (hl), 0x0         |
   0627 48           ; ld c, b              |
   0628 c3 76 05     ; jp 0x576             |
+
+  ;UNEXPLORED
+  062b 26 41        ; ld h, 0x41           |
+  062d 68           ; ld l, b              |
+  062e 2c           ; inc l                |
+  062f f8           ; ret m                |
+  0630 f5           ; push af              |
+  0631 1a           ; ld a, (de)           |
+  0632 4e           ; ld c, (hl)           |
+  0633 77           ; ld (hl), a           |
+  0634 79           ; ld a, c              |
+  0635 2c           ; inc l                |
+  0636 f2 32 06     ; jp p, 0x632          |
+  0639 48           ; ld c, b              |
+  063a f1           ; pop af               |
+  063b 21 95 40     ; ld hl, 0x4095        |
+  063e 34           ; inc (hl)             |
+  063f f0           ; ret p                |
+  0640 35           ; dec (hl)             |
+  0641 c9           ; ret                  |
 
   ;multiply() = de * bc
   0642 3e 10        ; ld a, 0x10           |
@@ -835,6 +855,132 @@ From **disassembly.py -a** on 2024 08 13
   06af 12           ; ld (de), a           |
   06b0 c9           ; ret                  |
 
+  ;UNEXPLORED
+  06b1 cd 10 04     ; call 0x410           |
+  06b4 cd a9 04     ; call 0x4a9           |
+  06b7 21 92 40     ; ld hl, 0x4092        |
+  06ba 6e           ; ld l, (hl)           |
+  06bb 26 41        ; ld h, 0x41           |
+  06bd 3a 95 40     ; ld a, (0x4095)       | get a = KSIZ
+  06c0 95           ; sub l                |
+  06c1 4f           ; ld c, a              |
+  06c2 47           ; ld b, a              |
+  06c3 28 ec        ; jr z, 0x6b1          |
+  06c5 0c           ; inc c                |
+  06c6 cd c2 01     ; call 0x1c2           |
+  06c9 28 e6        ; jr z, 0x6b1          |
+  06cb 30 f9        ; jr nc, 0x6c6         |
+  06cd cd c2 01     ; call 0x1c2           |
+  06d0 28 06        ; jr z, 0x6d8          |
+  06d2 38 f9        ; jr c, 0x6cd          |
+  06d4 fe 15        ; cp 0x15              |
+  06d6 28 f5        ; jr z, 0x6cd          |
+  06d8 d1           ; pop de               |
+  06d9 78           ; ld a, b              |
+  06da 91           ; sub c                |
+  06db 4f           ; ld c, a              |
+  06dc 21 40 42     ; ld hl, 0x4240        |
+  06df e5           ; push hl              |
+  06e0 c5           ; push bc              |
+  06e1 d5           ; push de              |
+  06e2 cd 7d 04     ; call 0x47d           |
+  06e5 c3 5b 01     ; jp 0x15b             |
+  06e8 11 00 00     ; ld de, 0x0           |
+  06eb 0c           ; inc c                |
+  06ec 0d           ; dec c                |
+  06ed c8           ; ret z                |
+  06ee 7e           ; ld a, (hl)           |
+  06ef e6 7f        ; and 0x7f             |
+  06f1 23           ; inc hl               |
+  06f2 d6 30        ; sub 0x30             |
+  06f4 38 2d        ; jr c, 0x723          |
+  06f6 fe 0a        ; cp 0xa               |
+  06f8 30 f2        ; jr nc, 0x6ec         |
+  06fa 2b           ; dec hl               |
+  06fb e5           ; push hl              |
+  06fc 62           ; ld h, d              |
+  06fd 6b           ; ld l, e              |
+  06fe 29           ; add hl, hl           |
+  06ff 38 0d        ; jr c, 0x70e          |
+  0701 29           ; add hl, hl           |
+  0702 38 0a        ; jr c, 0x70e          |
+  0704 19           ; add hl, de           |
+  0705 38 07        ; jr c, 0x70e          |
+  0707 29           ; add hl, hl           |
+  0708 38 04        ; jr c, 0x70e          |
+  070a 5f           ; ld e, a              |
+  070b 16 00        ; ld d, 0x0            |
+  070d 19           ; add hl, de           |
+  070e eb           ; ex de, hl            |
+  070f e1           ; pop hl               |
+  0710 d8           ; ret c                |
+  0711 0d           ; dec c                |
+  0712 c8           ; ret z                |
+  0713 23           ; inc hl               |
+  0714 7e           ; ld a, (hl)           |
+  0715 f6 80        ; or 0x80              |
+  0717 d6 30        ; sub 0x30             |
+  0719 f0           ; ret p                |
+  071a e6 7f        ; and 0x7f             |
+  071c fe 0a        ; cp 0xa               |
+  071e 38 db        ; jr c, 0x6fb          |
+  0720 14           ; inc d                |
+  0721 15           ; dec d                |
+  0722 c9           ; ret                  |
+  0723 d6 fe        ; sub 0xfe             |
+  0725 c8           ; ret z                |
+  0726 3c           ; inc a                |
+  0727 20 c3        ; jr nz, 0x6ec         |
+  0729 cd ec 06     ; call 0x6ec           |
+  072c d8           ; ret c                |
+  072d eb           ; ex de, hl            |
+  072e cd 7f 06     ; call 0x67f           |
+  0731 bf           ; cp a                 |
+  0732 eb           ; ex de, hl            |
+  0733 c9           ; ret                  |
+
+  ;UNEXPLORED
+  0734 e5           ; push hl              |
+  0735 0c           ; inc c                |
+  0736 04           ; inc b                |
+  0737 2b           ; dec hl               |
+  0738 23           ; inc hl               |
+  0739 0d           ; dec c                |
+  073a 28 26        ; jr z, 0x762          |
+  073c 7e           ; ld a, (hl)           |
+  073d b7           ; or a                 |
+  073e 28 22        ; jr z, 0x762          |
+  0740 e5           ; push hl              |
+  0741 d5           ; push de              |
+  0742 c5           ; push bc              |
+  0743 0c           ; inc c                |
+  0744 05           ; dec b                |
+  0745 28 11        ; jr z, 0x758          |
+  0747 1a           ; ld a, (de)           |
+  0748 b7           ; or a                 |
+  0749 28 0d        ; jr z, 0x758          |
+  074b 0d           ; dec c                |
+  074c 28 05        ; jr z, 0x753          |
+  074e 13           ; inc de               |
+  074f be           ; cp (hl)              |
+  0750 23           ; inc hl               |
+  0751 28 f1        ; jr z, 0x744          |
+  0753 c1           ; pop bc               |
+  0754 d1           ; pop de               |
+  0755 e1           ; pop hl               |
+  0756 18 e0        ; jr 0x738             |
+  0758 f1           ; pop af               |
+  0759 f1           ; pop af               |
+  075a d1           ; pop de               |
+  075b e1           ; pop hl               |
+  075c cd 7f 06     ; call 0x67f           |
+  075f 19           ; add hl, de           |
+  0760 23           ; inc hl               |
+  0761 c9           ; ret                  |
+  0762 f1           ; pop af               |
+  0763 21 00 00     ; ld hl, 0x0           |
+  0766 c9           ; ret                  |
+
   ;called from x003c (nibbl rotation?)
   0767 c5           ; push bc              |
   0768 06 10        ; ld b, 0x10           |
@@ -846,7 +992,7 @@ From **disassembly.py -a** on 2024 08 13
   0773 c1           ; pop bc               |
   0774 c9           ; ret                  |
 
-  ;UNEXPLORED x700 region
+  ;UNEXPLORED
   0775 cd d8 04     ; call 0x4d8           | call getkey?
   0778 21 89 40     ; ld hl, 0x4089        |
   077b 7e           ; ld a, (hl)           |
@@ -1716,6 +1862,17 @@ From **disassembly.py -a** on 2024 08 13
 
   ;report()
   0d8e c5           ; push bc              |
+  0d8f f5           ; push af              |
+  0d90 cd 6b 0d     ; call 0xd6b           | clrdk()
+  0d93 21 ec 0d     ; ld hl, 0xdec         |
+  0d96 0e 01        ; ld c, 0x1            |
+  0d98 cd 27 00     ; call 0x27            | print "CR?"
+  0d9b f1           ; pop af               |
+  0d9c fe 04        ; cp 0x4               | 0x4 = Key not found
+  0d9e 28 33        ; jr z, 0xdd3          |
+  0da0 fe 09        ; cp 0x9               |
+  0da2 fa a7 0d     ; jp m, 0xda7          |
+  0da5 3e 09        ; ld a, 0x9            |
 
   ;print nth error message
   0da7 21 ed 0d     ; ld hl, 0xded         | Start of error messages
@@ -2079,11 +2236,22 @@ From **disassembly.py -a** on 2024 08 13
   0ffe d9           ; exx                  |
   0fff c9           ; ret                  |
 
+  ;UNEXPLORED
+  1000 c3 8d 10     ; jp 0x108d            |
+
   ;write?
   1003 c3 44 11     ; jp 0x1144            |
 
+  ;UNEXPLORED
+  1006 c3 69 11     ; jp 0x1169            |
+
   ;key search jump vector
   1009 c3 6b 16     ; jp 0x166b            |
+
+  ;UNEXPLORED
+  100c c3 30 10     ; jp 0x1030            |
+  100f c3 18 15     ; jp 0x1518            |
+  1012 c3 c8 14     ; jp 0x14c8            |
 
   ;unknown IWS code jump vector
   1015 c3 6a 15     ; jp 0x156a            |
@@ -2691,7 +2859,7 @@ From **disassembly.py -a** on 2024 08 13
   1470 cd e2 13     ; call 0x13e2          |
   1473 18 d1        ; jr 0x1446            |
 
-  ;????
+  ;UNEXPLORED
   1475 7b           ; ld a, e              |
   1476 dd 6e 0e     ; ld l, (ix + 0xe)     | Track/Record
   1479 bd           ; cp l                 |
@@ -2866,6 +3034,14 @@ From **disassembly.py -a** on 2024 08 13
   1587 cd 9c 15     ; call 0x159c          |
   158a ca 15 10     ; jp z, 0x1015         |
   158d c9           ; ret                  |
+
+  ;UNEXPLORED
+  158e 4d           ; ld c, l              |
+  158f 55           ; ld d, l              |
+  1590 58           ; ld e, b              |
+  1591 49           ; ld c, c              |
+  1592 57           ; ld d, a              |
+  1593 53           ; ld d, e              |
 
   ;unknown IWS function ii
   1594 21 8e 15     ; ld hl, 0x158e        |
@@ -3257,11 +3433,13 @@ From **disassembly.py -a** on 2024 08 13
   17fe ff           ; rst 0x38             |
   17ff ff           ; rst 0x38             |
 
-  ;PL/1 1
+  ;PL/1 jump vectors
   1800 c3 ce 1c     ; jp 0x1cce            | PL/1 AAAA
-  1803 c3 78 18     ; jp 0x1878            | PL/1 BBBB
+  1803 c3 78 18     ; jp 0x1878            | PL/1 return from subroutine?
   1806 c3 53 1f     ; jp 0x1f53            | PL/1 CCCC
-  1809 c3 7c 18     ; jp 0x187c            | PL/1 DDDD
+  1809 c3 7c 18     ; jp 0x187c            | PL/1 RUN Microcode Program
+
+  ;PL/1 instruction vectors
   180c 9d           ; sbc a, l             |
   180d 18 fb        ; jr 0x180a            |
   180f 1c           ; inc e                |
@@ -3349,53 +3527,53 @@ From **disassembly.py -a** on 2024 08 13
   1875 1f           ; rra                  |
   1876 f2 1f e1     ; jp p, 0xe11f         |
 
-  ;bbbb()
+  ;return from subrouine?
   1878 e1           ; pop hl               |
   1879 c3 7f 18     ; jp 0x187f            |
 
   ;run microcode program
   187c 2a fe 40     ; ld hl, (0x40fe)      | Interpretive Program Counter
-  187f 7e           ; ld a, (hl)           |
+  187f 7e           ; ld a, (hl)           | get instruction (or data)
   1880 23           ; inc hl               |
   1881 87           ; add a, a             |
-  1882 fa 95 18     ; jp m, 0x1895         |
+  1882 fa 95 18     ; jp m, 0x1895         | jump if a > 63 (is address?)
   1885 da 95 18     ; jp c, 0x1895         |
   1888 22 fe 40     ; ld (0x40fe), hl      |
   188b c6 0c        ; add a, 0xc           |
   188d 6f           ; ld l, a              |
   188e 26 18        ; ld h, 0x18           |
-  1890 7e           ; ld a, (hl)           |
+  1890 7e           ; ld a, (hl)           | a = (0x18xx) xx = 2*a + 12; ex. instr 0xa is at 0x1820 -> jp 0x18a5
   1891 23           ; inc hl               |
   1892 66           ; ld h, (hl)           |
   1893 6f           ; ld l, a              |
-  1894 e9           ; jp (hl)              |
-  1895 1f           ; rra                  |
-  1896 5e           ; ld e, (hl)           |
+  1894 e9           ; jp (hl)              | jump to instruction code
+  1895 1f           ; rra                  | get original value of a
+  1896 5e           ; ld e, (hl)           | get next byte of address
   1897 23           ; inc hl               |
   1898 57           ; ld d, a              |
-  1899 d5           ; push de              |
-  189a c3 7f 18     ; jp 0x187f            |
-  189d e1           ; pop hl               |
+  1899 d5           ; push de              | push address on stack
+  189a c3 7f 18     ; jp 0x187f            | get next instr or address
+  189d e1           ; pop hl               | INST 00 - stack number from address on stack
   189e 4e           ; ld c, (hl)           |
   189f 23           ; inc hl               |
   18a0 46           ; ld b, (hl)           |
   18a1 c5           ; push bc              |
   18a2 c3 7c 18     ; jp 0x187c            |
-  18a5 e1           ; pop hl               |
+  18a5 e1           ; pop hl               | INST 0A - add
   18a6 d1           ; pop de               |
   18a7 19           ; add hl, de           |
   18a8 e5           ; push hl              |
   18a9 c3 7c 18     ; jp 0x187c            |
-  18ac d1           ; pop de               |
+  18ac d1           ; pop de               | INST 03 - store binary number at stack address
   18ad e1           ; pop hl               |
   18ae 73           ; ld (hl), e           |
   18af 23           ; inc hl               |
   18b0 72           ; ld (hl), d           |
   18b1 c3 7c 18     ; jp 0x187c            |
-  18b4 e1           ; pop hl               |
+  18b4 e1           ; pop hl               | INST 0C - replace binary number with negation
   18b5 cd 15 00     ; call 0x15            | call NhL routine
   18b8 c3 a8 18     ; jp 0x18a8            |
-  18bb d1           ; pop de               |
+  18bb d1           ; pop de               | INST 0E - multiply binary
   18bc c1           ; pop bc               |
   18bd cd 0c 00     ; call 0xc             | call MUL routine
   18c0 c3 a8 18     ; jp 0x18a8            |
@@ -3404,7 +3582,7 @@ From **disassembly.py -a** on 2024 08 13
   18c5 cd 0f 00     ; call 0xf             | call DIV routine
   18c8 d5           ; push de              |
   18c9 c3 7c 18     ; jp 0x187c            |
-  18cc cd 2b 1d     ; call 0x1d2b          | increment IPC
+  18cc cd 2b 1d     ; call 0x1d2b          | INST 15 - PUT data to specified device driver
   18cf 41           ; ld b, c              |
   18d0 cd 2b 1d     ; call 0x1d2b          | increment IPC
   18d3 21 fb 40     ; ld hl, 0x40fb        | Output routine for PUT
@@ -3469,7 +3647,7 @@ From **disassembly.py -a** on 2024 08 13
   1933 77           ; ld (hl), a           |
   1934 0d           ; dec c                |
   1935 c2 32 19     ; jp nz, 0x1932        |
-  1938 c9           ; ret                  |
+  1938 c9           ; ret                  | INST 1F - return from subroutine
   1939 cd 21 00     ; call 0x21            | call GETDN routine
   193c c3 7c 18     ; jp 0x187c            |
   193f c1           ; pop bc               |
@@ -3479,7 +3657,7 @@ From **disassembly.py -a** on 2024 08 13
   1943 cd 2f 19     ; call 0x192f          |
   1946 48           ; ld c, b              |
   1947 c3 6d 19     ; jp 0x196d            |
-  194a cd 24 00     ; call 0x24            | call NKEY routine
+  194a cd 24 00     ; call 0x24            | INST 23 - get new line of keyboard input
   194d c3 7c 18     ; jp 0x187c            |
   1950 c1           ; pop bc               |
   1951 e1           ; pop hl               |
@@ -3519,7 +3697,7 @@ From **disassembly.py -a** on 2024 08 13
   198b cd 2f 19     ; call 0x192f          |
   198e 48           ; ld c, b              |
   198f c3 6d 19     ; jp 0x196d            |
-  1992 c1           ; pop bc               |
+  1992 c1           ; pop bc               | INST 06 - store a string of bytes
   1993 e1           ; pop hl               |
   1994 d1           ; pop de               |
   1995 03           ; inc bc               |
@@ -3840,21 +4018,21 @@ From **disassembly.py -a** on 2024 08 13
   1ba6 c3 97 1b     ; jp 0x1b97            |
   1ba9 2a f9 40     ; ld hl, (0x40f9)      |
   1bac c3 8f 1b     ; jp 0x1b8f            |
-  1baf cd 2b 1d     ; call 0x1d2b          |
+  1baf cd 2b 1d     ; call 0x1d2b          | INST 2C - write on disk
   1bb2 79           ; ld a, c              |
   1bb3 e1           ; pop hl               |
   1bb4 d1           ; pop de               |
   1bb5 c1           ; pop bc               |
   1bb6 cd 03 08     ; call 0x803           | call WRITE
   1bb9 c3 81 1b     ; jp 0x1b81            |
-  1bbc cd 2b 1d     ; call 0x1d2b          |
+  1bbc cd 2b 1d     ; call 0x1d2b          | INST 2D - rewrite on disk
   1bbf 79           ; ld a, c              |
   1bc0 e1           ; pop hl               |
   1bc1 d1           ; pop de               |
   1bc2 c1           ; pop bc               |
   1bc3 cd 06 08     ; call 0x806           | call REWRITE
   1bc6 c3 81 1b     ; jp 0x1b81            |
-  1bc9 e1           ; pop hl               |
+  1bc9 e1           ; pop hl               | INST 22 - open file
   1bca cd 0c 08     ; call 0x80c           | call OPEN
   1bcd c3 81 1b     ; jp 0x1b81            |
   1bd0 e1           ; pop hl               |
@@ -3862,7 +4040,7 @@ From **disassembly.py -a** on 2024 08 13
   1bd4 c3 81 1b     ; jp 0x1b81            |
   1bd7 cd 06 00     ; call 0x6             |
   1bda c3 7c 18     ; jp 0x187c            |
-  1bdd cd fb 1d     ; call 0x1dfb          |
+  1bdd cd fb 1d     ; call 0x1dfb          | INST 08 - compare decimal
   1be0 e5           ; push hl              |
   1be1 1a           ; ld a, (de)           |
   1be2 0e 08        ; ld c, 0x8            |
@@ -3893,7 +4071,7 @@ From **disassembly.py -a** on 2024 08 13
   1c0d 0b           ; dec bc               |
   1c0e c5           ; push bc              |
   1c0f c3 7f 18     ; jp 0x187f            |
-  1c12 c1           ; pop bc               |
+  1c12 c1           ; pop bc               | INST 09 - compare character strings
   1c13 79           ; ld a, c              |
   1c14 d1           ; pop de               |
   1c15 c1           ; pop bc               |
@@ -3918,7 +4096,7 @@ From **disassembly.py -a** on 2024 08 13
   1c32 23           ; inc hl               |
   1c33 13           ; inc de               |
   1c34 c3 1a 1c     ; jp 0x1c1a            |
-  1c37 d1           ; pop de               |
+  1c37 d1           ; pop de               | INST 07 - compare binary numbers
   1c38 e1           ; pop hl               |
   1c39 7a           ; ld a, d              |
   1c3a ac           ; xor h                |
@@ -3932,7 +4110,7 @@ From **disassembly.py -a** on 2024 08 13
   1c48 7c           ; ld a, h              |
   1c49 ba           ; cp d                 |
   1c4a c3 f7 1b     ; jp 0x1bf7            |
-  1c4d cd fb 1d     ; call 0x1dfb          |
+  1c4d cd fb 1d     ; call 0x1dfb          | INST 0B - add decimal
   1c50 47           ; ld b, a              |
   1c51 ae           ; xor (hl)             |
   1c52 4f           ; ld c, a              |
@@ -4041,7 +4219,7 @@ From **disassembly.py -a** on 2024 08 13
   1cf5 2b           ; dec hl               |
   1cf6 36 00        ; ld (hl), 0x0         |
   1cf8 c3 f3 1c     ; jp 0x1cf3            |
-  1cfb d1           ; pop de               |
+  1cfb d1           ; pop de               | INST 01 - stack float from address on stack
   1cfc 01 00 00     ; ld bc, 0x0           | push 8 0x00 on stack (subroutine?)
   1cff c5           ; push bc              |
   1d00 c5           ; push bc              |
@@ -4057,7 +4235,7 @@ From **disassembly.py -a** on 2024 08 13
   1d0e 0d           ; dec c                |
   1d0f c2 0a 1d     ; jp nz, 0x1d0a        |
   1d12 c3 7c 18     ; jp 0x187c            |
-  1d15 cd 2b 1d     ; call 0x1d2b          | increment IPC
+  1d15 cd 2b 1d     ; call 0x1d2b          | INST 04 - store float
   1d18 21 09 00     ; ld hl, 0x9           |
   1d1b 39           ; add hl, sp           |
   1d1c 56           ; ld d, (hl)           |
@@ -4122,7 +4300,7 @@ From **disassembly.py -a** on 2024 08 13
   1d73 eb           ; ex de, hl            |
   1d74 d1           ; pop de               |
   1d75 c3 7f 18     ; jp 0x187f            |
-  1d78 2a fe 40     ; ld hl, (0x40fe)      |
+  1d78 2a fe 40     ; ld hl, (0x40fe)      | INST 05 - store decimal number as fixed point
   1d7b 4e           ; ld c, (hl)           |
   1d7c 23           ; inc hl               |
   1d7d 46           ; ld b, (hl)           |
@@ -4169,13 +4347,13 @@ From **disassembly.py -a** on 2024 08 13
   1db9 f1           ; pop af               |
   1dba f1           ; pop af               |
   1dbb c3 27 1d     ; jp 0x1d27            |
-  1dbe cd fb 1d     ; call 0x1dfb          |
+  1dbe cd fb 1d     ; call 0x1dfb          | INST 0D - negate decimal?
   1dc1 b7           ; or a                 |
   1dc2 ca 7c 18     ; jp z, 0x187c         |
   1dc5 ee 80        ; xor 0x80             |
   1dc7 12           ; ld (de), a           |
   1dc8 c3 7c 18     ; jp 0x187c            |
-  1dcb d1           ; pop de               |
+  1dcb d1           ; pop de               | INST 02 - stack dec num from address on stack
   1dcc 01 00 00     ; ld bc, 0x0           |
   1dcf c5           ; push bc              |
   1dd0 c5           ; push bc              |
@@ -4328,7 +4506,7 @@ From **disassembly.py -a** on 2024 08 13
   1eb0 1f           ; rra                  |
   1eb1 62           ; ld h, d              |
   1eb2 1f           ; rra                  |
-  1eb3 cd 53 1f     ; call 0x1f53          |
+  1eb3 cd 53 1f     ; call 0x1f53          | INST 0F - multiply decimal
   1eb6 cd fb 1d     ; call 0x1dfb          |
   1eb9 86           ; add a, (hl)          |
   1eba d6 41        ; sub 0x41             |
@@ -4432,7 +4610,7 @@ From **disassembly.py -a** on 2024 08 13
   1f4f e1           ; pop hl               |
   1f50 c3 d5 1e     ; jp 0x1ed5            |
 
-  ;cccc() - clear 8 bytes in scratch
+  ;cccc() - clear 16 bytes in scratch
   1f53 06 08        ; ld b, 0x8            |
   1f55 21 0f 42     ; ld hl, 0x420f        |
   1f58 97           ; sub a                |
@@ -4515,7 +4693,7 @@ From **disassembly.py -a** on 2024 08 13
   1fc9 f1           ; pop af               |
   1fca f1           ; pop af               |
   1fcb c5           ; push bc              |
-  1fcc c3 7c 18     ; jp 0x187c            |
+  1fcc c3 7c 18     ; jp 0x187c            | run microcode program
   1fcf e1           ; pop hl               |
   1fd0 c1           ; pop bc               |
   1fd1 c3 b4 1f     ; jp 0x1fb4            |
@@ -4546,7 +4724,7 @@ From **disassembly.py -a** on 2024 08 13
   1ff5 c1           ; pop bc               |
   1ff6 e1           ; pop hl               |
   1ff7 47           ; ld b, a              |
-  1ff8 cd 39 00     ; call 0x39            |
+  1ff8 cd 39 00     ; call 0x39            | jump via 0x4f to 0x734
   1ffb e5           ; push hl              |
   1ffc c3 7c 18     ; jp 0x187c            | run microcode program
   1fff ff           ; rst 0x38             |
