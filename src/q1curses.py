@@ -1,5 +1,6 @@
 import curses
 import socket
+
 stdscr = curses.initscr()
 curses.resize_term(26, 42)
 

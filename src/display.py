@@ -42,10 +42,9 @@ class Display:
 
 
     def control(self, val):
-        x, y = self.pos
         reset   = val & 0x01
-        blank   = val & 0x02
-        unblank = val & 0x04
+        #blank   = val & 0x02
+        #unblank = val & 0x04
         step    = val & 0x08
 
         if reset:
