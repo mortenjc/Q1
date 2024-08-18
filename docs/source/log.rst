@@ -456,3 +456,9 @@ loading and running the 'SCR' program from (emulated) disk.
 
 Better display emulation. Had to resort to using UDP to send the
 display buffer to a **curses** based application.
+
+.. figure:: images/displayemu.png
+  :width: 800
+  :align: center
+
+  Left window: debug output and keyboard input. Right window display emulator.

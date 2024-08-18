@@ -6,8 +6,7 @@ Documentation for the efforts of running the Q1-Lite z80 based
 software from ROMs.
 
 Quite a lot of progress since the beginning on 2024 07 03: Keyboard input,
-display output, disk io. Can run the microcode programs into which PL/1
-was compiled. Almost have a working file system.
+display output, disk io. Can load and run programs from (emulated) disk.
 
 .. figure:: images/Q1lite.png
   :width: 800
@@ -16,7 +15,7 @@ was compiled. Almost have a working file system.
   Q1 Lite, generation 3?
 
 
-Help wanted, please get in touch ;-)
+Collaborators wanted, please get in touch ;-)
 
 
 .. note::

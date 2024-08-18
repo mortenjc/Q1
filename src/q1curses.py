@@ -1,7 +1,7 @@
 import curses
 import socket
 stdscr = curses.initscr()
-#curses.resize_term(25, 41)
+curses.resize_term(26, 42)
 
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
