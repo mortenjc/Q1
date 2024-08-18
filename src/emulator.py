@@ -10,6 +10,10 @@ import z80io
 import programs as prg
 import disks.debugdisk.image as ddim
 
+'''
+    Q1 Emulator
+'''
+
 
 def int38(cpu, io, ch):
     io.keyin = ch
@@ -83,6 +87,8 @@ def emulator(args):
                 print('DISK (error) REPORT')
             if pc == 0xd21:
                 print('DISK OPEN')
+            if pc == 0xd1e:
+                print('LOADER')
             if pc == 0x1393:
                 print(f'ID Record w. good cksum: Track {cpu.m.b}, Record {cpu.m.c}')
             # if pc == 0x1497:
@@ -133,6 +139,8 @@ def emulator(args):
                     int38(cpu, io, 0x0d)
                 elif ch == 169:        # opt-g GO
                     io.go = 1
+                elif ch == 223:        # opt-s STOP
+                    io.stop = 1
                 elif ch == 127:
                     int38(cpu, io, 0x04) # BS -> CORR
                 elif ch == 231:

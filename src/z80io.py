@@ -1,6 +1,7 @@
 """Module to provide IO hooks for the Q1 Lite"""
 
 import disk
+import display
 
 #
 
@@ -13,6 +14,7 @@ class IO:
     def __init__(self, m, fs):
         self.disk1 = disk.Control(1, fs)
         self.disk2 = disk.Control(2, fs)
+        self.display = display.Display()
         self.m = m
         self.incb = {}
         self.outcb = {}
@@ -22,6 +24,7 @@ class IO:
         self.diskdata = 0x00
         self.diskstatus = 0x00
         self.go = 0
+        self.stop = 0
         self.verbose = False
         self.register_in_cb( 0x01, self.handle_key_in)
         self.register_out_cb(0x01, self.handle_key_out)
@@ -91,21 +94,27 @@ class IO:
 
 
     def handle_display_out(self, val) -> str:
-        if isprintable(val):
-            #self.print(f"IO out - display {val} '{chr(val)}'")
-            self.displaystr += chr(val)
-        else:
-            pass #self.print(f"IO out - display (non printable){val}")
+        self.display.data(chr(val))
+        self.display.update()
+        # if isprintable(val):
+        #     #self.print(f"IO out - display {val} '{chr(val)}'")
+        #     self.displaystr += chr(val)
+        #     if len(self.displaystr) > 1000:
+        #         print(self.displaystr)
+        #         self.displaystr = ""
+        # else:
+        #     pass #self.print(f"IO out - display (non printable){val}")
 
 
     def handle_display_out_ctrl(self, val) -> str:
+        self.display.control(val)
         if val == 0x05:
             desc = 'unblank, reset to (1,1)'
-            #self.displaystr += "\n"
-
-            if len(self.displaystr) > 1:
-                print(self.displaystr)
-            self.displaystr = ""
+        #     #self.displaystr += "\n"
+        #
+        #     if len(self.displaystr) > 1:
+        #         print(self.displaystr)
+        #     self.displaystr = ""
         elif val == 0x08:
             desc = 'advance right (or new line)'
         else:
@@ -120,6 +129,9 @@ class IO:
         if self.go:
             retval = 0x0e
             self.go = 0
+        if self.stop:
+            retval = 0x0f
+            self.stop = 0
         self.print(f'IO in  - key : 0x{retval:02x}')
         return retval
 

@@ -51,6 +51,16 @@ The **kbd** module provides a **kbhit()** functionality that can be put in
 the main loop of the emulation, capture keys and trigger keyboard events
 with the correct codes.
 
+display
+^^^^^^^
+
+The **display** module keeps track of the display buffer and essentially
+only supports three operations: 1) reset cursor position to (0,0), 2) move
+cursor right (and down if line width reached), 3) output a character at
+current posision. On every operation, the current buffer is transmitted
+via UDP to port 5005. This is used by the **q1curses** application to emulate
+the display.
+
 programs
 ^^^^^^^^
 
@@ -183,3 +193,10 @@ For interactive sessions it is better to disable periodic hexdump and instructio
 
    Q1-Lite
    klar til brug
+
+
+q1curses
+^^^^^^^^
+
+Receives the display buffer via UDP and uses **curses** to output to
+screen. 

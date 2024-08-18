@@ -631,6 +631,7 @@ SCR = {
         0x4312: 'print "THIS SPACE FOR RENT"',
         0x4318: 'delay',
         0x431b: 'get key',
+        0x432e: 'STOP',
         0x4336: 'hl -> "THIS SPACE FOR RENT"',
         0x433d: 'otir - write string to display'
     },
