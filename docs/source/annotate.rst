@@ -2,7 +2,7 @@
 Annotated disassembly
 =====================
 
-From **disassembly.py -a** on 2024 08 17
+From **disassembly.py -a** on 2024 08 19
 
 .. code-block:: console
 
@@ -50,8 +50,279 @@ From **disassembly.py -a** on 2024 08 17
   ;JP to wait-for-keyboard-or-printer
   0045 c3 15 08     ; jp 0x815             |
 
+  ;UNEXPLORED
+  0048 c9           ; ret                  |
+  0049 c9           ; ret                  |
+  004a c9           ; ret                  |
+  004b c9           ; ret                  |
+  004c c3 62 03     ; jp 0x362             |
+  004f c3 34 07     ; jp 0x734             |
+
   ;interrupt38 chain
   0052 c3 de 01     ; jp 0x1de             |
+
+  ;UNEXPLORED
+  0055 20 51        ; jr nz, 0xa8          |
+  0057 31 2d 4c     ; ld sp, 0x4c2d        |
+  005a 69           ; ld l, c              |
+  005b 74           ; ld (hl), h           |
+  005c 65           ; ld h, l              |
+  005d 00           ; nop                  |
+  005e 20 51        ; jr nz, 0xb1          |
+  0060 31 2d 4d     ; ld sp, 0x4d2d        |
+  0063 61           ; ld h, c              |
+  0064 67           ; ld h, a              |
+  0065 6e           ; ld l, (hl)           |
+  0066 75           ; ld (hl), l           |
+  0067 73           ; ld (hl), e           |
+  0068 20 6b        ; jr nz, 0xd5          |
+  006a 6c           ; ld l, h              |
+  006b 61           ; ld h, c              |
+  006c 72           ; ld (hl), d           |
+  006d 20 74        ; jr nz, 0xe3          |
+  006f 69           ; ld l, c              |
+  0070 6c           ; ld l, h              |
+  0071 20 62        ; jr nz, 0xd5          |
+  0073 72           ; ld (hl), d           |
+  0074 75           ; ld (hl), l           |
+  0075 67           ; ld h, a              |
+  0076 65           ; ld h, l              |
+  0077 e1           ; pop hl               |
+  0078 22 81 40     ; ld (0x4081), hl      |
+  007b 21 14 42     ; ld hl, 0x4214        |
+  007e 0e 04        ; ld c, 0x4            |
+  0080 d1           ; pop de               |
+  0081 7b           ; ld a, e              |
+  0082 cd f4 00     ; call 0xf4            |
+  0085 7a           ; ld a, d              |
+  0086 cd f4 00     ; call 0xf4            |
+  0089 0d           ; dec c                |
+  008a 20 f4        ; jr nz, 0x80          |
+  008c 23           ; inc hl               |
+  008d 23           ; inc hl               |
+  008e 7a           ; ld a, d              |
+  008f 87           ; add a, a             |
+  0090 f5           ; push af              |
+  0091 5f           ; ld e, a              |
+  0092 7e           ; ld a, (hl)           |
+  0093 fe 30        ; cp 0x30              |
+  0095 28 52        ; jr z, 0xe9           |
+  0097 55           ; ld d, l              |
+  0098 2e 14        ; ld l, 0x14           |
+  009a 2b           ; dec hl               |
+  009b 7e           ; ld a, (hl)           |
+  009c fe 30        ; cp 0x30              |
+  009e 28 fa        ; jr z, 0x9a           |
+  00a0 7d           ; ld a, l              |
+  00a1 4f           ; ld c, a              |
+  00a2 3c           ; inc a                |
+  00a3 92           ; sub d                |
+  00a4 47           ; ld b, a              |
+  00a5 21 30 30     ; ld hl, 0x3030        |
+  00a8 22 02 42     ; ld (0x4202), hl      |
+  00ab 22 04 42     ; ld (0x4204), hl      |
+  00ae 26 42        ; ld h, 0x42           |
+  00b0 7b           ; ld a, e              |
+  00b1 69           ; ld l, c              |
+  00b2 23           ; inc hl               |
+  00b3 23           ; inc hl               |
+  00b4 fe 81        ; cp 0x81              |
+  00b6 da 4c 01     ; jp c, 0x14c          |
+  00b9 fe 8f        ; cp 0x8f              |
+  00bb 30 4e        ; jr nc, 0x10b         |
+  00bd d6 7b        ; sub 0x7b             |
+  00bf 6f           ; ld l, a              |
+  00c0 91           ; sub c                |
+  00c1 28 0c        ; jr z, 0xcf           |
+  00c3 30 42        ; jr nc, 0x107         |
+  00c5 15           ; dec d                |
+  00c6 04           ; inc b                |
+  00c7 0e 2e        ; ld c, 0x2e           |
+  00c9 7e           ; ld a, (hl)           |
+  00ca 71           ; ld (hl), c           |
+  00cb 2d           ; dec l                |
+  00cc 4f           ; ld c, a              |
+  00cd 20 fa        ; jr nz, 0xc9          |
+  00cf f1           ; pop af               |
+  00d0 30 05        ; jr nc, 0xd7          |
+  00d2 15           ; dec d                |
+  00d3 04           ; inc b                |
+  00d4 6a           ; ld l, d              |
+  00d5 36 2d        ; ld (hl), 0x2d        |
+  00d7 5a           ; ld e, d              |
+  00d8 16 42        ; ld d, 0x42           |
+  00da 78           ; ld a, b              |
+  00db fe 10        ; cp 0x10              |
+  00dd 38 02        ; jr c, 0xe1           |
+  00df 06 10        ; ld b, 0x10           |
+  00e1 48           ; ld c, b              |
+  00e2 06 00        ; ld b, 0x0            |
+  00e4 d5           ; push de              |
+  00e5 c5           ; push bc              |
+  00e6 c3 80 40     ; jp 0x4080            |
+  00e9 2c           ; inc l                |
+  00ea 04           ; inc b                |
+  00eb 05           ; dec b                |
+  00ec 20 a9        ; jr nz, 0x97          |
+  00ee 06 01        ; ld b, 0x1            |
+  00f0 16 13        ; ld d, 0x13           |
+  00f2 18 db        ; jr 0xcf              |
+  00f4 47           ; ld b, a              |
+  00f5 e6 0f        ; and 0xf              |
+  00f7 c6 30        ; add a, 0x30          |
+  00f9 2b           ; dec hl               |
+  00fa 77           ; ld (hl), a           |
+  00fb 2b           ; dec hl               |
+  00fc 78           ; ld a, b              |
+  00fd 0f           ; rrca                 |
+  00fe 0f           ; rrca                 |
+  00ff 0f           ; rrca                 |
+  0100 0f           ; rrca                 |
+  0101 e6 0f        ; and 0xf              |
+  0103 c6 30        ; add a, 0x30          |
+  0105 77           ; ld (hl), a           |
+  0106 c9           ; ret                  |
+  0107 80           ; add a, b             |
+  0108 47           ; ld b, a              |
+  0109 18 c4        ; jr 0xcf              |
+  010b 0e 2b        ; ld c, 0x2b           |
+  010d d6 80        ; sub 0x80             |
+  010f 5f           ; ld e, a              |
+  0110 7d           ; ld a, l              |
+  0111 fe 11        ; cp 0x11              |
+  0113 38 02        ; jr c, 0x117          |
+  0115 2e 11        ; ld l, 0x11           |
+  0117 71           ; ld (hl), c           |
+  0118 7a           ; ld a, d              |
+  0119 b7           ; or a                 |
+  011a 7b           ; ld a, e              |
+  011b ea 22 01     ; jp pe, 0x122         |
+  011e 79           ; ld a, c              |
+  011f d6 2c        ; sub 0x2c             |
+  0121 83           ; add a, e             |
+  0122 2d           ; dec l                |
+  0123 36 45        ; ld (hl), 0x45        |
+  0125 0e 2f        ; ld c, 0x2f           |
+  0127 23           ; inc hl               |
+  0128 23           ; inc hl               |
+  0129 0c           ; inc c                |
+  012a d6 0a        ; sub 0xa              |
+  012c 30 fb        ; jr nc, 0x129         |
+  012e c6 3a        ; add a, 0x3a          |
+  0130 47           ; ld b, a              |
+  0131 79           ; ld a, c              |
+  0132 fe 3a        ; cp 0x3a              |
+  0134 38 02        ; jr c, 0x138          |
+  0136 0e 39        ; ld c, 0x39           |
+  0138 71           ; ld (hl), c           |
+  0139 23           ; inc hl               |
+  013a 70           ; ld (hl), b           |
+  013b 15           ; dec d                |
+  013c 7d           ; ld a, l              |
+  013d 92           ; sub d                |
+  013e 3c           ; inc a                |
+  013f 47           ; ld b, a              |
+  0140 6a           ; ld l, d              |
+  0141 36 2e        ; ld (hl), 0x2e        |
+  0143 18 8a        ; jr 0xcf              |
+  0145 0e 2d        ; ld c, 0x2d           |
+  0147 2f           ; cpl                  |
+  0148 c6 81        ; add a, 0x81          |
+  014a 18 c3        ; jr 0x10f             |
+  014c fe 7c        ; cp 0x7c              |
+  014e 38 f5        ; jr c, 0x145          |
+  0150 d6 7b        ; sub 0x7b             |
+  0152 57           ; ld d, a              |
+  0153 6f           ; ld l, a              |
+  0154 91           ; sub c                |
+  0155 2f           ; cpl                  |
+  0156 3c           ; inc a                |
+  0157 47           ; ld b, a              |
+  0158 c3 c6 00     ; jp 0xc6              |
+  015b cd 06 18     ; call 0x1806          |
+  015e e1           ; pop hl               |
+  015f 22 81 40     ; ld (0x4081), hl      |
+  0162 c1           ; pop bc               |
+  0163 0c           ; inc c                |
+  0164 1e 00        ; ld e, 0x0            |
+  0166 43           ; ld b, e              |
+  0167 53           ; ld d, e              |
+  0168 e1           ; pop hl               |
+  0169 cd c2 01     ; call 0x1c2           |
+  016c 28 24        ; jr z, 0x192          |
+  016e 30 f9        ; jr nc, 0x169         |
+  0170 e5           ; push hl              |
+  0171 21 06 42     ; ld hl, 0x4206        |
+  0174 b6           ; or (hl)              |
+  0175 77           ; ld (hl), a           |
+  0176 cd 67 07     ; call 0x767           |
+  0179 e1           ; pop hl               |
+  017a 78           ; ld a, b              |
+  017b 92           ; sub d                |
+  017c 47           ; ld b, a              |
+  017d cd c2 01     ; call 0x1c2           |
+  0180 28 10        ; jr z, 0x192          |
+  0182 38 ec        ; jr c, 0x170          |
+  0184 fe 15        ; cp 0x15              |
+  0186 20 0a        ; jr nz, 0x192         |
+  0188 d5           ; push de              |
+  0189 e5           ; push hl              |
+  018a cd e8 06     ; call 0x6e8           |
+  018d 7b           ; ld a, e              |
+  018e 80           ; add a, b             |
+  018f e1           ; pop hl               |
+  0190 47           ; ld b, a              |
+  0191 d1           ; pop de               |
+  0192 78           ; ld a, b              |
+  0193 1f           ; rra                  |
+  0194 4f           ; ld c, a              |
+  0195 da 9c 01     ; jp c, 0x19c          |
+  0198 cd 67 07     ; call 0x767           |
+  019b 0d           ; dec c                |
+  019c 21 10 42     ; ld hl, 0x4210        |
+  019f 2b           ; dec hl               |
+  01a0 7d           ; ld a, l              |
+  01a1 fe 06        ; cp 0x6               |
+  01a3 28 04        ; jr z, 0x1a9          |
+  01a5 7e           ; ld a, (hl)           |
+  01a6 b7           ; or a                 |
+  01a7 28 f6        ; jr z, 0x19f          |
+  01a9 79           ; ld a, c              |
+  01aa 85           ; add a, l             |
+  01ab c6 3b        ; add a, 0x3b          |
+  01ad e6 7f        ; and 0x7f             |
+  01af b3           ; or e                 |
+  01b0 23           ; inc hl               |
+  01b1 77           ; ld (hl), a           |
+  01b2 c5           ; push bc              |
+  01b3 c5           ; push bc              |
+  01b4 c5           ; push bc              |
+  01b5 c5           ; push bc              |
+  01b6 cd 00 18     ; call 0x1800          |
+  01b9 c3 80 40     ; jp 0x4080            |
+  01bc 16 01        ; ld d, 0x1            |
+  01be 18 02        ; jr 0x1c2             |
+  01c0 1e 80        ; ld e, 0x80           |
+  01c2 0d           ; dec c                |
+  01c3 c8           ; ret z                |
+  01c4 7e           ; ld a, (hl)           |
+  01c5 e6 7f        ; and 0x7f             |
+  01c7 23           ; inc hl               |
+  01c8 d6 30        ; sub 0x30             |
+  01ca 38 05        ; jr c, 0x1d1          |
+  01cc fe 0a        ; cp 0xa               |
+  01ce c0           ; ret nz               |
+  01cf b7           ; or a                 |
+  01d0 c9           ; ret                  |
+  01d1 3c           ; inc a                |
+  01d2 3c           ; inc a                |
+  01d3 28 e7        ; jr z, 0x1bc          |
+  01d5 3c           ; inc a                |
+  01d6 28 e8        ; jr z, 0x1c0          |
+  01d8 3c           ; inc a                |
+  01d9 3c           ; inc a                |
+  01da 28 e6        ; jr z, 0x1c2          |
+  01dc b7           ; or a                 |
 
   ;interrupt routine()
   01de f5           ; push af              |
@@ -284,7 +555,7 @@ From **disassembly.py -a** on 2024 08 17
   0366 fb           ; ei                   |
   0367 c9           ; ret                  |
 
-  ;unknown
+  ;UNEXPLORED
   0368 7b           ; ld a, e              |
   0369 b2           ; or d                 |
   036a c8           ; ret z                |
@@ -361,7 +632,7 @@ From **disassembly.py -a** on 2024 08 17
   03ca f3           ; di                   |
   03cb ff           ; rst 0x38             |
 
-  ;unknown
+  ;UNEXPLORED
   03cd c5           ; push bc              |
   03ce cd 86 40     ; call 0x4086          |
   03d1 c1           ; pop bc               |
@@ -369,7 +640,7 @@ From **disassembly.py -a** on 2024 08 17
   03d3 f3           ; di                   |
   03d4 ff           ; rst 0x38             |
 
-  ;unknown
+  ;UNEXPLORED
   03d5 18 b8        ; jr 0x38f             | check printer status
   03d7 cd 10 04     ; call 0x410           | clear keyboard buffer, update display
   03da cd a9 04     ; call 0x4a9           | get keyboard input, result in a
@@ -421,7 +692,7 @@ From **disassembly.py -a** on 2024 08 17
   0437 ff           ; rst 0x38             |
   0438 c9           ; ret                  |
 
-  ;XXX
+  ;UNEXPLORED
   0439 ed 5b 96 40  ; ld de, (0x4096)      | get de = OSEZ (# chars used for display)
   043d 3e 05        ; ld a, 0x5            |
   043f d3 04        ; out (0x4), a         | display ctrl (0x05) Reset, Unbuffer
@@ -465,7 +736,7 @@ From **disassembly.py -a** on 2024 08 17
   047b fb           ; ei                   |
   047c c9           ; ret                  |
 
-  ;unkown
+  ;UNEXPLORED
   047d e5           ; push hl              |
   047e cd a9 04     ; call 0x4a9           |
   0481 d1           ; pop de               |
@@ -586,7 +857,7 @@ From **disassembly.py -a** on 2024 08 17
   0546 77           ; ld (hl), a           |
   0547 c9           ; ret                  |
 
-  ;unknown
+  ;UNEXPLORED
   0548 32 98 40     ; ld (0x4098), a       | set ACTK = a
   054b 32 91 40     ; ld (0x4091), a       | set FUNKEY = a
   054e 1a           ; ld a, (de)           |
@@ -601,8 +872,7 @@ From **disassembly.py -a** on 2024 08 17
   055c 47           ; ld b, a              |
   055d 04           ; inc b                |
   055e 0e 03        ; ld c, 0x3            |
-  0560 ed           ; db 0xed              | z80 otir instruction - B bytes from HL to port C
-  0561 b3           ; or e                 |
+  0560 ed b3        ; otir                 | z80 otir instruction - B bytes from HL to port C
   0562 c9           ; ret                  |
 
   ;handle tab clear (clears tab bit in hl?)
@@ -696,7 +966,7 @@ From **disassembly.py -a** on 2024 08 17
   05e5 1a           ; ld a, (de)           |
   05e6 c3 83 05     ; jp 0x583             |
 
-  ;unknown
+  ;UNEXPLORED
   05e7 83           ; add a, e             |
   05e8 05           ; dec b                |
 
@@ -3521,8 +3791,7 @@ From **disassembly.py -a** on 2024 08 17
   186c db 1f        ; in a, (0x1f)         |
   186e b9           ; cp c                 |
   186f 19           ; add hl, de           |
-  1870 ea           ; db 0xea              |
-  1871 18 df        ; jr 0x1852            |
+  1870 ea 18 df     ; jp pe, 0xdf18        |
   1873 18 b0        ; jr 0x1825            |
   1875 1f           ; rra                  |
   1876 f2 1f e1     ; jp p, 0xe11f         |
@@ -3577,7 +3846,7 @@ From **disassembly.py -a** on 2024 08 17
   18bc c1           ; pop bc               |
   18bd cd 0c 00     ; call 0xc             | call MUL routine
   18c0 c3 a8 18     ; jp 0x18a8            |
-  18c3 d1           ; pop de               |
+  18c3 d1           ; pop de               | INST 10 - divide binary
   18c4 e1           ; pop hl               |
   18c5 cd 0f 00     ; call 0xf             | call DIV routine
   18c8 d5           ; push de              |
@@ -3592,22 +3861,22 @@ From **disassembly.py -a** on 2024 08 17
   18da 23           ; inc hl               |
   18db 70           ; ld (hl), b           |
   18dc c3 7c 18     ; jp 0x187c            |
-  18df 2a fe 40     ; ld hl, (0x40fe)      |
+  18df 2a fe 40     ; ld hl, (0x40fe)      | INST 33 - byte 2 and 3 is binary number, stacked
   18e2 46           ; ld b, (hl)           |
   18e3 23           ; inc hl               |
   18e4 4e           ; ld c, (hl)           |
   18e5 c5           ; push bc              |
   18e6 23           ; inc hl               |
   18e7 c3 7f 18     ; jp 0x187f            |
-  18ea 2a fe 40     ; ld hl, (0x40fe)      |
+  18ea 2a fe 40     ; ld hl, (0x40fe)      | INST 32 - byte 2 is binary number, stacked
   18ed 4e           ; ld c, (hl)           |
   18ee 23           ; inc hl               |
   18ef 06 00        ; ld b, 0x0            |
   18f1 c5           ; push bc              |
   18f2 c3 7f 18     ; jp 0x187f            |
-  18f5 cd 03 00     ; call 0x3             | call TOSTR routine
+  18f5 cd 03 00     ; call 0x3             | INST 1A - Convert from decimal to character
   18f8 c3 7c 18     ; jp 0x187c            |
-  18fb e1           ; pop hl               |
+  18fb e1           ; pop hl               | INST 1E - Call to address on top of the stack
   18fc 7e           ; ld a, (hl)           |
   18fd 23           ; inc hl               |
   18fe 23           ; inc hl               |
@@ -3648,22 +3917,22 @@ From **disassembly.py -a** on 2024 08 17
   1934 0d           ; dec c                |
   1935 c2 32 19     ; jp nz, 0x1932        |
   1938 c9           ; ret                  | INST 1F - return from subroutine
-  1939 cd 21 00     ; call 0x21            | call GETDN routine
+  1939 cd 21 00     ; call 0x21            | INST 24 - Get decimal number from input
   193c c3 7c 18     ; jp 0x187c            |
-  193f c1           ; pop bc               |
+  193f c1           ; pop bc               | INST 2A - Output character N times
   1940 d1           ; pop de               |
   1941 7b           ; ld a, e              |
   1942 41           ; ld b, c              |
   1943 cd 2f 19     ; call 0x192f          |
   1946 48           ; ld c, b              |
   1947 c3 6d 19     ; jp 0x196d            |
-  194a cd 24 00     ; call 0x24            | INST 23 - get new line of keyboard input
+  194a cd 24 00     ; call 0x24            | INST 23 - Get new line of keyboard input
   194d c3 7c 18     ; jp 0x187c            |
-  1950 c1           ; pop bc               |
+  1950 c1           ; pop bc               | INST 25 - Get character string from input
   1951 e1           ; pop hl               |
   1952 cd 1e 00     ; call 0x1e            |
   1955 c3 7c 18     ; jp 0x187c            |
-  1958 cd 03 00     ; call 0x3             | call TOSTR
+  1958 cd 03 00     ; call 0x3             | INST 27 - Put decimal number
   195b 3e 20        ; ld a, 0x20           |
   195d 0e 10        ; ld c, 0x10           |
   195f cd 2f 19     ; call 0x192f          |
@@ -3673,11 +3942,11 @@ From **disassembly.py -a** on 2024 08 17
   1966 c5           ; push bc              |
   1967 4f           ; ld c, a              |
   1968 cd fb 40     ; call 0x40fb          |
-  196b c1           ; pop bc               |
+  196b c1           ; pop bc               | INST 26 - Put character string
   196c e1           ; pop hl               |
   196d cd fb 40     ; call 0x40fb          |
   1970 c3 7c 18     ; jp 0x187c            |
-  1973 d1           ; pop de               |
+  1973 d1           ; pop de               | INST 28 - Put Edit character string
   1974 c1           ; pop bc               |
   1975 e1           ; pop hl               |
   1976 e5           ; push hl              |
@@ -3725,7 +3994,7 @@ From **disassembly.py -a** on 2024 08 17
   19b2 c2 ac 19     ; jp nz, 0x19ac        |
   19b5 e1           ; pop hl               |
   19b6 c3 7c 18     ; jp 0x187c            |
-  19b9 c1           ; pop bc               |
+  19b9 c1           ; pop bc               | INST 31 - store string (no padding)
   19ba 79           ; ld a, c              |
   19bb e1           ; pop hl               |
   19bc c1           ; pop bc               |
@@ -3748,7 +4017,7 @@ From **disassembly.py -a** on 2024 08 17
   19d6 d5           ; push de              |
   19d7 c5           ; push bc              |
   19d8 c3 7c 18     ; jp 0x187c            |
-  19db c1           ; pop bc               |
+  19db c1           ; pop bc               | INST 29 - Put Edit decimal number
   19dc 79           ; ld a, c              |
   19dd c1           ; pop bc               |
   19de d1           ; pop de               |
@@ -3910,12 +4179,12 @@ From **disassembly.py -a** on 2024 08 17
   1ae3 23           ; inc hl               |
   1ae4 4f           ; ld c, a              |
   1ae5 c3 6d 19     ; jp 0x196d            |
-  1ae8 c1           ; pop bc               |
+  1ae8 c1           ; pop bc               | INST 16 - Convert from character to binary
   1ae9 e1           ; pop hl               |
   1aea cd 2d 00     ; call 0x2d            | call CARB (ch to binary)
   1aed d5           ; push de              |
   1aee c3 7c 18     ; jp 0x187c            |
-  1af1 e1           ; pop hl               |
+  1af1 e1           ; pop hl               | INST 18 - Convert from binary to decimal
   1af2 22 64 42     ; ld (0x4264), hl      |
   1af5 e1           ; pop hl               |
   1af6 22 66 42     ; ld (0x4266), hl      |
@@ -3938,13 +4207,13 @@ From **disassembly.py -a** on 2024 08 17
   1b19 2a 64 42     ; ld hl, (0x4264)      |
   1b1c e5           ; push hl              |
   1b1d c3 7c 18     ; jp 0x187c            |
-  1b20 e1           ; pop hl               |
+  1b20 e1           ; pop hl               | INST 19 - Convert from binary to character
   1b21 11 32 42     ; ld de, 0x4232        |
   1b24 cd 12 00     ; call 0x12            | call TODEC
   1b27 d5           ; push de              |
   1b28 c5           ; push bc              |
   1b29 c3 7c 18     ; jp 0x187c            |
-  1b2c e1           ; pop hl               |
+  1b2c e1           ; pop hl               | INST 12 - And binary
   1b2d d1           ; pop de               |
   1b2e 7d           ; ld a, l              |
   1b2f a3           ; and e                |
@@ -3954,7 +4223,7 @@ From **disassembly.py -a** on 2024 08 17
   1b33 67           ; ld h, a              |
   1b34 e5           ; push hl              |
   1b35 c3 7c 18     ; jp 0x187c            |
-  1b38 e1           ; pop hl               |
+  1b38 e1           ; pop hl               | INST 13 - Or binary
   1b39 d1           ; pop de               |
   1b3a 7d           ; ld a, l              |
   1b3b b3           ; or e                 |
@@ -3964,12 +4233,12 @@ From **disassembly.py -a** on 2024 08 17
   1b3f 67           ; ld h, a              |
   1b40 e5           ; push hl              |
   1b41 c3 7c 18     ; jp 0x187c            |
-  1b44 e1           ; pop hl               |
+  1b44 e1           ; pop hl               | INST 14 - Ones complement binary
   1b45 cd 15 00     ; call 0x15            | call NHL (negate binary in hl)
   1b48 2b           ; dec hl               |
   1b49 e5           ; push hl              |
   1b4a c3 7c 18     ; jp 0x187c            |
-  1b4d d1           ; pop de               |
+  1b4d d1           ; pop de               | INST 2E - Read key
   1b4e e1           ; pop hl               |
   1b4f 22 14 42     ; ld (0x4214), hl      |
   1b52 e1           ; pop hl               |
@@ -3991,7 +4260,7 @@ From **disassembly.py -a** on 2024 08 17
   1b6e 2a 14 42     ; ld hl, (0x4214)      |
   1b71 cd 00 08     ; call 0x800           | call READ
   1b74 c3 81 1b     ; jp 0x1b81            |
-  1b77 cd 2b 1d     ; call 0x1d2b          | increment IPC
+  1b77 cd 2b 1d     ; call 0x1d2b          | INST 2B - Read from disk
   1b7a 79           ; ld a, c              |
   1b7b e1           ; pop hl               |
   1b7c d1           ; pop de               |
@@ -4035,10 +4304,10 @@ From **disassembly.py -a** on 2024 08 17
   1bc9 e1           ; pop hl               | INST 22 - open file
   1bca cd 0c 08     ; call 0x80c           | call OPEN
   1bcd c3 81 1b     ; jp 0x1b81            |
-  1bd0 e1           ; pop hl               |
+  1bd0 e1           ; pop hl               | INST 2F - file description on top of stack
   1bd1 cd 12 08     ; call 0x812           |
   1bd4 c3 81 1b     ; jp 0x1b81            |
-  1bd7 cd 06 00     ; call 0x6             |
+  1bd7 cd 06 00     ; call 0x6             | INST 17 - Convert from character to decimal
   1bda c3 7c 18     ; jp 0x187c            |
   1bdd cd fb 1d     ; call 0x1dfb          | INST 08 - compare decimal
   1be0 e5           ; push hl              |
@@ -4258,15 +4527,15 @@ From **disassembly.py -a** on 2024 08 17
   1d33 c9           ; ret                  |
 
   ;UNEXPLORED
-  1d34 e1           ; pop hl               |
+  1d34 e1           ; pop hl               | INST 1C - Go to address on top of stack
   1d35 c3 7f 18     ; jp 0x187f            |
-  1d38 e1           ; pop hl               |
+  1d38 e1           ; pop hl               | INST 1D - Go to address on top of stack (conditional)
   1d39 c1           ; pop bc               |
   1d3a 78           ; ld a, b              |
   1d3b b1           ; or c                 |
   1d3c c2 7c 18     ; jp nz, 0x187c        | run microcode program
   1d3f c3 7f 18     ; jp 0x187f            |
-  1d42 21 0b 00     ; ld hl, 0xb           |
+  1d42 21 0b 00     ; ld hl, 0xb           | INST 21 - Do loop control for decimal indexes
   1d45 39           ; add hl, sp           |
   1d46 4e           ; ld c, (hl)           |
   1d47 11 08 00     ; ld de, 0x8           |
@@ -4285,7 +4554,7 @@ From **disassembly.py -a** on 2024 08 17
   1d5c d1           ; pop de               |
   1d5d c1           ; pop bc               |
   1d5e c3 57 1d     ; jp 0x1d57            |
-  1d61 d1           ; pop de               |
+  1d61 d1           ; pop de               | INST 20 - Do loop control for binary indexes
   1d62 e1           ; pop hl               |
   1d63 c1           ; pop bc               |
   1d64 e3           ; ex (sp), hl          |
@@ -4417,7 +4686,7 @@ From **disassembly.py -a** on 2024 08 17
   1e1f 0d           ; dec c                |
   1e20 c2 13 1e     ; jp nz, 0x1e13        |
   1e23 c9           ; ret                  |
-  1e24 cd 53 1f     ; call 0x1f53          |
+  1e24 cd 53 1f     ; call 0x1f53          | INST 11 - divide decimal
   1e27 cd fb 1d     ; call 0x1dfb          |
   1e2a b7           ; or a                 |
   1e2b ca c7 1c     ; jp z, 0x1cc7         |
@@ -4671,7 +4940,7 @@ From **disassembly.py -a** on 2024 08 17
   1fa9 d2 72 1f     ; jp nc, 0x1f72        |
   1fac 04           ; inc b                |
   1fad c3 72 1f     ; jp 0x1f72            |
-  1fb0 c1           ; pop bc               |
+  1fb0 c1           ; pop bc               | INST 34 - VERIFY
   1fb1 e1           ; pop hl               |
   1fb2 d1           ; pop de               |
   1fb3 1c           ; inc e                |
@@ -4702,7 +4971,7 @@ From **disassembly.py -a** on 2024 08 17
   1fd6 1b           ; dec de               |
   1fd7 d5           ; push de              |
   1fd8 c3 7c 18     ; jp 0x187c            | run microcode program
-  1fdb c1           ; pop bc               |
+  1fdb c1           ; pop bc               | INST 30 - string length
   1fdc e1           ; pop hl               |
   1fdd cd e7 1f     ; call 0x1fe7          |
   1fe0 48           ; ld c, b              |
@@ -4718,7 +4987,7 @@ From **disassembly.py -a** on 2024 08 17
   1fed c8           ; ret z                |
   1fee 04           ; inc b                |
   1fef c3 e8 1f     ; jp 0x1fe8            |
-  1ff2 c1           ; pop bc               |
+  1ff2 c1           ; pop bc               | INST 35 - INDEX
   1ff3 d1           ; pop de               |
   1ff4 79           ; ld a, c              |
   1ff5 c1           ; pop bc               |
