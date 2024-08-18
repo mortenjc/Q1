@@ -375,11 +375,11 @@ For example.
   ...
 
 
-  2024 08 17
-  ----------
+2024 08 17
+----------
 
-  Oops, forgot to update the log for a while. But yesterday I succeeded in
-  loading and running the 'SCR' program from (emulated) disk.
+Oops, forgot to update the log for a while. But yesterday I succeeded in
+loading and running the 'SCR' program from (emulated) disk.
 
   This marks a major milestone in this project. The sequence of commands that
   verifies this are
@@ -449,3 +449,10 @@ For example.
   $%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT
     !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT
            !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}             THIS SPACE FOR RENT
+
+
+2024 08 18
+----------
+
+Better display emulation. Had to resort to using UDP to send the
+display buffer to a **curses** based application.
