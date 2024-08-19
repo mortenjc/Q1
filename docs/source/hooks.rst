@@ -118,85 +118,8 @@ Or by constructing tracks using id and data record functions using
 **idrecord()**, **datarecord()** and **datareci()**.
 
 
-Applications
-============
-
-The previous modules can be combined to achieve different functions
-
-
-disassembly
-^^^^^^^^^^^
-
-Provides disassembler functionality of **programs** with annotations.
-
-.. code-block:: console
-
-  > python3 disassembly.py -a
-  ...
-  <<<<< report() >>>>>
-  0d8e c5           ; push bc         |
-  0d8f f5           ; push af         |
-  0d90 cd 6b 0d     ; call 0xd6b      | clrdk()
-  0d93 21 ec 0d     ; ld hl, 0xdec    | CLEAR
-  0d96 0e 01        ; ld c, 0x1       |
-  0d98 cd 27 00     ; call 0x27       |
-  0d9b f1           ; pop af          |
-  0d9c fe 04        ; cp 0x4          |
-  0d9e 28 33        ; jr z, 0xdd3     |
-  0da0 fe 09        ; cp 0x9          |
-  0da2 fa a7 0d     ; jp m, 0xda7     |
-  0da5 3e 09        ; ld a, 0x9       |
-  <<<<< print nth error message >>>>>
-  0da7 21 ed 0d     ; ld hl, 0xded    | Start of error messages
-  ...
-
-emulator
-^^^^^^^^
-
-The **emulator** runs the program and displays the runtime status
-of the program counter, registers, decoded instructions, etc.
-
-.. code-block:: console
-
-  > python3 emulator.py -d
-  ; jump to START
-  0000 c3 e5 01     ; jp 0x1e5        | SP=0000, A=00    BC=0000, DE=0000, HL=0000
-  ; START()
-  01e5 ed 56        ; im 0x1          | SP=0000, A=00    BC=0000, DE=0000, HL=0000
-  01e7 3e 04        ; ld a, 0x4       | SP=0000, A=00    BC=0000, DE=0000, HL=0000
-  01e9 d3 01        ; out (0x1), a    | SP=0000, A=04    BC=0000, DE=0000, HL=0000
-  ; 01eb setup registers for copying and clearing
-  01eb 11 3f 00     ; ld de, 0x3f     | SP=0000, A=04    BC=0000, DE=0000, HL=0000
-  01ee 21 80 40     ; ld hl, 0x4080   | SP=0000, A=04    BC=0000, DE=003f, HL=0000
-  01f1 f9           ; ld sp, hl       | SP=0000, A=04    BC=0000, DE=003f, HL=4080
-  01f2 eb           ; ex de, hl       | SP=4080, A=04    BC=0000, DE=003f, HL=4080
-  ; 01f3 copy (function calls) from 0x003f:0x0047 to 0x4080:
-  01f3 01 09 00     ; ld bc, 0x9      | SP=4080, A=04    BC=0000, DE=4080, HL=003f
-
-For interactive sessions it is better to disable periodic hexdump and instruction decode
-
-
-.. code-block:: console
-
-  > python3 emulator.py
-  loading program: Combined Q1 image from IC25-IC32
-  loaded 1024 bytes from roms/JDC/IC25.bin at address 0000h
-  loaded 1024 bytes from roms/JDC/IC26.bin at address 0400h
-  loaded 1024 bytes from roms/JDC/IC27.bin at address 0800h
-  loaded 1024 bytes from roms/JDC/IC28.bin at address 0c00h
-  loaded 1024 bytes from roms/JDC/IC29.bin at address 1000h
-  loaded 1024 bytes from roms/JDC/IC30.bin at address 1400h
-  loaded 1024 bytes from roms/JDC/IC31.bin at address 1800h
-  loaded 1024 bytes from roms/JDC/IC32.bin at address 1c00h
-
-  ... several blank lines ...
-
-   Q1-Lite
-   klar til brug
-
-
 q1curses
 ^^^^^^^^
 
 Receives the display buffer via UDP and uses **curses** to output to
-screen. 
+screen.

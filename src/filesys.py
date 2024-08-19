@@ -187,14 +187,3 @@ class FileSys:
         for i, ch in enumerate(rec):
             d[offset + i] = ch
         return offset + len(rec)
-
-
-
-
-fs1 = FileSys()
-fs1.idrecord(0, 2189, 0)
-fs1.idrecord(0, 2193, 0)
-fs1.datareci(2197, 'MJC     ', 16)
-fs1.idrecord(0, 2240, 0)
-fs1.idrecord(0, 2244, 0)
-fs1.datareci(2248, 'IBM     ', 16)

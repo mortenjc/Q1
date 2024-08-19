@@ -50,6 +50,8 @@ Collaborators wanted, please get in touch ;-)
         :hidden:
 
         hooks
+        emulator
+        disassembler
         running
         annotate
         log
