@@ -1,3 +1,4 @@
+.. _python_modules:
 
 Python modules
 ==============

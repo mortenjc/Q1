@@ -9,7 +9,7 @@ emulation (yellow arros going down). The Q1 Emulator makes use of a **z80
 emulator** which in turn interfaces to **memory** and **IO**. Memory is loaded
 with **programs** by a **loader** and IO devices are initialised: **display buffer**
 is cleared and **disk** is populated with a **filesystem**. These abstractions
-are described in the **Python Modules** section.
+are described in the :ref:`python_modules` section.
 
 On the initialisation is done the emulator enters a repeated series of single
 instruction **steps**.
