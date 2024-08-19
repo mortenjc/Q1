@@ -55,3 +55,4 @@ Collaborators wanted, please get in touch ;-)
         running
         annotate
         log
+        references

@@ -4,14 +4,14 @@ Emulator
 ========
 
 The Q1 Emulator architecture is shown below. Operationally it consists of
-two paths, one for initialisation (blue arrows going up) and one for the runtime
-emulation (yellow arros going down). The Q1 Emulator makes use of a **z80
+two paths: Initialisation (blue up arrows) and Runtime
+emulation (yellow down arrows). The Q1 Emulator makes use of a **z80
 emulator** which in turn interfaces to **memory** and **IO**. Memory is loaded
 with **programs** by a **loader** and IO devices are initialised: **display buffer**
 is cleared and **disk** is populated with a **filesystem**. These abstractions
 are described in the :ref:`python_modules` section.
 
-On the initialisation is done the emulator enters a repeated series of single
+Once the initialisation is done the emulator enters a repeated series of single
 instruction **steps**.
 
 
