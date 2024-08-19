@@ -13,6 +13,7 @@ of the program counter, registers, decoded instructions, etc.
   Q1 Emulator Architecture
 
 
+The emulator can be run with disassembly:
 
 .. code-block:: console
 
@@ -31,30 +32,12 @@ of the program counter, registers, decoded instructions, etc.
   ; 01f3 copy (function calls) from 0x003f:0x0047 to 0x4080:
   01f3 01 09 00     ; ld bc, 0x9      | SP=4080, A=04    BC=0000, DE=4080, HL=003f
 
-For interactive sessions it is better to disable periodic hexdump and instruction decode
 
+However, for interactive sessions it is better to skip periodic hexdump and
+instruction decode, and use the display emulator:
 
-.. code-block:: console
+.. figure:: images/displayemu.png
+  :width: 800
+  :align: center
 
-  > python3 emulator.py
-  loading program: Combined Q1 image from IC25-IC32
-  loaded 1024 bytes from roms/JDC/IC25.bin at address 0000h
-  loaded 1024 bytes from roms/JDC/IC26.bin at address 0400h
-  loaded 1024 bytes from roms/JDC/IC27.bin at address 0800h
-  loaded 1024 bytes from roms/JDC/IC28.bin at address 0c00h
-  loaded 1024 bytes from roms/JDC/IC29.bin at address 1000h
-  loaded 1024 bytes from roms/JDC/IC30.bin at address 1400h
-  loaded 1024 bytes from roms/JDC/IC31.bin at address 1800h
-  loaded 1024 bytes from roms/JDC/IC32.bin at address 1c00h
-
-  ... several blank lines ...
-
-   Q1-Lite
-   klar til brug
-
-
-q1curses
-^^^^^^^^
-
-Receives the display buffer via UDP and uses **curses** to output to
-screen.
+  Left window: debug output and keyboard input. Right window display emulator.
